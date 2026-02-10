@@ -7,11 +7,11 @@
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg-color: #f4f7f9; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
+        .banner-container { width: 100%; background: white; text-align: center; }
         .banner-top { width: 100%; height: auto; max-height: 120px; object-fit: contain; display: block; margin: 0 auto; padding: 5px 0; }
         .header { width: 100%; background: white; padding: 10px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); }
         .logo-securitas { height: 30px; }
-        .container { width: 90%; max-width: 550px; margin: 20px 0; flex-grow: 1; }
+        .container { width: 90%; max-width: 550px; margin: 20px 0; flex-grow: 1; padding-bottom: 80px; }
         .step { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -20,9 +20,9 @@
         button { width: 100%; padding: 15px; margin: 6px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-gray { background: #6c757d; }
+        .btn-logout { background: #333; font-size: 0.8rem; margin-top: 40px; }
         .instruction-card { background: #fff9db; border-left: 6px solid #fcc419; padding: 15px; text-align: left; margin-top: 15px; border-radius: 4px; font-size: 0.9rem; }
         .danger { background: #fff5f5; border-left-color: var(--securitas-red); color: #c92a2a; }
-        .note-ref { font-style: italic; color: #555; margin-top: 10px; display: block; font-size: 0.85rem; }
         input[type="password"] { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 1rem; }
     </style>
 </head>
@@ -34,94 +34,89 @@
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.85rem;">NSIF Castione - Gestione Controllo Accessi V.2.0</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.85rem;">NSIF Castione - Gestione Accessi V.2.1</div>
     </div>
 
-    <div class="container" id="mainContainer">
+    <div class="container">
         <div id="step_login" class="step">
             <h2>Accesso Riservato</h2>
-            <input type="password" id="pass_input" placeholder="Inserire Password">
+            <input type="password" id="pass_input" placeholder="Password">
             <button onclick="checkPassword()">ACCEDI</button>
         </div>
 
         <div id="step_start" class="step">
             <h2>Tipo di Scenario</h2>
-            <p>Seleziona la situazione attuale del dipendente:</p>
-            <button onclick="nextStep('step_oft_bau')">Dipendente OFT</button>
-            <button class="btn-outline" onclick="nextStep('step_nonoft')">Dipendente Azienda NON OFT</button>
-            <button class="btn-gray" onclick="nextStep('step_badge_pers')">Possiede già Badge Personale</button>
+            <button onclick="nextStep('step_oft_bau')">Lavoratore Azienda OFT</button>
+            <button class="btn-outline" onclick="nextStep('step_nonoft')">Azienda NON OFT / Visitatore</button>
+            <button class="btn-gray" onclick="nextStep('step_badge_pers')">Lavoratore con Badge Personale</button>
+            <button class="btn-logout" onclick="logout()">LOGOUT / ESCI</button>
         </div>
 
         <div id="step_oft_bau" class="step">
             <h2>Verifica Bausicht (OFT)</h2>
-            <p>Effettuare accertamento sul sistema:</p>
-            <button onclick="nextStep('step_oft_foto')">Presente nel sistema</button>
-            <button onclick="nextStep('step_oft_no_bau')">NON presente nel sistema</button>
+            <button onclick="nextStep('step_oft_foto')">PRESENTE nel sistema</button>
+            <button onclick="nextStep('step_oft_no_bau')">NON PRESENTE nel sistema</button>
+            <button class="btn-gray" onclick="nextStep('step_start')">Indietro</button>
         </div>
 
         <div id="step_oft_foto" class="step">
-            <h2>Verifica Immagine (OFT)</h2>
-            <button onclick="showFinal('oft_ok')">Immagine Presente</button>
-            <button onclick="showFinal('oft_no_foto')">Senza Immagine</button>
+            <h2>Verifica Immagine</h2>
+            <button onclick="showFinal('oft_ok')">Sì, immagine presente</button>
+            <button onclick="showFinal('oft_no_foto')">No, senza immagine</button>
         </div>
 
         <div id="step_oft_no_bau" class="step">
-            <h2>Referente OFT (OFT no Bau)</h2>
-            <p>La persona non è autorizzata. Richiedere conferma:</p>
+            <h2>Referente OFT</h2>
+            <p>La persona non è autorizzata. Richiedere conferma ad un referente OFT:</p>
             <button onclick="nextStep('step_oft_ref_si')">Il referente è presente</button>
             <button class="btn-gray" onclick="showFinal('oft_blocco_zatta')">Referente NON presente</button>
         </div>
 
         <div id="step_oft_ref_si" class="step">
-            <h2>Opzioni Consegna (Referente presente)</h2>
-            <p>Il referente si assume la responsabilità:</p>
+            <h2>Opzioni Consegna Badge</h2>
             <button onclick="showFinal('oft_ref_op1')">Opzione 1: Firma Modulo Responsabilità</button>
-            <button onclick="showFinal('oft_ref_op2')">Opzione 2: Firma Modulo + Consegna Diretta</button>
+            <button onclick="showFinal('oft_ref_op2')">Opzione 2: Garanzia Referente (Senza formazione)</button>
+            <button onclick="showFinal('oft_ref_op3')">Opzione 3: Già istruito (Consegna diretta)</button>
         </div>
 
         <div id="step_nonoft" class="step">
-            <h2>Aziende NON OFT </h2>
-            <p>Procedura per ditte esterne o visitatori:</p>
-            <button onclick="showFinal('nonoft_deposito')">Badge Provvisorio (con Deposito)</button>
-            <button class="btn-outline" onclick="showFinal('nonoft_manuale')">Registrazione Manuale Modulo</button>
+            <h2>Aziende NON OFT</h2>
+            <button onclick="showFinal('nonoft_deposito')">Badge Provvisorio (Deposito)</button>
+            <button class="btn-outline" onclick="showFinal('nonoft_manuale')">Registrazione Manuale (Modulo)</button>
         </div>
 
         <div id="step_badge_pers" class="step">
-            <h2>Lavoratore con Badge Personale</h2>
-            <p>Il lavoratore ha già il suo tesserino:</p>
-            <button onclick="showFinal('badge_ok')">Controllo validità superato</button>
-            <button class="btn-gray" onclick="nextStep('step_oft_no_bau')">Badge non funzionante / Scaduto</button>
+            <h2>Controllo Badge Personale</h2>
+            <button onclick="showFinal('badge_ok')">Accesso Regolare</button>
+            <button class="btn-gray" onclick="nextStep('step_oft_no_bau')">Badge Scaduto/Smarrito</button>
         </div>
 
         <div id="result" class="step">
-            <h2>Disposizione Finale</h2>
+            <h2>Istruzione Operativa</h2>
             <div id="resultText" class="instruction-card"></div>
-            <button onclick="resetFlow()" style="background: var(--securitas-red); margin-top:20px;">NUOVA VERIFICA</button>
+            <button onclick="nextStep('step_start')" style="background: var(--securitas-red); margin-top:20px;">NUOVA VERIFICA</button>
+            <button class="btn-logout" onclick="logout()">LOGOUT</button>
         </div>
     </div>
-
-    <div class="footer">Securitas SA - NSIF Castione<br>La Morgia</div>
 
     <script>
         const SECRET_PASSWORD = "Securitas2026";
 
-        // Controllo automatico password all'avvio
         window.onload = function() {
-            if (sessionStorage.getItem('accessGranted') === 'true') {
-                nextStep('step_start');
-            } else {
-                nextStep('step_login');
-            }
+            if (sessionStorage.getItem('accessGranted') === 'true') { nextStep('step_start'); } 
+            else { nextStep('step_login'); }
         };
 
         function checkPassword() {
-            const pass = document.getElementById('pass_input').value;
-            if (pass === SECRET_PASSWORD) {
+            if (document.getElementById('pass_input').value === SECRET_PASSWORD) {
                 sessionStorage.setItem('accessGranted', 'true');
                 nextStep('step_start');
-            } else {
-                alert("Password errata");
-            }
+            } else { alert("Password errata"); }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('accessGranted');
+            location.reload();
         }
 
         function nextStep(id) {
@@ -130,21 +125,17 @@
             window.scrollTo(0,0);
         }
 
-        // Funzione per tornare all'inizio senza chiedere password
-        function resetFlow() {
-            nextStep('step_start');
-        }
-
         function showFinal(key) {
             const res = {
-                'oft_ok': "<b>✓ PROCEDI:</b> Consegna Badge Personale. <br><span class='note-ref'>Nota Nijaz (12.01.26): Se presente nel sistema, non serve contattarlo per conferma.</span>",
-                'oft_no_foto': "<b>⚠ AZIONE:</b> Effettuare la foto nel sistema Bausicht. <br><b>✓ POI:</b> Consegna Badge Personale. <br><span class='note-ref'>Nota: Già a sistema, non contattare Nijaz.</span>",
-                'oft_blocco_zatta': "<b style='color:red'>🛑 ACCESSO NEGATO:</b> La persona non è autorizzata.<br><b>AZIONE:</b> Contattare <b>Loris Zatta</b> (QHSE Assistant) per conferma autorizzazione.",
-                'oft_ref_op1': "<b>✓ PROCEDI:</b> Firma del modulo di responsabilità (Referente + Lavoratore). Consegna Badge Personale.",
-                'oft_ref_op2': "<b>✓ PROCEDI:</b> Consegna diretta Badge Personale (Il referente garantisce per la formazione sicurezza).",
-                'nonoft_deposito': "<b>✓ BADGE PROVVISORIO:</b> Richiedere in deposito: <b>Documento, Patente o Chiavi auto</b>.<br><span class='note-ref'>Nota: Serve per garantire la riconsegna del Badge a fine turno.</span>",
-                'nonoft_manuale': "<b>⚠ REGISTRAZIONE:</b> Compilare il modulo visitatori. La Morgia depositerà il modulo nella cassettina nera.",
-                'badge_ok': "<b>✓ ACCESSO CONSENTITO:</b> Verificare solo che la ditta sia autorizzata per la giornata odierna."
+                'oft_ok': "<b>✓ PROCEDI:</b> Consegna Badge. <br><i>Nota Nijaz: Se a sistema, non contattarlo per conferma.</i>",
+                'oft_no_foto': "<b>⚠ AZIONE:</b> Scattare foto in Bausicht. <br><b>✓ POI:</b> Consegna Badge. <br><i>Nota: Non contattare Nijaz.</i>",
+                'oft_blocco_zatta': "<b style='color:red'>🛑 BLOCCATO:</b> Contattare <b>Loris Zatta</b> (QHSE Assistant) per conferma autorizzazione.",
+                'oft_ref_op1': "<b>✓ PROCEDI:</b> Firma modulo responsabilità (Referente + Operaio) e consegna badge.",
+                'oft_ref_op2': "<b>✓ PROCEDI:</b> Referente garantisce per la sicurezza. Consegna badge diretta.",
+                'oft_ref_op3': "<b>✓ PROCEDI:</b> Operaio già istruito. Consegna badge e firma modulo.",
+                'nonoft_deposito': "<b>✓ BADGE PROVVISORIO:</b> Obbligo deposito (Documento/Chiavi). Garantisce la riconsegna.",
+                'nonoft_manuale': "<b>⚠ MODULO:</b> Compilare modulo visitatori. <br><i>Nota La Morgia: Depositare il modulo nella cassettina nera.</i>",
+                'badge_ok': "<b>✓ PROCEDI:</b> Accesso consentito con badge proprio."
             };
             nextStep('result');
             document.getElementById('resultText').innerHTML = res[key];
@@ -152,5 +143,3 @@
     </script>
 </body>
 </html>
-
-
