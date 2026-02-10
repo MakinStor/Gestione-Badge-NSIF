@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Badge - Procedura Guidata</title>
+    <style>
+        body { font-family: Arial; padding: 20px; line-height: 1.6; }
+        .step { display: none; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        .active { display: block; }
+        button { margin: 10px 5px; padding: 10px 20px; cursor: pointer; }
+        .instruction { background: #e7f3ff; padding: 15px; border-left: 5px solid #2196F3; }
+    </style>
+</head>
+<body>
+    <h1>Procedura Rilascio Badge</h1>
+
+    <div id="step1" class="step active">
+        <h3>1. Verifica Iniziale</h3>
+        <p>Il dipendente è presente nel sistema Bausicht?</p>
+        <button onclick="nextStep('step2a')">SÌ (Presente)</button>
+        <button onclick="nextStep('step2b')">NO (Non presente)</button>
+        <button onclick="showResult('Badge Provvisorio: Seguire procedura Aziende NON OFT.')">Azienda NON OFT</button>
+    </div>
+
+    <div id="step2a" class="step">
+        <h3>2. Verifica Foto</h3>
+        <p>Nel sistema è presente la foto?</p>
+        <button onclick="showResult('OK: Procedi con il badge. Non serve contattare Nijaz.')">SÌ, c'è la foto</button>
+        <button onclick="showResult('AZIONE: Scattare foto. Non serve contattare Nijaz.')">NO, manca foto</button>
+    </div>
+
+    <div id="step2b" class="step">
+        <h3>2. Verifica Referente</h3>
+        <p>È presente un referente OFT fisicamente?</p>
+        <button onclick="showResult('AZIONE: Il referente firma il modulo di responsabilità e consegna badge.')">SÌ</button>
+        <button onclick="showResult('BLOCCO: Contattare Loris Zatta (QHSE Assistant) per conferma.')">NO</button>
+    </div>
+
+    <div id="result" class="step">
+        <h3>Cosa fare:</h3>
+        <div id="resultText" class="instruction"></div>
+        <button onclick="location.reload()">Ricomincia</button>
+    </div>
+
+    <script>
+        function nextStep(stepId) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+        }
+        function showResult(text) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('result').classList.add('active');
+            document.getElementById('resultText').innerText = text;
+        }
+    </script>
+</body>
+</html>
