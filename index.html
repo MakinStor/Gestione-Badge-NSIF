@@ -4,11 +4,67 @@
     <meta charset="UTF-8">
     <title>Gestione Badge - Procedura Guidata</title>
     <style>
-        body { font-family: Arial; padding: 20px; line-height: 1.6; }
-        .step { display: none; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
-        .active { display: block; }
-        button { margin: 10px 5px; padding: 10px 20px; cursor: pointer; }
-        .instruction { background: #e7f3ff; padding: 15px; border-left: 5px solid #2196F3; }
+        <style>
+    body { 
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        background-color: #f4f7f9; 
+        margin: 0; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+    }
+    .header {
+        width: 100%;
+        background: #ffffff;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .step { 
+        display: none; 
+        background: white;
+        width: 90%;
+        max-width: 500px;
+        padding: 30px; 
+        border-radius: 15px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    .active { display: block; animation: fadeIn 0.5s; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    h3 { color: #333; margin-bottom: 20px; }
+    p { color: #666; font-size: 1.1em; }
+
+    button { 
+        width: 100%;
+        margin: 10px 0; 
+        padding: 15px; 
+        border: none;
+        border-radius: 10px;
+        background-color: #007bff;
+        color: white;
+        font-size: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:hover { background-color: #0056b3; }
+    
+    /* Colore diverso per i blocchi o avvisi */
+    .btn-warning { background-color: #ff9800; }
+    .instruction { 
+        background: #fff3cd; 
+        color: #856404;
+        padding: 20px; 
+        border-radius: 10px;
+        border-left: 8px solid #ffeeba;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+</style>
     </style>
 </head>
 <body>
@@ -55,3 +111,4 @@
     </script>
 </body>
 </html>
+
