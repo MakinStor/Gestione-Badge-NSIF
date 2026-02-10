@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             display: flex;
@@ -21,53 +21,52 @@
             min-height: 100vh;
         }
 
-        /* Banner superiore */
+        /* Banner superiore ottimizzato per visibilità */
         .banner-container {
             width: 100%;
-            background-color: #003366;
-            line-height: 0;
-            overflow: hidden;
+            background-color: white; /* Sfondo bianco per far risaltare il logo */
+            text-align: center;
+            border-bottom: 2px solid #ddd;
         }
 
         .banner-top {
-            width: 50%;
+            width: 100%;
             height: auto;
-            max-height: 50px;
-            object-fit: contain;
+            max-height: 150px; /* Altezza bilanciata */
+            object-fit: contain; /* L'immagine non viene mai tagliata */
             display: block;
+            margin: 0 auto;
+            padding: 10px 0;
         }
 
         .header {
             width: 100%;
             background: white;
-            padding: 20px 0;
+            padding: 15px 0;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             border-bottom: 5px solid var(--securitas-red);
         }
 
-        .logo-securitas {
-            height: 40px;
-            margin-bottom: 10px;
-        }
+        .logo-securitas { height: 35px; margin-bottom: 5px; }
 
         .header h1 {
             margin: 5px 0;
             color: var(--securitas-blue);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             text-transform: uppercase;
         }
 
         .header .subtitle {
             color: #666;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
         .container {
             width: 90%;
             max-width: 500px;
-            margin: 25px 0;
+            margin: 20px 0;
             flex-grow: 1;
         }
 
@@ -78,14 +77,16 @@
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             text-align: center;
+            animation: fadeIn 0.3s ease-in;
         }
 
-        .active { display: block; animation: fadeIn 0.3s; }
+        .active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        h2 { color: var(--securitas-blue); font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        
+        h2 { color: var(--securitas-blue); font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        p { font-size: 1rem; color: #444; }
+
         button {
             width: 100%;
             padding: 16px;
@@ -94,11 +95,13 @@
             border-radius: 8px;
             background-color: var(--securitas-blue);
             color: white;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
+        button:active { transform: scale(0.98); }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-secondary { background: #6c757d; }
 
@@ -109,6 +112,7 @@
             text-align: left;
             margin-top: 20px;
             border-radius: 4px;
+            font-size: 0.95rem;
         }
 
         .danger { background: #fff5f5; border-left-color: var(--securitas-red); color: #c92a2a; }
@@ -119,37 +123,56 @@
 <body>
 
     <div class="banner-container">
-        <img src="logo_nsif.jpg" alt="Banner NSIF Castione" class="banner-top" onerror="this.src='https://via.placeholder.com/1200x300/003366/FFFFFF?text=NSIF+Castione+Gestione+Accessi'">
+        <img src="logo_nsif.jpg" alt="Banner Progetto" class="banner-top" onerror="this.style.display='none'">
     </div>
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo" class="logo-securitas">
         <h1>NSIF Castione - Gestione controllo accessi</h1>
-        <div class="subtitle">Securitas SA - Tool ControlAccess-La Morgia-V.1.5</div>
+        <div class="subtitle">Securitas SA - Tool CotrollAccess-La Morgia-V.1.6</div>
     </div>
 
     <div class="container">
         <div id="step1" class="step active">
-            <h2>Verifica Bausicht</h2>
-            <p>Il lavoratore è presente nel sistema informativo?</p>
-            <button onclick="nextStep('step_foto')">SÌ - Presente</button>
-            <button onclick="nextStep('step_no_sistema')">NO - Non presente</button>
-            <button class="btn-outline" onclick="nextStep('step_nonoft')">Azienda NON OFT</button>
+            <h2>1. Verifica Sistema Bausicht</h2>
+            <p>L'operaio è presente nel sistema informativo?</p>
+            <button onclick="nextStep('step_foto')">SÌ - È presente</button>
+            <button onclick="nextStep('step_no_sistema')">NO - Non a sistema</button>
+            <button class="btn-outline" onclick="nextStep('step_nonoft')">Ditta Esterna (NON OFT)</button>
         </div>
 
         <div id="step_foto" class="step">
-            <h2>Immagine Profilo</h2>
-            <p>La foto è presente a sistema?</p>
-            <button onclick="showResult('Procedi con la consegna del badge. Nota: Utente presente, NON contattare Nijaz Pepeljak.')">SÌ - Foto presente</button>
-            <button onclick="showResult('AZIONE: Scattare foto in Bausicht. Nota: NON occorre contattare Nijaz Pepeljak.')">NO - Manca foto</button>
+            <h2>2. Verifica Fotografia</h2>
+            <p>Il profilo ha la foto caricata?</p>
+            <button onclick="showResult('✓ PROCEDI: Consegna il badge. (Nota Nijaz Pepeljak: essendo a sistema non occorre contattarlo).')">SÌ - Foto presente</button>
+            <button onclick="showResult('⚠ AZIONE: Scattare foto e caricarla in Bausicht. Poi consegna il badge. (Nota: non occorre contattare Nijaz).')">NO - Manca foto</button>
             <button class="btn-secondary" onclick="nextStep('step1')">Indietro</button>
         </div>
 
         <div id="step_no_sistema" class="step">
-            <h2>Referente OFT</h2>
-            <p>È presente un referente sul posto?</p>
-            <button onclick="showResult('AZIONE: Il referente firma il modulo di responsabilità. Procedi con la consegna del badge.')">SÌ - Presente</button>
-            <button class="btn-secondary" onclick="nextStep('step_loris')">NO - Assente</button>
+            <h2>2. Verifica Referente</h2>
+            <p>È presente un referente OFT sul posto?</p>
+            <button onclick="showResult('✓ PROCEDI: Il referente deve firmare il modulo di responsabilità. Poi consegna il badge.')">SÌ - Referente presente</button>
+            <button class="btn-secondary" onclick="nextStep('step_loris')">NO - Nessun referente</button>
+        </div>
+
+        <div id="step_loris" class="step">
+            <h2 style="color:var(--securitas-red)">ACCESSO NEGATO</h2>
+            <div class="instruction-card danger">
+                <b>AZIONE OBBLIGATORIA:</b><br>
+                Contattare immediatamente <b>Loris Zatta</b> (QHSE Assistant) per autorizzare l'accesso e verificare le dichiarazioni.
+            </div>
+            <button onclick="location.reload()" style="margin-top:20px">Nuova verifica</button>
+        </div>
+
+        <div id="step_nonoft" class="step">
+            <h2>Badge Provvisorio (NON OFT)</h2>
+            <p>Procedura per visitatori o ditte esterne.</p>
+            <div class="instruction-card">
+                <b>DEPOSITO OBBLIGATORIO:</b><br>
+                Richiedere in deposito un documento, la patente o le chiavi del mezzo per garantire la riconsegna del badge.
+            </div>
+            <button onclick="location.reload()" style="margin-top:20px">Torna all'inizio</button>
         </div>
 
         <div id="result" class="step">
@@ -157,26 +180,11 @@
             <div id="resultText" class="instruction-card"></div>
             <button onclick="location.reload()" style="background: var(--securitas-red); margin-top:20px;">CHIUDI E RESETTA</button>
         </div>
-
-        <div id="step_loris" class="step">
-            <h2>Accesso Negato</h2>
-            <div class="instruction-card danger">
-                <b>AZIONE:</b> Contattare <b>Loris Zatta</b> (QHSE Assistant) per conferma autorizzazione.
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px">Ricomincia</button>
-        </div>
-
-        <div id="step_nonoft" class="step">
-            <h2>Badge Provvisorio</h2>
-            <div class="instruction-card">
-                <b>DEPOSITO:</b> Richiedere Documento, Patente o Chiavi dell'auto.
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px">Indietro</button>
-        </div>
     </div>
 
     <div class="footer">
-        Securitas SA - Sede Regionale Lugano<br>Tool creato per NSIF Castione
+        Securitas SA - Sede Regionale Lugano<br>
+        Processi aggiornati al 10.02.2026
     </div>
 
     <script>
@@ -194,7 +202,3 @@
     </script>
 </body>
 </html>
-
-
-
-
