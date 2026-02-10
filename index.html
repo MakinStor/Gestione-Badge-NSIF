@@ -9,13 +9,12 @@
             --securitas-blue: #003366;
             --securitas-red: #e30613;
             --bg-color: #f4f7f9;
-            --text-color: #333;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: #333;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -23,45 +22,58 @@
             min-height: 100vh;
         }
 
+        /* Nuovo Banner a tutta larghezza */
+        .banner-container {
+            width: 100%;
+            background-color: white;
+            line-height: 0; /* Rimuove spazi bianchi sotto l'immagine */
+        }
+
+        .banner-top {
+            width: 100%;
+            height: auto;
+            max-height: 250px; /* Regola l'altezza massima del tuo banner */
+            object-fit: cover;
+        }
+
         .header {
             width: 100%;
             background: white;
-            padding: 25px 0;
+            padding: 20px 0;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             border-bottom: 5px solid var(--securitas-red);
             margin-bottom: 30px;
         }
 
-        .header img {
-            height: 60px;
-            margin-bottom: 15px;
+        .logo-securitas {
+            height: 45px;
+            margin-bottom: 10px;
         }
 
         .header h1 {
-            margin: 0;
+            margin: 5px 0 0 0;
             color: var(--securitas-blue);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .header .subtitle {
-            margin-top: 5px;
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 400;
         }
 
         .container {
             width: 92%;
             max-width: 550px;
+            margin-bottom: 50px;
         }
 
         .step {
             display: none;
             background: white;
-            padding: 35px;
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
@@ -71,13 +83,12 @@
         .active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h2 { color: var(--securitas-blue); margin-top: 0; font-size: 1.3rem; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        p { line-height: 1.6; color: #444; font-size: 1.05rem; margin-bottom: 25px; }
-
+        h2 { color: var(--securitas-blue); font-size: 1.25rem; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        
         button {
             width: 100%;
             padding: 18px;
@@ -89,11 +100,10 @@
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        button:active { transform: scale(0.97); }
+        button:active { transform: scale(0.98); }
         
         .btn-secondary { background-color: #5a6268; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); box-shadow: none; }
@@ -105,7 +115,6 @@
             margin-top: 25px;
             text-align: left;
             border-radius: 6px;
-            font-size: 1rem;
         }
 
         .instruction-card.danger {
@@ -114,10 +123,8 @@
             color: #c92a2a;
         }
 
-        .instruction-card b { display: block; margin-bottom: 8px; color: #000; text-transform: uppercase; font-size: 0.85rem; }
-
         .footer-info {
-            margin: 40px 0 20px 0;
+            padding-bottom: 30px;
             font-size: 0.75rem;
             color: #999;
             text-align: center;
@@ -126,80 +133,10 @@
 </head>
 <body>
 
+    <div class="banner-container">
+        <img src="NOME_DEL_TUO_FILE_CARICATO.jpg" alt="Banner Progetto" class="banner-top">
+    </div>
+
     <div class="header">
-        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo">
+        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo" class="logo-securitas">
         <h1>NSIF Castione - Gestione controllo accessi</h1>
-        <div class="subtitle">Securitas SA - Tool CotrollAccess-La Morgia-V.1.4</div>
-    </div>
-
-    <div class="container">
-        <div id="step1" class="step active">
-            <h2>Verifica Sistema Bausicht</h2>
-            <p>Il collaboratore è registrato correttamente nel sistema informativo?</p>
-            <button onclick="nextStep('step2_presente')">SÌ - Presente</button>
-            <button onclick="nextStep('step2_assente')">NO - Non a sistema</button>
-            <button class="btn-outline" onclick="nextStep('step_nonoft')">Ditta Esterna (NON OFT)</button>
-        </div>
-
-        <div id="step2_presente" class="step">
-            <h2>Verifica Immagine Profilo</h2>
-            <p>La foto dell'operaio è visibile a sistema?</p>
-            <button onclick="showResult('Procedi con la consegna del badge. Nota 12.01.2026: L\'operaio è già noto al sistema, non è necessario contattare Nijaz Pepeljak.')">SÌ - Foto presente</button>
-            <button onclick="showResult('AZIONE: Scattare e caricare la foto in Bausicht. Nota 12.01.2026: Non occorre contattare Nijaz Pepeljak.')">NO - Foto mancante</button>
-            <button class="btn-secondary" onclick="nextStep('step1')">Annulla</button>
-        </div>
-
-        <div id="step2_assente" class="step">
-            <h2>Verifica Referente</h2>
-            <p>È presente un referente OFT per autorizzare l'accesso?</p>
-            <button onclick="showResult('AZIONE: Il referente deve sottoscrivere il modulo di responsabilità. Procedere poi con la consegna del badge.')">SÌ - Referente presente</button>
-            <button class="btn-secondary" onclick="nextStep('step_loris')">NO - Nessun referente</button>
-        </div>
-
-        <div id="step_loris" class="step">
-            <h2>Accesso Negato</h2>
-            <div class="instruction-card danger">
-                <b>Procedura Obbligatoria:</b>
-                L'accesso è bloccato. Contattare immediatamente <b>Loris Zatta</b> (QHSE Assistant) per verificare le dichiarazioni del lavoratore.
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px">Ricomincia</button>
-        </div>
-
-        <div id="step_nonoft" class="step">
-            <h2>Badge Provvisorio</h2>
-            <p>Procedura per aziende esterne / visitatori.</p>
-            <div class="instruction-card">
-                <b>Nota cautelativa:</b>
-                Per garantire la riconsegna, richiedere un deposito (Documento, Patente o Chiavi dell'automezzo).
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px">Fine / Indietro</button>
-        </div>
-
-        <div id="result" class="step">
-            <h2>Istruzioni per Agente</h2>
-            <div id="resultText" class="instruction-card"></div>
-            <button onclick="location.reload()" style="margin-top:25px; background-color: var(--securitas-red);">CHIUDI PROCEDURA</button>
-        </div>
-    </div>
-
-    <div class="footer-info">
-        Proprietà di Securitas SA - Sede Regionale Lugano<br>
-        NSIF Castione - Automazione Logiche di Cantiere
-    </div>
-
-    <script>
-        function nextStep(stepId) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById(stepId).classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        function showResult(text) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('result').classList.add('active');
-            document.getElementById('resultText').innerHTML = "<b>DISPOSIZIONE OPERATIVA:</b>" + text;
-            window.scrollTo(0, 0);
-        }
-    </script>
-</body>
-</html>
