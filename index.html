@@ -5,113 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NSIF Castione - Gestione Accessi</title>
     <style>
-        :root {
-            --securitas-blue: #003366;
-            --securitas-red: #e30613;
-            --bg-color: #f4f7f9;
-        }
-
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .banner-container {
-            width: 100%;
-            background-color: white;
-            text-align: center;
-        }
-
-        .banner-top {
-            width: 100%;
-            height: auto;
-            max-height: 140px; /* Altezza ottimizzata */
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-            padding: 5px 0;
-        }
-
-        .header {
-            width: 100%;
-            background: white;
-            padding: 15px 0;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            border-bottom: 5px solid var(--securitas-red);
-        }
-
-        .logo-securitas { height: 35px; margin-bottom: 5px; }
-
-        .header h1 {
-            margin: 5px 0;
-            color: var(--securitas-blue);
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-
-        .header .subtitle {
-            color: #666;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 500px;
-            margin: 20px 0;
-            flex-grow: 1;
-        }
-
-        .step {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
+        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg-color: #f4f7f9; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .banner-container { width: 100%; background: white; text-align: center; }
+        .banner-top { width: 100%; height: auto; max-height: 130px; object-fit: contain; display: block; margin: 0 auto; padding: 5px 0; }
+        .header { width: 100%; background: white; padding: 10px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); }
+        .logo-securitas { height: 30px; }
+        .container { width: 90%; max-width: 500px; margin: 20px 0; flex-grow: 1; }
+        .step { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        h2 { color: var(--securitas-blue); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        
-        button {
-            width: 100%;
-            padding: 16px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--securitas-blue);
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        h2 { color: var(--securitas-blue); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        button { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
-        .btn-secondary { background: #6c757d; }
-
-        .instruction-card {
-            background: #fff9db;
-            border-left: 6px solid #fcc419;
-            padding: 15px;
-            text-align: left;
-            margin-top: 20px;
-            border-radius: 4px;
-            font-size: 0.95rem;
-        }
-
+        .instruction-card { background: #fff9db; border-left: 6px solid #fcc419; padding: 15px; text-align: left; margin-top: 20px; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; }
         .danger { background: #fff5f5; border-left-color: var(--securitas-red); color: #c92a2a; }
-
-        .footer { padding: 20px; font-size: 0.7rem; color: #999; text-align: center; }
+        input[type="password"] { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -122,84 +31,98 @@
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo" class="logo-securitas">
-        <h1>NSIF Castione - Gestione controllo accessi</h1>
-        <div class="subtitle">Securitas SA - Tool CotrollAccess-La Morgia-V.1.7</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem;">NSIF Castione - Gestione Accessi V.1.9</div>
     </div>
 
     <div class="container">
         
-        <div id="step1" class="step active">
-            <h2>Tipo di Lavoratore / Accesso</h2>
-            <p>Seleziona la categoria del lavoratore:</p>
-            <button onclick="nextStep('step_bausicht')">Lavoratore OFT (Cantiere)</button>
-            <button class="btn-outline" onclick="nextStep('step_nonoft')">Ditta Esterna / Visitatore (NON OFT)</button>
+        <div id="step_login" class="step active">
+            <h2>Accesso Riservato</h2>
+            <input type="password" id="pass_input" placeholder="Password">
+            <button onclick="checkPassword()">ACCEDI</button>
         </div>
 
-        <div id="step_bausicht" class="step">
-            <h2>Verifica Sistema Bausicht</h2>
-            <p>Il lavoratore è registrato correttamente a sistema?</p>
-            <button onclick="nextStep('step_foto')">SÌ - È presente</button>
-            <button class="btn-secondary" onclick="nextStep('step_referente')">NO - Non a sistema</button>
+        <div id="step_ditta" class="step">
+            <h2>Tipo di Azienda</h2>
+            <p>Il lavoratore appartiene a una ditta OFT?</p>
+            <button onclick="nextStep('step_bausicht_oft')">SÌ - Ditta OFT</button>
+            <button class="btn-outline" onclick="nextStep('step_bausicht_nonoft')">NO - Ditta NON OFT</button>
         </div>
 
-        <div id="step_foto" class="step">
+        <div id="step_bausicht_oft" class="step">
+            <h2>Verifica Bausicht (Ditta OFT)</h2>
+            <p>È presente nel sistema Bausicht?</p>
+            <button onclick="nextStep('step_foto_oft')">SÌ - Presente</button>
+            <button onclick="nextStep('step_ref_oft_no_bau')">NO - Non a sistema</button>
+        </div>
+
+        <div id="step_bausicht_nonoft" class="step">
+            <h2>Verifica Bausicht (Ditta NON OFT)</h2>
+            <p>È presente nel sistema Bausicht?</p>
+            <button onclick="nextStep('step_ref_nonoft_bau')">SÌ - Presente</button>
+            <button onclick="nextStep('step_ref_nonoft_nobau')">NO - Non a sistema</button>
+        </div>
+
+        <div id="step_foto_oft" class="step">
             <h2>Verifica Fotografia</h2>
-            <p>La foto è presente nel profilo Bausicht?</p>
-            <button onclick="showResult('✓ DISPOSIZIONE: Procedere con la consegna del badge. <br><br><i>Nota Nijaz Pepeljak: Essendo a sistema, non occorre contattarlo.</i>')">SÌ - Foto presente</button>
-            <button onclick="showResult('⚠ AZIONE: Effettuare la foto all\'operaio direttamente nel sistema Bausicht. <br>Poi consegnare il badge. <br><br><i>Nota: Non occorre contattare Nijaz Pepeljak.</i>')">NO - Manca foto</button>
+            <p>C'è la foto a sistema?</p>
+            <button onclick="showFinal('oft_bau_foto')">SÌ - Foto presente</button>
+            <button onclick="showFinal('oft_bau_nofoto')">NO - Foto assente</button>
         </div>
 
-        <div id="step_referente" class="step">
+        <div id="step_ref_oft_no_bau" class="step">
             <h2>Verifica Referente</h2>
-            <p>È presente fisicamente un referente OFT per autorizzarlo?</p>
-            <button onclick="showResult('✓ DISPOSIZIONE: Far sottoscrivere al referente il modulo di responsabilità. <br>Procedere poi con la consegna del badge.')">SÌ - Referente presente</button>
-            <button class="btn-secondary" onclick="nextStep('step_loris')">NO - Referente assente</button>
+            <p>È presente il referente sul posto?</p>
+            <button onclick="showFinal('oft_nobau_ref')">SÌ - Referente presente</button>
+            <button class="btn-secondary" onclick="showFinal('oft_nobau_noref')">NO - Referente assente</button>
         </div>
 
-        <div id="step_loris" class="step">
-            <h2 style="color:var(--securitas-red)">ACCESSO BLOCCATO</h2>
-            <div class="instruction-card danger">
-                <b>AZIONE OBBLIGATORIA:</b><br>
-                Contattare immediatamente <b>Loris Zatta</b> (QHSE Assistant) per autorizzare l'accesso e verificare la posizione del lavoratore.
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px">Nuova verifica</button>
+        <div id="step_ref_nonoft_bau" class="step">
+            <h2>Verifica Referente</h2>
+            <p>È presente il referente sul posto?</p>
+            <button onclick="showFinal('nonoft_bau_ref')">SÌ - Referente presente</button>
+            <button class="btn-secondary" onclick="showFinal('nonoft_bau_noref')">NO - Referente assente</button>
         </div>
 
-        <div id="step_nonoft" class="step">
-            <h2>Badge Provvisorio (NON OFT)</h2>
-            <p>Ditte esterne, manutenzioni occasionali o visitatori.</p>
-            <div class="instruction-card">
-                <b>PROCEDURA DEPOSITO:</b><br>
-                1. Registrare i dati sul modulo visitatori.<br>
-                2. <b>Obbligatorio:</b> Richiedere in deposito un documento, la patente o le chiavi del veicolo.<br>
-                3. Consegnare il badge provvisorio.
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px">Torna all'inizio</button>
+        <div id="step_ref_nonoft_nobau" class="step">
+            <h2>Verifica Referente</h2>
+            <p>È presente il referente sul posto?</p>
+            <button onclick="showFinal('nonoft_nobau_ref')">SÌ - Referente presente</button>
+            <button class="btn-secondary" onclick="showFinal('nonoft_nobau_noref')">NO - Referente assente</button>
         </div>
 
         <div id="result" class="step">
-            <h2>Istruzione Finale</h2>
+            <h2>Disposizione Operativa</h2>
             <div id="resultText" class="instruction-card"></div>
-            <button onclick="location.reload()" style="background: var(--securitas-red); margin-top:20px;">RESET / CHIUDI</button>
+            <button onclick="location.reload()" style="background: var(--securitas-red); margin-top:20px;">NUOVA VERIFICA</button>
         </div>
     </div>
 
-    <div class="footer">
-        Securitas SA - Servizio NSIF Castione<br>
-        Logica basata su disposizioni: Pepeljak / Zatta / Digirolamo
-    </div>
-
     <script>
+        const SECRET_PASSWORD = "Securitas2026";
+        function checkPassword() {
+            if (document.getElementById('pass_input').value === SECRET_PASSWORD) nextStep('step_ditta');
+            else alert("Password errata");
+        }
+
         function nextStep(id) {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
         }
-        function showResult(txt) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('result').classList.add('active');
-            document.getElementById('resultText').innerHTML = "<b>OPERAZIONE:</b><br><br>" + txt;
-            window.scrollTo(0,0);
+
+        function showFinal(key) {
+            const results = {
+                'oft_bau_foto': "<b>✓ PROCEDI:</b> Consegna badge. <br><i>Nota: L'operaio è a sistema, non serve contattare Nijaz Pepeljak.</i>",
+                'oft_bau_nofoto': "<b>⚠ AZIONE:</b> Scattare foto in Bausicht. Poi consegna badge. <br><i>Nota: Non occorre contattare Nijaz Pepeljak.</i>",
+                'oft_nobau_ref': "<b>✓ PROCEDI:</b> Firma modulo responsabilità del referente e consegna badge.",
+                'oft_nobau_noref': "<b style='color:red'>🛑 BLOCCO:</b> Contattare <b>Loris Zatta</b> (QHSE Assistant) per conferma autorizzazione.",
+                'nonoft_bau_ref': "<b>✓ PROCEDI:</b> Badge provvisorio. <br><i>Nota: Richiedere deposito (Documento/Chiavi).</i>",
+                'nonoft_bau_noref': "<b>⚠ ATTENZIONE:</b> Verificare con Loris Zatta prima della consegna badge provvisorio.",
+                'nonoft_nobau_ref': "<b>✓ PROCEDI:</b> Registrazione manuale e badge visitatore (con deposito).",
+                'nonoft_nobau_noref': "<b style='color:red'>🛑 BLOCCO:</b> Accesso negato senza referente o autorizzazione Zatta/Digirolamo."
+            };
+            nextStep('result');
+            document.getElementById('resultText').innerHTML = results[key];
         }
     </script>
 </body>
