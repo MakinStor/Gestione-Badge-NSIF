@@ -2,100 +2,169 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Gestione Badge - Procedura Guidata</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Securitas SA - Gestione Badge</title>
     <style>
-        <style>
-    body { 
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-        background-color: #f4f7f9; 
-        margin: 0; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center;
-    }
-    .header {
-        width: 100%;
-        background: #ffffff;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 30px;
-    }
-    .step { 
-        display: none; 
-        background: white;
-        width: 90%;
-        max-width: 500px;
-        padding: 30px; 
-        border-radius: 15px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        text-align: center;
-    }
-    .active { display: block; animation: fadeIn 0.5s; }
-    
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root {
+            --securitas-blue: #003366;
+            --securitas-red: #e30613;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+        }
 
-    h3 { color: #333; margin-bottom: 20px; }
-    p { color: #666; font-size: 1.1em; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-    button { 
-        width: 100%;
-        margin: 10px 0; 
-        padding: 15px; 
-        border: none;
-        border-radius: 10px;
-        background-color: #007bff;
-        color: white;
-        font-size: 1em;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    button:hover { background-color: #0056b3; }
-    
-    /* Colore diverso per i blocchi o avvisi */
-    .btn-warning { background-color: #ff9800; }
-    .instruction { 
-        background: #fff3cd; 
-        color: #856404;
-        padding: 20px; 
-        border-radius: 10px;
-        border-left: 8px solid #ffeeba;
-        font-weight: bold;
-        margin-top: 20px;
-    }
-</style>
+        .header {
+            width: 100%;
+            background: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 4px solid var(--securitas-red);
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            perspective: 1000px;
+        }
+
+        .step {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .active { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { color: var(--securitas-blue); margin-top: 0; font-size: 1.4rem; }
+        p { line-height: 1.5; color: #555; margin-bottom: 25px; }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--securitas-blue);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        
+        .btn-secondary { background-color: #6c757d; }
+        .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
+
+        .instruction-card {
+            background: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            border-radius: 4px;
+        }
+
+        .instruction-card.danger {
+            background: #fdecea;
+            border-left-color: var(--securitas-red);
+            color: #bd2130;
+        }
+
+        .instruction-card b { display: block; margin-bottom: 5px; color: #000; }
+
+        .footer-info {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #888;
+        }
     </style>
 </head>
 <body>
-    <h1>Procedura Rilascio Badge</h1>
 
-    <div id="step1" class="step active">
-        <h3>1. Verifica Iniziale</h3>
-        <p>Il dipendente è presente nel sistema Bausicht?</p>
-        <button onclick="nextStep('step2a')">SÌ (Presente)</button>
-        <button onclick="nextStep('step2b')">NO (Non presente)</button>
-        <button onclick="showResult('Badge Provvisorio: Seguire procedura Aziende NON OFT.')">Azienda NON OFT</button>
+    <div class="header">
+        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo">
+        <div><b>SERVIZIO CONTROLLO ACCESSI</b></div>
     </div>
 
-    <div id="step2a" class="step">
-        <h3>2. Verifica Foto</h3>
-        <p>Nel sistema è presente la foto?</p>
-        <button onclick="showResult('OK: Procedi con il badge. Non serve contattare Nijaz.')">SÌ, c'è la foto</button>
-        <button onclick="showResult('AZIONE: Scattare foto. Non serve contattare Nijaz.')">NO, manca foto</button>
+    <div class="container">
+        <div id="step1" class="step active">
+            <h2>Verifica Bausicht</h2>
+            <p>Il lavoratore è presente nel sistema informativo?</p>
+            <button onclick="nextStep('step2_presente')">SÌ - Presente</button>
+            <button onclick="nextStep('step2_assente')">NO - Non presente</button>
+            <button class="btn-outline" onclick="nextStep('step_nonoft')">Azienda NON OFT</button>
+        </div>
+
+        <div id="step2_presente" class="step">
+            <h2>Verifica Immagine</h2>
+            <p>È presente la foto profilo nel sistema?</p>
+            <button onclick="showResult('Procedi con la stampa/consegna del badge. Come da nota del 12.01.2026, essendo a sistema non serve contattare Nijaz Pepeljak.')">SÌ - Foto presente</button>
+            <button onclick="showResult('AZIONE: Effettuare la foto all\'operaio nel sistema Bausicht. Non occorre contattare Nijaz Pepeljak.')">NO - Manca foto</button>
+            <button class="btn-secondary" onclick="nextStep('step1')">Indietro</button>
+        </div>
+
+        <div id="step2_assente" class="step">
+            <h2>Verifica Referente</h2>
+            <p>È presente fisicamente un referente OFT?</p>
+            <button onclick="showResult('AZIONE: Il referente deve firmare il modulo di responsabilità. Procedere poi con la consegna del badge.')">SÌ - Referente presente</button>
+            <button class="btn-secondary" onclick="nextStep('step_loris')">NO - Nessun referente</button>
+        </div>
+
+        <div id="step_loris" class="step">
+            <h2>Blocco Accesso</h2>
+            <div class="instruction-card danger">
+                <b>AZIONE OBBLIGATORIA:</b>
+                Contattare Loris Zatta (QHSE Assistant) per avere conferma di quanto dichiarato dall'operaio. La persona NON può entrare senza autorizzazione.
+            </div>
+            <button onclick="location.reload()" style="margin-top:20px">Nuova verifica</button>
+        </div>
+
+        <div id="step_nonoft" class="step">
+            <h2>Badge Provvisorio</h2>
+            <p>Seguire la procedura per aziende esterne (NON OFT).</p>
+            <div class="instruction-card">
+                <b>NOTA:</b> Farsi consegnare un documento d'identità, patente o chiavi dell'auto per garantire la riconsegna del badge a fine turno.
+            </div>
+            <button onclick="location.reload()" style="margin-top:20px">Torna all'inizio</button>
+        </div>
+
+        <div id="result" class="step">
+            <h2>Istruzioni Operative</h2>
+            <div id="resultText" class="instruction-card"></div>
+            <button onclick="location.reload()" style="margin-top:20px">Fine Procedura</button>
+        </div>
     </div>
 
-    <div id="step2b" class="step">
-        <h3>2. Verifica Referente</h3>
-        <p>È presente un referente OFT fisicamente?</p>
-        <button onclick="showResult('AZIONE: Il referente firma il modulo di responsabilità e consegna badge.')">SÌ</button>
-        <button onclick="showResult('BLOCCO: Contattare Loris Zatta (QHSE Assistant) per conferma.')">NO</button>
-    </div>
-
-    <div id="result" class="step">
-        <h3>Cosa fare:</h3>
-        <div id="resultText" class="instruction"></div>
-        <button onclick="location.reload()">Ricomincia</button>
+    <div class="footer-info">
+        Securitas SA - Tool Supporto Decisionale Badge
     </div>
 
     <script>
@@ -103,12 +172,12 @@
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
         }
+
         function showResult(text) {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById('result').classList.add('active');
-            document.getElementById('resultText').innerText = text;
+            document.getElementById('resultText').innerHTML = "<b>PROCEDERE COME SEGUE:</b>" + text;
         }
     </script>
 </body>
 </html>
-
