@@ -3,34 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi V4</title>
+    <title>NSIF Castione - Sistema Integrale V5.1</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg-color: #f4f7f9; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* Layout */
         .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
-        .banner-top { width: 100%; height: auto; max-height: 100px; object-fit: contain; padding: 10px 0; }
+        .banner-top { width: 100%; height: auto; max-height: 100px; padding: 10px 0; }
         .header { width: 100%; background: white; padding: 10px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); }
-        .logo-securitas { height: 30px; }
+        .logo-securitas { height: 25px; }
+        
         .container { width: 95%; max-width: 500px; margin: 20px 0; flex-grow: 1; padding-bottom: 60px; }
         .step { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Typography */
         h2 { color: var(--securitas-blue); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; }
-        
-        /* Password centrata e corretta */
+        p { font-size: 0.95rem; color: #444; line-height: 1.4; }
+
+        /* Form Password */
         .pass-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
         input[type="password"] { 
-            width: 100%; max-width: 260px; padding: 15px; margin: 15px 0; 
+            width: 100%; max-width: 250px; padding: 15px; margin: 15px 0; 
             border: 2px solid #ddd; border-radius: 8px; text-align: center; 
-            font-size: 1.1rem; box-sizing: border-box;
+            font-size: 1.2rem; box-sizing: border-box;
         }
 
+        /* Buttons */
         button { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-gray { background: #6c757d; }
-        .btn-logout { background: #333; font-size: 0.8rem; margin-top: 40px; }
-        .instruction-card { background: #fff9db; border-left: 6px solid #fcc419; padding: 15px; text-align: left; margin-top: 15px; border-radius: 8px; font-size: 0.9rem; line-height: 1.6; color: #333; }
-        .footer { padding: 15px; font-size: 0.75rem; color: #999; text-align: center; }
+        .btn-red { background: var(--securitas-red); }
+        .btn-logout { background: #333; font-size: 0.8rem; margin-top: 40px; width: auto; padding: 10px 20px; }
+        
+        /* Cards */
+        .instruction-card { background: #fff9db; border-left: 6px solid #fcc419; padding: 15px; text-align: left; margin-top: 15px; border-radius: 8px; font-size: 0.9rem; line-height: 1.6; }
+        .success-label { font-weight: bold; color: #2b8a3e; font-size: 1.2rem; margin-top: 20px; display: block; }
     </style>
 </head>
 <body>
@@ -41,9 +51,140 @@
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.85rem;">NSIF Castione - Gestione Accessi V.4.0</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.85rem;">NSIF Castione - Sistema Gestione V.5.1</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="step">
-            <h2>Access
+            <h2>Accesso Riservato</h2>
+            <div class="pass-container">
+                <input type="password" id="pass_input" placeholder="Password" onkeydown="if(event.key==='Enter') checkPassword()">
+                <button onclick="checkPassword()">ACCEDI</button>
+            </div>
+        </div>
+
+        <div id="step_start" class="step">
+            <h2>Nuova Registrazione</h2>
+            <button onclick="nextStep('step_oft_check')">Registrazione collaboratore OFT</button>
+            <button onclick="nextStep('step_ffs_check')">Registrazione collaboratore FFS</button>
+            <button class="btn-outline" onclick="nextStep('step_vis_proc')">Elaborazione "Badge Visitatore"</button>
+            <button class="btn-outline" onclick="nextStep('step_vis_proc')">Elaborazione "Stampa-Press"</button>
+            <button class="btn-outline" onclick="nextStep('step_csc_proc')">Elaborazione "CSC Paritetica"</button>
+            <button class="btn-logout" onclick="logout()">LOGOUT</button>
+        </div>
+
+        <div id="step_oft_check" class="step">
+            <h2>OFT: Verifica Sistema</h2>
+            <p>Il collaboratore è presente nel sistema Bausicht?</p>
+            <button onclick="nextStep('step_oft_foto')">SÌ, presente</button>
+            <button class="btn-gray" onclick="nextStep('step_oft_no_sys')">NO, assente</button>
+        </div>
+
+        <div id="step_oft_foto" class="step">
+            <h2>OFT: Verifica Foto</h2>
+            <p>L'immagine è visibile a sistema?</p>
+            <button onclick="showFinal('oft_ok')">SÌ, foto presente</button>
+            <button class="btn-outline" onclick="nextStep('step_oft_sit')">NO, foto assente</button>
+        </div>
+
+        <div id="step_oft_sit" class="step">
+            <h2>OFT: Situazioni (Foto Assente)</h2>
+            <button onclick="showFinal('oft_sit1')">Situazione 1: Scatto foto in Bausicht</button>
+            <button onclick="showFinal('oft_sit2')">Situazione 2: Referente conferma identità</button>
+        </div>
+
+        <div id="step_oft_no_sys" class="step">
+            <h2>OFT: Sistema Assente</h2>
+            <p>Il collaboratore non è registrato. È presente un referente OFT?</p>
+            <button onclick="nextStep('step_oft_ref_op')">SÌ, referente presente</button>
+            <button class="btn-red" onclick="showFinal('oft_zatta')">NO, referente assente</button>
+        </div>
+
+        <div id="step_oft_ref_op" class="step">
+            <h2>OFT: Opzioni Referente</h2>
+            <button onclick="showFinal('ref_1')">Opzione 1: Firma Modulo Responsabilità</button>
+            <button onclick="showFinal('ref_2')">Opzione 2: Garanzia Referente (No Formazione)</button>
+            <button onclick="showFinal('ref_3')">Opzione 3: Già istruito sicurezza</button>
+        </div>
+
+        <div id="step_ffs_check" class="step">
+            <h2>FFS: Verifica Sistema</h2>
+            <button onclick="nextStep('step_ffs_foto')">Presente a sistema</button>
+            <button class="btn-gray" onclick="showFinal('ffs_no_sys')">NON presente a sistema</button>
+        </div>
+
+        <div id="step_ffs_foto" class="step">
+            <h2>FFS: Verifica Foto</h2>
+            <button onclick="showFinal('ffs_ok')">Foto presente</button>
+            <button onclick="showFinal('ffs_no_foto')">Foto assente / Da regolarizzare</button>
+        </div>
+
+        <div id="step_vis_proc" class="step">
+            <h2>Procedura Visitatori</h2>
+            <div class="instruction-card">
+                1. Verifica annuncio.<br>
+                2. Chiama referente visita.<br>
+                3. Chiedi documento d'identità.
+            </div>
+            <button onclick="showFinal('vis_end')">Registra e Assegna Badge</button>
+        </div>
+
+        <div id="step_csc_proc" class="step">
+            <h2>CSC Paritetica</h2>
+            <p>Se non annunciati, chiedere dati dalla tessera di riconoscimento.</p>
+            <button class="btn-red" onclick="showFinal('csc_end')">CHIAMARE NIJAZ PEPELJAK</button>
+        </div>
+
+        <div id="result" class="step">
+            <h2>Disposizione Finale</h2>
+            <div id="resultText" class="instruction-card"></div>
+            <span class="success-label">✓ COMPITO TERMINATO</span>
+            <button onclick="nextStep('step_start')" class="btn-red" style="margin-top:20px;">NUOVA REGISTRAZIONE</button>
+            <button class="btn-logout" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <script>
+        const PWD = "Securitas2026";
+
+        function checkPassword() {
+            if (document.getElementById('pass_input').value === PWD) {
+                sessionStorage.setItem('nsif_auth', 'true');
+                nextStep('step_start');
+            } else { alert("Password errata!"); }
+        }
+
+        function logout() { sessionStorage.removeItem('nsif_auth'); location.reload(); }
+
+        function nextStep(id) {
+            document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function showFinal(key) {
+            const data = {
+                'oft_ok': "<b>AZIONE:</b> Consegna Badge Personale OFT. <br><i>Nota: Se a sistema, non contattare Nijaz Pepeljak.</i>",
+                'oft_sit1': "<b>SITUAZIONE 1:</b> Scattare foto in Bausicht. <br><b>AZIONE:</b> Consegna Badge Personale.",
+                'oft_sit2': "<b>SITUAZIONE 2:</b> Firma modulo (Referente conferma identità). <br><b>AZIONE:</b> Consegna Badge.",
+                'oft_zatta': "<b>🛑 AZIONE:</b> Collaboratore non a sistema e senza referente. Contattare <b>Loris Zatta</b>.",
+                'ref_1': "<b>OPZIONE 1:</b> Firma modulo responsabilità (Referente + Operaio). Consegna Badge.",
+                'ref_2': "<b>OPZIONE 2:</b> Garanzia Referente (No formazione). Firma modulo e consegna Badge.",
+                'ref_3': "<b>OPZIONE 3:</b> Operaio già istruito. Firma modulo e consegna Badge.",
+                'ffs_ok': "<b>AZIONE:</b> Verifica autorizzazione sistema FFS e consegna Badge.",
+                'ffs_no_foto': "<b>AZIONE:</b> Regolarizzare foto sistema FFS e consegna Badge.",
+                'ffs_no_sys': "<b>🛑 AZIONE:</b> Collaboratore FFS non a sistema. Contattare referente FFS.",
+                'vis_end': "<b>PROCEDURA:</b> Registra dati, assegna Badge. <b>Metti documento in busta numerata</b>.<br><i>Nota: Se presente lista nominativi, non ritirare documento.</i>",
+                'csc_end': "<b>AZIONE:</b> Chiamare immediatamente <b>Nijaz Pepeljak</b> per autorizzare l'accesso."
+            };
+            nextStep('result');
+            document.getElementById('resultText').innerHTML = data[key];
+        }
+
+        window.onload = function() {
+            if (sessionStorage.getItem('nsif_auth') === 'true') nextStep('step_start');
+            else nextStep('step_login');
+        };
+    </script>
+</body>
+</html>
