@@ -22,7 +22,6 @@
         .btn-gray { background: #6c757d; }
         .btn-logout { background: #333; font-size: 0.8rem; margin-top: 40px; }
         .instruction-card { background: #fff9db; border-left: 6px solid #fcc419; padding: 15px; text-align: left; margin-top: 15px; border-radius: 4px; font-size: 0.9rem; line-height: 1.6; color: #333; }
-        .danger { background: #fff5f5; border-left-color: var(--securitas-red); color: #c92a2a; }
         .footer { padding: 15px; font-size: 0.75rem; color: #999; text-align: center; }
     </style>
 </head>
@@ -34,7 +33,7 @@
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.85rem;">NSIF Castione - Gestione Controllo Accessi V.3.1</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.85rem;">NSIF Castione - Gestione Controllo Accessi V.3.2</div>
     </div>
 
     <div class="container">
@@ -48,45 +47,45 @@
             <h2>Nuova Registrazione</h2>
             <button onclick="nextStep('step_check_sistema_oft')">Registrazione collaboratore OFT</button>
             <button onclick="nextStep('step_check_sistema_ffs')">Registrazione collaboratore FFS</button>
-            <button class="btn-outline" onclick="nextStep('step_visitatori')">Badge Visitatore / Stampa-Press</button>
-            <button class="btn-outline" onclick="nextStep('step_csc')">CSC Paritetica</button>
+            <button class="btn-outline" onclick="nextStep('step_visitatori')">Elaborazione "Badge Visitatore"</button>
+            <button class="btn-outline" onclick="nextStep('step_visitatori')">Elaborazione "Stampa-Press"</button>
+            <button class="btn-outline" onclick="nextStep('step_csc')">Elaborazione "CSC Paritetica"</button>
             <button class="btn-logout" onclick="logout()">LOGOUT / ESCI</button>
         </div>
 
         <div id="step_check_sistema_oft" class="step">
-            <h2>Verifica Sistema Bausicht (OFT)</h2>
-            <button onclick="nextStep('step_foto_oft')">Collaboratore REGISTRATO</button>
-            <button class="btn-gray" onclick="showFinal('non_registrato_oft')">Collaboratore NON registrato</button>
+            <h2>Verifica Sistema (OFT)</h2>
+            <button onclick="nextStep('step_foto_oft')">Già registrato nel sistema</button>
+            <button class="btn-gray" onclick="showFinal('non_reg_oft')">NON registrato nel sistema</button>
         </div>
 
         <div id="step_check_sistema_ffs" class="step">
             <h2>Verifica Sistema (FFS)</h2>
-            <button onclick="nextStep('step_foto_ffs')">Collaboratore REGISTRATO</button>
-            <button class="btn-gray" onclick="showFinal('non_registrato_ffs')">Collaboratore NON registrato</button>
+            <button onclick="nextStep('step_foto_ffs')">Già registrato nel sistema</button>
+            <button class="btn-gray" onclick="showFinal('non_reg_ffs')">NON registrato nel sistema</button>
         </div>
 
         <div id="step_foto_oft" class="step">
-            <h2>Verifica Fotografia (OFT)</h2>
+            <h2>Verifica Foto (OFT)</h2>
             <button onclick="showFinal('oft_ok')">Foto presente</button>
             <button onclick="showFinal('oft_no_foto')">Foto MANCANTE</button>
         </div>
 
         <div id="step_foto_ffs" class="step">
-            <h2>Verifica Fotografia (FFS)</h2>
+            <h2>Verifica Foto (FFS)</h2>
             <button onclick="showFinal('ffs_ok')">Foto presente</button>
             <button onclick="showFinal('ffs_no_foto')">Foto MANCANTE</button>
         </div>
 
         <div id="step_visitatori" class="step">
-            <h2>Badge Visitatori / Stampa-Press</h2>
-            <p>Seguire rigorosamente la procedura:</p>
-            <div style="text-align: left; font-size: 0.85rem; margin-bottom: 15px; color: #555;">
+            <h2>Procedura Visitatori / Stampa</h2>
+            <div class="instruction-card" style="background:#e7f5ff; border-left-color:#228be6;">
                 1. Verifica se la visita è stata annunciata.<br>
                 2. Chiamare il referente della visita.<br>
                 3. Chiedere un documento d'identità.
             </div>
-            <button onclick="showFinal('visitatore_procedura')">Procedi con Registrazione</button>
-            <button class="btn-gray" onclick="nextStep('step_start')">Annulla</button>
+            <button onclick="showFinal('visitatore_procedura')" style="margin-top:15px;">Registra e Assegna Badge</button>
+            <button class="btn-gray" onclick="nextStep('step_start')">Indietro</button>
         </div>
 
         <div id="step_csc" class="step">
@@ -99,12 +98,10 @@
         <div id="result" class="step">
             <h2>Disposizione Operativa</h2>
             <div id="resultText" class="instruction-card"></div>
-            <button onclick="nextStep('step_start')" style="background: var(--securitas-red); margin-top:20px;">NUOVA VERIFICA</button>
+            <button onclick="nextStep('step_start')" style="background: var(--securitas-red); margin-top:20px;">NUOVA OPERAZIONE</button>
             <button class="btn-logout" onclick="logout()">LOGOUT</button>
         </div>
     </div>
-
-    <div class="footer">Securitas SA - NSIF Castione V.3.1</div>
 
     <script>
         const SECRET_PASSWORD = "Securitas2026";
@@ -132,10 +129,18 @@
 
         function showFinal(key) {
             const res = {
-                'oft_ok': "<b>✓ AZIONE:</b> Consegna Badge Personale OFT. <br><i>Nota: Non contattare Nijaz Pepeljak (Gia a sistema).</i>",
+                'oft_ok': "<b>✓ PROCEDI:</b> Consegna Badge Personale OFT. <br><i>Nota: Non contattare Nijaz Pepeljak se già a sistema.</i>",
                 'oft_no_foto': "<b>⚠ AZIONE:</b> Scattare foto in Bausicht. <br><b>✓ POI:</b> Consegna Badge Personale OFT.",
-                'ffs_ok': "<b>✓ AZIONE:</b> Consegna Badge Personale FFS. <br><i>Verificare autorizzazione specifica a sistema.</i>",
-                'ffs_no_foto': "<b>⚠ AZIONE:</b> Regolarizzare foto a sistema FFS. <br><b>✓ POI:</b> Consegna Badge Personale.",
-                'non_registrato_oft': "<b>🛑 BLOCCATO:</b> Collaboratore OFT non a sistema. Contattare referente OFT o Loris Zatta.",
-                'non_registrato_ffs': "<b>🛑 BLOCCATO:</b> Collaboratore FFS non a sistema. Contattare referente FFS.",
-                'visitatore_procedura': "<b>✓ PROCEDURA BADGE VISIT
+                'ffs_ok': "<b>✓ PROCEDI:</b> Consegna Badge Personale FFS. <br><i>Verificare i permessi specifici nel sistema FFS.</i>",
+                'ffs_no_foto': "<b>⚠ AZIONE:</b> Regolarizzare la foto a sistema FFS. <br><b>✓ POI:</b> Consegna Badge.",
+                'non_reg_oft': "<b>🛑 AZIONE:</b> Collaboratore non a sistema. Contattare referente OFT o Loris Zatta.",
+                'non_reg_ffs': "<b>🛑 AZIONE:</b> Collaboratore non a sistema. Contattare referente FFS per autorizzazione.",
+                'visitatore_procedura': "<b>✓ ISTRUZIONI FINALI:</b><br>• Registrare i dati nel sistema.<br>• Assegnare Badge Visitatori.<br>• <b>Inserire il documento nella busta numerata</b> e sistemarlo nel contenitore.<br><br><i><b>NOTA:</b> Se presente una lista nominativi, potrebbero richiedere di <u>non</u> ritirare il documento.</i>",
+                'csc_azione': "<b>⚠ AZIONE:</b> Chiamare immediatamente <b>Nijaz Pepeljak</b> per l'accesso dei commissari CSC."
+            };
+            nextStep('result');
+            document.getElementById('resultText').innerHTML = res[key];
+        }
+    </script>
+</body>
+</html>
