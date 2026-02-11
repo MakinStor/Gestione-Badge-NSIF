@@ -3,168 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi Professionale</title>
+    <title>NSIF Castione - Gestione Accessi V8</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* Logo e Header */
-        .banner-container { width: 100%; background: white; text-align: center; border-bottom: 3px solid var(--securitas-red); }
-        .logo-img { width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto; }
+        /* HEADER E LOGHI */
+        .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
+        .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
+        .header { width: 100%; background: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); position: relative; }
+        .logo-securitas { height: 35px; }
+
+        .container { width: 95%; max-width: 600px; margin: 20px auto; padding-bottom: 60px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
+        .active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h2 { color: var(--securitas-blue); font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; }
         
-        .container { width: 95%; max-width: 600px; margin: 20px auto; padding-bottom: 50px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; }
-        .active { display: block; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* BOTTONI */
+        button { width: 100%; padding: 18px; margin: 10px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
+        .btn-red { background: var(--securitas-red); }
+        .btn-gray { background: #6c757d; }
 
-        h2 { color: var(--securitas-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; text-transform: uppercase; font-size: 1.2rem; }
-        p { line-height: 1.6; color: #333; }
-
-        /* Bottoni */
-        button { width: 100%; padding: 18px; margin: 10px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .btn-next { background: var(--securitas-blue); color: white; }
-        .btn-back { background: #6c757d; color: white; margin-top: 5px; }
-        .btn-outline { background: white; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
-        button:hover { opacity: 0.9; }
-
-        /* Form */
+        /* FORM */
         .form-group { text-align: left; margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--securitas-blue); }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        input { width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; text-align: center; }
 
-        /* Checklist */
-        .process-box { background: #fff9db; border-left: 5px solid #fcc419; padding: 15px; margin: 15px 0; text-align: left; }
-        .step-done { color: #2b8a3e; font-weight: bold; margin-bottom: 5px; display: block; }
+        /* ISTRUZIONI */
+        .instruction-card { background: #fff9db; border-left: 6px solid #fcc419; padding: 15px; text-align: left; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div class="banner-container">
-    <img src="logo_nsif.jpg" alt="NSIF Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/600x150?text=Logo+NSIF+Castione'">
-</div>
-
-<div class="container">
-    <div id="step_login" class="card active">
-        <h2>Accesso Riservato</h2>
-        <input type="password" id="pass_input" placeholder="Inserire Password" style="margin-bottom: 20px;">
-        <button class="btn-next" onclick="checkAuth()">ENTRA</button>
+    <div class="banner-container">
+        <img src="logo_nsif.jpg" alt="Banner NSIF" class="banner-top" onerror="this.style.display='none'">
     </div>
 
-    <div id="step_main" class="card">
-        <h2>Seleziona Collaboratore</h2>
-        <button class="btn-next" onclick="goTo('step_oft_1')">DIPENDENTE OFT</button>
-        <button class="btn-outline" onclick="alert('Processo FFS in sviluppo...')">DIPENDENTE FFS</button>
+    <div class="header">
+        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
+        <div style="font-weight: bold; color: var(--securitas-blue); margin-top:5px;">NSIF Castione - Portale Accessi V8.0</div>
     </div>
 
-    <div id="step_oft_1" class="card">
-        <h2>Verifica Sistema</h2>
-        <p>Il dipendente è presente nel sistema?</p>
-        <button class="btn-next" onclick="goTo('step_oft_2')">SÌ, PRESENTE</button>
-        <button class="btn-back" onclick="goTo('step_main')">INDIETRO</button>
-    </div>
-
-    <div id="step_oft_2" class="card">
-        <h2>Verifica Foto</h2>
-        <p>L'immagine è presente nel sistema?</p>
-        <button class="btn-outline" onclick="goTo('step_oft_sit1_a')">NO, SENZA FOTO (Situazione 1)</button>
-        <button class="btn-next">SÌ, CON FOTO</button>
-        <button class="btn-back" onclick="goTo('step_oft_1')">INDIETRO</button>
-    </div>
-
-    <div id="step_oft_sit1_a" class="card">
-        <h2>Situazione 1 - Azioni Iniziali</h2>
-        <div class="process-box">
-            1. Effettuare la foto dell'operaio.<br>
-            2. Farsi consegnare un documento d'identità.<br>
-            3. Preparare il badge provvisorio.<br>
-            4. Comunicare: "A fine turno ritornare per il badge personale".
+    <div class="container">
+        <div id="step_login" class="card active">
+            <h2>Accesso Riservato</h2>
+            <div class="form-group">
+                <input type="password" id="pass_input" placeholder="Password" onkeydown="if(event.key==='Enter') checkAuth()">
+            </div>
+            <button onclick="checkAuth()">ACCEDI</button>
         </div>
-        <button class="btn-next" onclick="goTo('step_oft_form')">PROCEDI ALLA STAMPA</button>
+
+        <div id="step_menu" class="card">
+            <h2>Seleziona Processo</h2>
+            <button onclick="showStep('step_oft_check')">Registrazione collaboratore OFT</button>
+            <button onclick="showStep('step_ffs_start')">Registrazione collaboratore FFS</button>
+            <button class="btn-outline" onclick="showStep('step_speciale')">Badge Visitatore / Stampa-Press</button>
+            <button class="btn-outline" onclick="showStep('step_csc')">CSC Paritetica</button>
+        </div>
+
+        <div id="step_oft_check" class="card">
+            <h2>OFT: Sistema Bausicht</h2>
+            <p>Il dipendente è presente nel sistema?</p>
+            <button onclick="showStep('step_oft_foto')">SÌ, PRESENTE</button>
+            <button class="btn-gray" onclick="showStep('step_menu')">NO, NON PRESENTE (Seguire Excel)</button>
+        </div>
+
+        <div id="step_oft_foto" class="card">
+            <h2>OFT: Verifica Immagine</h2>
+            <button class="btn-outline" onclick="showStep('step_sit1_desc')">IMMAGINE NON PRESENTE (Situazione 1)</button>
+            <button onclick="alert('Consegna Badge Personale - Fine')">IMMAGINE PRESENTE</button>
+        </div>
+
+        <div id="step_sit1_desc" class="card">
+            <h2>Situazione 1 - Procedura</h2>
+            <div class="instruction-card">
+                1. Effettuare la foto dell'operaio.<br>
+                2. Farsi consegnare un documento d'identità.<br>
+                3. Prepara il badge provvisorio.<br>
+                4. Comunicare di ritornare a fine turno.<br>
+                5. Procedere con la stampa del badge personale.
+            </div>
+            <button onclick="showStep('step_form')">COMPILA MODULO RITIRO BADGE</button>
+        </div>
+
+        <div id="step_form" class="card">
+            <h2>Dati Modulo</h2>
+            <div class="form-group"><input type="text" id="f_azienda" placeholder="Azienda"></div>
+            <div class="form-group"><input type="text" id="f_cognome" placeholder="Cognome"></div>
+            <div class="form-group"><input type="text" id="f_nome" placeholder="Nome"></div>
+            <div class="form-group"><input type="text" id="f_badge" placeholder="Numero Badge"></div>
+            <button class="btn-red" onclick="generatePDF()">GENERA PDF E PROSEGUI</button>
+        </div>
+
+        <div id="step_logistica" class="card">
+            <h2>Logistica e Archiviazione</h2>
+            <div class="instruction-card">
+                6. Segnare nel file excel l'operazione.<br>
+                7. Consegnare badge e modulo a <b>Loris Zatta</b>.<br>
+                8. Attendere riconsegna.<br>
+                9. Lasciare modulo a <b>La Morgia</b> per verifica.<br>
+                10. <b>T3</b>: Verifica e inserimento in classatore.
+            </div>
+            <p style="color: green; font-weight: bold;">✓ COMPITO TERMINATO</p>
+            <button onclick="location.reload()">NUOVA OPERAZIONE</button>
+        </div>
+
+        <div id="step_csc" class="card">
+            <h2>CSC Paritetica</h2>
+            <button class="btn-red" onclick="alert('CHIAMARE IMMEDIATAMENTE NIJAZ PEPELJAK')">CHIAMARE NIJAZ PEPELJAK</button>
+            <button class="btn-gray" onclick="showStep('step_menu')">INDIETRO</button>
+        </div>
     </div>
 
-    <div id="step_oft_form" class="card">
-        <h2>Compilazione Modulo</h2>
-        <div class="form-group">
-            <label>Azienda:</label>
-            <input type="text" id="f_azienda">
-        </div>
-        <div class="form-group">
-            <label>Nome:</label>
-            <input type="text" id="f_nome">
-        </div>
-        <div class="form-group">
-            <label>Cognome:</label>
-            <input type="text" id="f_cognome">
-        </div>
-        <div class="form-group">
-            <label>Codice Badge:</label>
-            <input type="text" id="f_badge">
-        </div>
-        <button class="btn-next" onclick="generatePDF()">GENERA PDF E PROSEGUI</button>
-    </div>
+    <script>
+        function checkAuth() {
+            if(document.getElementById('pass_input').value === "Securitas2026") showStep('step_menu');
+            else alert("Password errata");
+        }
 
-    <div id="step_oft_sit1_b" class="card">
-        <h2>Situazione 1 - Logistica Moduli</h2>
-        <div class="process-box">
-            <span class="step-done">✓ Dati registrati e PDF creato</span>
-            5. Segnare l'operazione nel file Excel.<br>
-            6. Consegnare Badge e Modulo a <b>Loris Zatta</b>.<br>
-            7. Attendere riconsegna da Loris Zatta.<br>
-            8. Lasciare il modulo a <b>La Morgia</b> per verifica.
-        </div>
-        <button class="btn-next" onclick="goTo('step_oft_final')">CONFERMA CONSEGNA A LA MORGIA</button>
-    </div>
+        function showStep(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        }
 
-    <div id="step_oft_final" class="card">
-        <h2>Chiusura Processo (T3)</h2>
-        <div class="process-box">
-            9. La Morgia verifica e lascia nella cassetta.<br>
-            10. T3 preleva il modulo dalla cassetta.<br>
-            11. T3 verifica registrazione tramite Excel.<br>
-            12. T3 inserisce il modulo nel classificatore.
-        </div>
-        <p style="color: green; font-weight: bold; font-size: 1.4rem;">COMPITO TERMINATO</p>
-        <button class="btn-next" onclick="location.reload()">NUOVA OPERAZIONE</button>
-    </div>
-</div>
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const az = document.getElementById('f_azienda').value;
+            const cog = document.getElementById('f_cognome').value;
+            const nom = document.getElementById('f_nome').value;
+            const bdg = document.getElementById('f_badge').value;
 
-<script>
-    function checkAuth() {
-        if(document.getElementById('pass_input').value === "Securitas2026") goTo('step_main');
-        else alert("Password errata");
-    }
+            doc.setFontSize(16); doc.text("Modulo ritiro Badge Identificativo", 105, 20, {align:'center'});
+            doc.setFontSize(10); doc.text("Cantiere FFS - NSIF Castione", 105, 28, {align:'center'});
+            
+            doc.rect(20, 40, 170, 40);
+            doc.text(`Azienda: ${az}`, 25, 50);
+            doc.text(`Cognome: ${cog}`, 25, 60);
+            doc.text(`Nome: ${nom}`, 25, 70);
+            doc.text(`Numero Badge: ${bdg}`, 120, 70);
 
-    function goTo(id) {
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        const az = document.getElementById('f_azienda').value;
-        const nom = document.getElementById('f_nome').value;
-        const cog = document.getElementById('f_cognome').value;
-        const bdg = document.getElementById('f_badge').value;
-
-        doc.setFontSize(22);
-        doc.text("MODULO REGISTRAZIONE BADGE", 20, 30);
-        doc.setFontSize(14);
-        doc.text(`Azienda: ${az}`, 20, 50);
-        doc.text(`Collaboratore: ${nom} ${cog}`, 20, 60);
-        doc.text(`ID Badge: ${bdg}`, 20, 70);
-        doc.text("--------------------------------------------------", 20, 80);
-        doc.setFontSize(10);
-        doc.text("Testo procedurale standard NSIF Castione.", 20, 90);
-        doc.text("Il presente modulo deve essere verificato da La Morgia e archiviato dal T3.", 20, 100);
-
-        doc.save(`Badge_${cog}.pdf`);
-        goTo('step_oft_sit1_b');
-    }
-</script>
-
+            doc.text("Dichiarazione e Accettazione:", 20, 95);
+            doc.setFontSize(8);
+            const clausole = [
+                "Il badge è personale e non cedibile.",
+                "In caso di perdita, tassa di CHF 50.00.",
+                "Il furto va segnalato immediatamente a Securitas.",
+                "Restituzione obbligatoria a fine rapporto (pena CHF 50.00)."
+            ];
+            doc.text(clausole, 20, 105);
+            
+            doc.text("Firma per accettazione: ________________", 20, 150);
+            doc.text("Visto: Marco La Morgia", 120, 150);
+            
+            doc.save(`Modulo_${cog}.pdf`);
+            showStep('step_logistica');
+        }
+    </script>
 </body>
 </html>
