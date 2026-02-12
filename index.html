@@ -3,196 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - V1.4</title>
+    <title>NSIF Castione - V1.6 (Email Security)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
         .header { background: white; padding: 15px; text-align: center; border-bottom: 5px solid var(--securitas-red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .container { width: 95%; max-width: 800px; margin: 20px auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .btn-blue { background: var(--securitas-blue); color: white; }
         .btn-red { background: var(--securitas-red); color: white; }
-        .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-gray { background: #6c757d; color: white; }
-        .instruction-card { background: #eef6ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; margin-bottom: 20px; font-size: 0.9rem; }
         .form-group { text-align: left; margin-bottom: 15px; }
         label { display: block; font-weight: bold; font-size: 0.8rem; color: var(--securitas-blue); margin-bottom: 5px; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background: #f8f9fa; }
-        .status-blocked { color: red; font-weight: bold; }
-        .status-active { color: green; font-weight: bold; }
+        .auth-code-box { background: #fff3cd; border: 1px solid #ffeeba; padding: 20px; border-radius: 8px; margin-top: 20px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 1.2rem;">NSIF CASTIONE - GESTIONE ACCESSI V1.4</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 1.2rem;">NSIF CASTIONE - ACCESSO PROTETTO EMAIL</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
-            <h2>Login</h2>
-            <div class="form-group"><label>Email</label><input type="text" id="login_user"></div>
+            <h2>Login Sistema</h2>
+            <div class="form-group"><label>Email Utente</label><input type="text" id="login_user"></div>
             <div class="form-group"><label>Password</label><input type="password" id="login_pass"></div>
-            <button class="btn-blue" onclick="handleLogin()">ACCEDI</button>
+            <button class="btn-blue" onclick="requestAuthCode()">CHIEDI CODICE DI ACCESSO</button>
+        </div>
+
+        <div id="step_verify" class="card">
+            <h2>Verifica Identità</h2>
+            <p id="email_notify"></p>
+            <div class="form-group">
+                <label>Inserisci il codice ricevuto via Email</label>
+                <input type="text" id="input_code" placeholder="000000" style="text-align:center; font-size: 2rem; letter-spacing: 5px;">
+            </div>
+            <button class="btn-blue" onclick="verifyAndLogin()">VERIFICA E ACCEDI</button>
+            <button class="btn-gray" onclick="showStep('step_login')">ANNULLA</button>
         </div>
 
         <div id="step_menu" class="card">
-            <h2>Tipo Collaboratore</h2>
-            <button class="btn-blue" onclick="setFlow('OFT')">Collaboratore OFT</button>
-            <button class="btn-blue" onclick="setFlow('FFS')">Collaboratore FFS</button>
-            <button class="btn-outline" onclick="showStep('step_visitatori')">Badge Visitatore / Stampa / Paritetica</button>
-            <div id="admin_area" style="display:none; margin-top:30px; border-top: 1px solid #ddd; padding-top: 20px;">
-                <button class="btn-red" onclick="showAdminPanel()">⚙️ GESTIONE UTENTI & SICUREZZA</button>
-            </div>
+            <h2 id="welcome_msg">Benvenuto</h2>
+            <button class="btn-blue" onclick="alert('Flusso OFT avviato')">Collaboratore OFT</button>
+            <button class="btn-blue" onclick="alert('Flusso FFS avviato')">Collaboratore FFS</button>
             <button class="btn-gray" onclick="location.reload()">LOGOUT</button>
-        </div>
-
-        <div id="step_visitatori" class="card">
-            <h2>Gestione Visitatori</h2>
-            <div class="instruction-card">
-                1. <b>E-mail:</b> Verificare richiesta con nominativo.<br>
-                2. <b>Referente:</b> Chiamare il referente interno.<br>
-                3. <b>Documento:</b> Richiedere documento d'identità.<br>
-                4. <b>Consegna:</b> Fornire Badge Visitatore.<br>
-                5. <b>Registrazione:</b> Inserire i dati sotto.
-            </div>
-            <div class="form-group"><label>Nome e Cognome</label><input type="text" id="v_nome"></div>
-            <div class="form-group"><label>Azienda</label><input type="text" id="v_azienda"></div>
-            <div class="form-group"><label>Telefono</label><input type="text" id="v_tel"></div>
-            <button class="btn-blue" onclick="alert('Visitatore Registrato correttamente'); showStep('step_menu')">REGISTRA ACCESSO</button>
-            <button class="btn-gray" onclick="showStep('step_menu')">INDIETRO</button>
-        </div>
-
-        <div id="step_admin" class="card">
-            <h2>Pannello Controllo Utenti</h2>
-            <div class="instruction-card">Le password scadono ogni 30 giorni. Gli utenti bloccati non possono accedere.</div>
-            <div style="background: #f0f0f0; padding: 15px; border-radius: 8px;">
-                <div class="form-group"><label>Nuova Email</label><input type="text" id="new_u"></div>
-                <div class="form-group"><label>Password</label><input type="text" id="new_p"></div>
-                <button class="btn-blue" onclick="addUser()">CREA ACCOUNT</button>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Utente / Pass</th>
-                        <th>Stato</th>
-                        <th>Ultimo Accesso</th>
-                        <th>Scad. Pass</th>
-                        <th>Azioni</th>
-                    </tr>
-                </thead>
-                <tbody id="u_list_body"></tbody>
-            </table>
-            <button class="btn-gray" onclick="showStep('step_menu')" style="margin-top:20px;">TORNA AL MENU</button>
         </div>
     </div>
 
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
-        const PASS_DURATION_DAYS = 30;
-
-        function handleLogin() {
-            const u = document.getElementById('login_user').value;
-            const p = document.getElementById('login_pass').value;
-            let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            
-            // Logica Master
-            if(u === MASTER.email && p === MASTER.pass) {
-                document.getElementById('admin_area').style.display = 'block';
-                showStep('step_menu');
-                return;
-            }
-
-            const user = users.find(x => x.email === u && x.pass === p);
-            if(user) {
-                if(user.blocked) { alert("ACCOUNT BLOCCATO. Contattare l'amministratore."); return; }
-                
-                // Verifica scadenza password (30gg)
-                const lastChange = new Date(user.passDate);
-                const diffDays = Math.floor((new Date() - lastChange) / (1000 * 60 * 60 * 24));
-                if(diffDays > PASS_DURATION_DAYS) {
-                    alert("PASSWORD SCADUTA (Oltre 30gg). Modificarla subito.");
-                }
-
-                user.lastAccess = new Date().toLocaleString('it-IT');
-                localStorage.setItem('nsif_users', JSON.stringify(users));
-                document.getElementById('admin_area').style.display = 'none';
-                showStep('step_menu');
-            } else {
-                alert("Credenziali errate o utente inesistente.");
-            }
-        }
-
-        function showAdminPanel() {
-            renderUsers();
-            showStep('step_admin');
-        }
-
-        function addUser() {
-            const u = document.getElementById('new_u').value;
-            const p = document.getElementById('new_p').value;
-            if(!u || !p) return;
-            let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            users.push({
-                email: u, 
-                pass: p, 
-                blocked: false, 
-                lastAccess: "Mai", 
-                passDate: new Date().toISOString()
-            });
-            localStorage.setItem('nsif_users', JSON.stringify(users));
-            renderUsers();
-        }
-
-        function renderUsers() {
-            const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            const tbody = document.getElementById('u_list_body');
-            tbody.innerHTML = users.map((x, i) => {
-                const passDate = new Date(x.passDate);
-                const diff = Math.floor((new Date() - passDate) / (1000 * 60 * 60 * 24));
-                return `
-                <tr>
-                    <td><b>${x.email}</b><br><small>Pass: ${x.pass}</small></td>
-                    <td class="${x.blocked ? 'status-blocked' : 'status-active'}">${x.blocked ? 'BLOCCATO' : 'ATTIVO'}</td>
-                    <td>${x.lastAccess}</td>
-                    <td>${diff}/${PASS_DURATION_DAYS} gg</td>
-                    <td>
-                        <button onclick="toggleUser(${i})" style="padding:5px; font-size:0.7rem;">${x.blocked ? 'SBLOCCA' : 'BLOCCA'}</button>
-                        <button onclick="delUser(${i})" style="padding:5px; font-size:0.7rem; background:red; color:white;">ELIMINA</button>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-
-        function toggleUser(i) {
-            let users = JSON.parse(localStorage.getItem('nsif_users'));
-            users[i].blocked = !users[i].blocked;
-            localStorage.setItem('nsif_users', JSON.stringify(users));
-            renderUsers();
-        }
-
-        function delUser(i) {
-            if(!confirm("Eliminare l'utente?")) return;
-            let users = JSON.parse(localStorage.getItem('nsif_users'));
-            users.splice(i, 1);
-            localStorage.setItem('nsif_users', JSON.stringify(users));
-            renderUsers();
-        }
+        let generatedCode = "";
+        let currentUser = null;
 
         function showStep(id) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function setFlow(t) { showStep('step_menu'); alert("Flusso " + t + " avviato (Seguire procedura standard V1.3)"); }
+        function requestAuthCode() {
+            const u = document.getElementById('login_user').value;
+            const p = document.getElementById('login_pass').value;
+            let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            
+            // Trova utente
+            const user = (u === MASTER.email && p === MASTER.pass) ? MASTER : users.find(x => x.email === u && x.pass === p);
+
+            if (user) {
+                if (user.blocked) { alert("Account bloccato."); return; }
+                
+                currentUser = user;
+                // Genera codice 6 cifre
+                generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                // SIMULAZIONE INVIO EMAIL
+                // In una versione reale, qui si integra un servizio API (es. EmailJS o SendGrid)
+                console.log("Codice inviato a " + user.email + " : " + generatedCode);
+                
+                document.getElementById('email_notify').innerText = "Il codice è stato inviato all'indirizzo: " + user.email;
+                
+                // Mostra avviso simulato (come se l'utente aprisse la mail)
+                alert("SISTEMA NSIF:\nCodice di sicurezza inviato a " + user.email + "\n\nIL TUO CODICE È: " + generatedCode);
+                
+                showStep('step_verify');
+            } else {
+                alert("Credenziali errate.");
+            }
+        }
+
+        function verifyAndLogin() {
+            const input = document.getElementById('input_code').value;
+            if (input === generatedCode) {
+                document.getElementById('welcome_msg').innerText = "Accesso effettuato: " + currentUser.email;
+                showStep('step_menu');
+            } else {
+                alert("Codice errato. Riprova.");
+            }
+        }
     </script>
 </body>
 </html>
