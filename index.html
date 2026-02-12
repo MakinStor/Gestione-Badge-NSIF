@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi V2.0</title>
+    <title>NSIF Castione - Sistema Integrale V2.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
@@ -25,10 +25,9 @@
         .nota-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.85rem; text-align: left; color: #856404; }
         .form-group { text-align: left; margin-bottom: 12px; }
         label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: var(--securitas-blue); }
-        input, select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.75rem; background: white; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        th { background: #f8f9fa; color: var(--securitas-blue); }
         .status-on { color: green; font-weight: bold; }
         .status-off { color: red; font-weight: bold; }
     </style>
@@ -38,7 +37,7 @@
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner NSIF" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESS V2.0</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V2.1</div>
     </div>
 
     <div class="container">
@@ -47,7 +46,7 @@
             <div class="form-group"><label>Email</label><input type="text" id="login_user"></div>
             <div class="form-group"><label>Password</label><input type="password" id="login_pass"></div>
             <button onclick="handleLogin()">ACCEDI</button>
-            <p style="font-size: 0.8rem; color: #666;">Premi 'Invio' per confermare la password</p>
+            <button class="btn-outline" style="border:none; font-size:0.8rem; text-decoration:underline;" onclick="alert('Contattare l\'amministratore (Marco La Morgia) per il reset della password.')">Password dimenticata?</button>
         </div>
 
         <div id="step_menu" class="card">
@@ -59,6 +58,25 @@
                 <button class="btn-red" onclick="showAdminPanel()">⚙️ PANNELLO AMMINISTRATORE</button>
             </div>
             <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">ESCI (LOGOUT)</button>
+        </div>
+
+        <div id="step_np" class="card">
+            <h2 id="np_title">Non presente nel sistema</h2>
+            <div class="instruction-card">
+                La persona non è autorizzata ad entrare. Bisogna richiedere conferma a <b id="np_referente">Referente</b> indipendentemente dall'orario.
+            </div>
+            <div class="nota-box">Nota: Se non dovesse rispondere, la persona NON può assolutamente entrare. Attendere una risposta.</div>
+            <div class="instruction-card">
+                1. Richiedere alla persona quanti giorni verrà a lavorare in cantiere.<br>
+                2. Richiedere conferma al referente per l'autorizzazione della durata del soggiorno.<br>
+                3. Successivamente il referente dovrà decidere se farlo inserire nel sistema oppure no.
+            </div>
+            
+            <div class="nota-box" style="background:#fce4ec; border-color:#e91e63; color:#880e4f;">
+                <b>SITUAZIONE 1 (Autorizzato):</b> Farsi consegnare Documento/Patente/Chiavi. Preparare Badge Provvisorio (specificare motivo nota). Informare l'operaio di tornare a fine turno.<br><br>
+                <b>SITUAZIONE 2 (Negato):</b> Comunicare che non ha il permesso di accedere. Osservare che non provi ad entrare. Segnalare a La Morgia anomalie.
+            </div>
+            <button class="btn-gray" onclick="showStep('step_menu')">TORNA AL MENU</button>
         </div>
 
         <div id="step_sistema" class="card">
@@ -86,54 +104,44 @@
             <div class="instruction-card">
                 • Effettuare la foto all'operaio.<br>
                 • Farsi consegnare il Documento personale, Patente o chiavi della macchina.<br>
-                <div class="nota-box" style="background:transparent; border:none; margin:0; padding:0; font-style:italic;">Nota: Questo serve per far sì che la persona ritorni da noi per riconsegnare il Badge</div>
+                <div class="nota-box" style="background:transparent; border:none; margin:0; padding:0; font-style:italic;">Nota: Questo serve per far sì che la persona ritorna da noi per riconsegnare il Badge</div>
                 • Preparare il Badge Provvisorio inserendo nella nota del sistema il motivo per cui viene rilasciato questo Badge.<br>
                 • Comunicare all'operaio che a fine turno dovrà ritornare a lasciare il Badge Provvisorio e a riprendere il proprio documento personale e a ritirare il proprio Badge Personale.
             </div>
-            <button class="btn-red" onclick="showStep('step_backoffice')">VAI A STAMPA E LOGISTICA</button>
+            <button class="btn-red" onclick="showStep('step_backoffice')">VAI A BACKOFFICE E CHIUSURA</button>
         </div>
 
         <div id="step_backoffice" class="card">
             <h2>Backoffice e Chiusura</h2>
             <div class="instruction-card">
                 1. Stampare il Badge Personale.<br>
-                2. Compilare il modulo di ritiro badge con i dati: Azienda, Cognome, Nome, Numero Badge.<br>
+                2. Compilare il modulo di ritiro badge (Azienda, Cognome, Nome, Numero Badge).<br>
                 3. Portare il Badge Personale e il modulo a <b>Loris Zatta</b>.<br>
                 4. Attendere il ritorno del modulo firmato (Visto).<br>
                 5. Lasciare il modulo nella cassetta di <b>Marco La Morgia</b>.
             </div>
             <div class="nota-box">
-                <b>Responsabilità T3:</b><br>
+                <b>Competenza T3:</b><br>
                 • Prelevare modulo, verifica Excel: VTI External > Sharing Documenti > Badge > Badge Stampati.xlsx > Apri in Excel online.<br>
-                • Rimuovere le note sotto la persona per evitare incomprensioni.<br>
-                • Classificare: Azienda, Cognome, Nome e archiviare nel raccoglitore.
+                • Rimuovere le note sotto la persona.<br>
+                • Classificare: Azienda, Cognome, Nome e inserire nel raccoglitore.
             </div>
             <button onclick="showStep('step_menu')">COMPITO TERMINATO</button>
         </div>
 
         <div id="step_admin" class="card">
-            <h2>Gestione Utenti & Password</h2>
+            <h2>Gestione Utenti</h2>
             <div class="form-group">
-                <input type="text" id="new_u" placeholder="Email Utente">
+                <input type="text" id="new_u" placeholder="Email">
                 <input type="text" id="new_p" placeholder="Password" style="margin-top:5px;">
                 <input type="number" id="new_v" placeholder="Validità (giorni)" value="30" style="margin-top:5px;">
             </div>
-            <button onclick="addUser()">CREA NUOVO UTENTE</button>
-            <div style="overflow-x:auto;">
-                <table id="user_table">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Password</th>
-                            <th>Validità (gg)</th>
-                            <th>Stato</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody id="u_list_body"></tbody>
-                </table>
-            </div>
-            <button class="btn-outline" onclick="showStep('step_menu')" style="margin-top:20px;">TORNA AL MENU</button>
+            <button onclick="addUser()">AGGIUNGI UTENTE</button>
+            <table style="width:100%; font-size:0.7rem;">
+                <thead><tr><th>Email</th><th>Password</th><th>Scad (gg)</th><th>Stato</th><th>Azione</th></tr></thead>
+                <tbody id="u_list_body"></tbody>
+            </table>
+            <button class="btn-outline" onclick="showStep('step_menu')" style="margin-top:20px;">INDIETRO</button>
         </div>
     </div>
 
@@ -141,10 +149,8 @@
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
         let aziendaSelezionata = "";
 
-        // LISTENER TASTO ENTER
-        document.getElementById('login_pass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') handleLogin();
-        });
+        // TASTO ENTER
+        document.getElementById('login_pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
         function handleLogin() {
             const u = document.getElementById('login_user').value;
@@ -154,23 +160,29 @@
 
             if (user) {
                 if (user.blocked) { alert("ACCOUNT BLOCCATO"); return; }
-                user.lastAccess = new Date().toLocaleString();
-                localStorage.setItem('nsif_users', JSON.stringify(users));
                 if(u === MASTER.email) document.getElementById('admin_area').style.display = 'block';
                 showStep('step_menu');
-            } else { alert("Credenziali non valide."); }
+            } else { alert("Email o Password errati."); }
         }
 
-        function selectAzienda(az) { aziendaSelezionata = az; showStep('step_sistema'); }
+        function selectAzienda(az) { aziendaSelezionata = az; document.getElementById('sys_title').innerText = "Azienda " + az + ": Nel sistema?"; showStep('step_sistema'); }
+        
         function checkSistema(presente) {
-            if (!presente) alert("Seguire flusso " + aziendaSelezionata + "-Non presente nel sistema (Chiamare Pepeljak/La Morgia)");
-            else (aziendaSelezionata === 'OFT') ? showStep('step_formazione') : showStep('step_foto');
+            if (!presente) {
+                document.getElementById('np_title').innerText = aziendaSelezionata + ": Non presente";
+                document.getElementById('np_referente').innerText = (aziendaSelezionata === 'OFT') ? "Nijaz Pepeljak" : "Marco La Morgia";
+                showStep('step_np');
+            } else {
+                (aziendaSelezionata === 'OFT') ? showStep('step_formazione') : showStep('step_foto');
+            }
         }
+
         function checkFormazione(fatta) {
             const h = document.getElementById('sit1_header');
             h.innerText = fatta ? "Formazione eseguita - Foto non presente" : "Ci comunica di non aver effettuato la formazione di sicurezza";
             showStep(fatta ? 'step_foto' : 'step_situazione1');
         }
+
         function showSituazione1() { showStep('step_situazione1'); }
 
         function showStep(id) {
@@ -178,47 +190,26 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // --- FUNZIONI ADMIN ---
+        // --- ADMIN FUNCTIONS ---
         function showAdminPanel() { renderUsers(); showStep('step_admin'); }
-
         function addUser() {
             let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            u.push({ 
-                email: document.getElementById('new_u').value, 
-                pass: document.getElementById('new_p').value, 
-                validity: document.getElementById('new_v').value,
-                blocked: false, 
-                lastAccess: "Mai" 
-            });
+            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, validity: document.getElementById('new_v').value, blocked: false });
             localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
         }
-
         function renderUsers() {
             const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
             document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
                 <tr>
                     <td>${x.email}</td>
-                    <td><input type="text" value="${x.pass}" onchange="updateUser(${i}, 'pass', this.value)" style="padding:5px; width:80px;"></td>
-                    <td><input type="number" value="${x.validity}" onchange="updateUser(${i}, 'validity', this.value)" style="padding:5px; width:50px;"></td>
-                    <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'BLOCC' : 'ATTIVO'}</td>
-                    <td>
-                        <button onclick="toggleUser(${i})" style="padding:5px; font-size:0.7rem;">${x.blocked ? 'SBLOCCA' : 'BLOCCA'}</button>
-                    </td>
+                    <td><input type="text" value="${x.pass}" onchange="updateUser(${i}, 'pass', this.value)" style="width:60px; font-size:0.7rem;"></td>
+                    <td><input type="number" value="${x.validity}" onchange="updateUser(${i}, 'validity', this.value)" style="width:30px; font-size:0.7rem;"></td>
+                    <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'OFF' : 'ON'}</td>
+                    <td><button onclick="toggleUser(${i})" style="padding:4px; font-size:0.6rem;">${x.blocked ? 'SBLOCCA' : 'BLOCCA'}</button></td>
                 </tr>`).join('');
         }
-
-        function updateUser(index, field, value) {
-            let u = JSON.parse(localStorage.getItem('nsif_users'));
-            u[index][field] = value;
-            localStorage.setItem('nsif_users', JSON.stringify(u));
-        }
-
-        function toggleUser(index) {
-            let u = JSON.parse(localStorage.getItem('nsif_users'));
-            u[index].blocked = !u[index].blocked;
-            localStorage.setItem('nsif_users', JSON.stringify(u));
-            renderUsers();
-        }
+        function updateUser(i, f, v) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i][f] = v; localStorage.setItem('nsif_users', JSON.stringify(u)); }
+        function toggleUser(i) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i].blocked = !u[i].blocked; localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers(); }
     </script>
 </body>
 </html>
