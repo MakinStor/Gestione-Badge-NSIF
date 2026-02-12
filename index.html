@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi V1.8</title>
+    <title>NSIF Castione - Gestione Accessi V1.9</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
@@ -22,6 +22,7 @@
         .btn-red { background: var(--securitas-red); }
         .btn-gray { background: #6c757d; }
         .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px; border-radius: 4px; }
+        .nota-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.85rem; text-align: left; color: #856404; }
         .form-group { text-align: left; margin-bottom: 12px; }
         label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: var(--securitas-blue); }
         input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
@@ -37,7 +38,7 @@
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V1.8</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V1.9</div>
     </div>
 
     <div class="container">
@@ -49,11 +50,10 @@
         </div>
 
         <div id="step_menu" class="card">
-            <h2>Seleziona Processo</h2>
-            <button onclick="setFlow('OFT')">Collaboratore OFT</button>
-            <button onclick="setFlow('FFS')">Collaboratore FFS</button>
-            <button class="btn-outline" onclick="showStep('step_visitatori_info')">Badge Visitatore / Stampa / Paritetica</button>
-            
+            <h2>Seleziona Azienda</h2>
+            <button onclick="selectAzienda('OFT')">Azienda gestita da OFT</button>
+            <button onclick="selectAzienda('FFS')">Azienda gestita da FFS</button>
+            <button class="btn-outline" onclick="showStep('step_visitatori')">Badge Visitatore / Stampa / Paritetica</button>
             <div id="admin_area" style="display:none; margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 10px;">
                 <button class="btn-red" onclick="showAdminPanel()">⚙️ GESTIONE UTENTI (ADMIN)</button>
             </div>
@@ -61,43 +61,68 @@
         </div>
 
         <div id="step_sistema" class="card">
-            <h2 id="flow_title_sys">Verifica Sistema</h2>
-            <button onclick="showStep('step_foto')">SÌ, Inserito nel sistema</button>
-            <button class="btn-red" onclick="showStep('step_no_sistema')">NO, Non presente</button>
-            <button class="btn-outline" onclick="showStep('step_referente')">Referente presente fisicamente</button>
+            <h2 id="sys_title">Dipendente nel sistema?</h2>
+            <button onclick="checkSistema(true)">SÌ</button>
+            <button class="btn-red" onclick="checkSistema(false)">NO</button>
+        </div>
+
+        <div id="step_formazione" class="card">
+            <h2>Formazione "Induction" eseguita?</h2>
+            <button onclick="checkFormazione(true)">SÌ</button>
+            <button class="btn-red" onclick="checkFormazione(false)">NO</button>
         </div>
 
         <div id="step_foto" class="card">
-            <h2>Verifica Immagine</h2>
-            <button onclick="showStep('step_situazione1')">Senza Immagine (Situazione 1)</button>
-            <button onclick="alert('Compito terminato: consegna badge personale.')">Con Immagine</button>
+            <h2>Foto presente nel sistema?</h2>
+            <button onclick="alert('SITUAZIONE 2: Compito terminato.'); showStep('step_menu');">SÌ</button>
+            <button class="btn-red" onclick="showSituazione1('formazione_si')">NO</button>
         </div>
 
         <div id="step_situazione1" class="card">
-            <h2>Situazione 1</h2>
+            <h2>SITUAZIONE 1</h2>
+            <div id="sit1_header" class="instruction-card"></div>
+            <div class="nota-box">Nota: Nel 99% delle persone che si presentano sul posto e che non hanno la foto nel sistema Bausicht, non hanno effettuato la formazione di sicurezza.</div>
+            
             <div class="instruction-card">
-                1. Effettua la <b>foto</b> dell'operaio.<br>
-                2. Ritira <b>documento d'identità</b>.<br>
-                3. Consegna <b>Badge Provvisorio</b>.<br>
-                4. Comunica rientro a fine turno.<br>
-                5. Procedi alla stampa del <b>Badge Personale</b>.
+                • Effettuare la foto all'operaio.<br>
+                • Farsi consegnare il Documento personale, Patente o chiavi della macchina.<br>
+                <small><i>Nota: Questo serve per far sì che la persona ritorni da noi per riconsegnare il Badge.</i></small><br>
+                • Preparare il Badge Provvisorio inserendo nella nota del sistema il motivo per cui viene rilasciato questo Badge.<br>
+                • Comunicare all'operaio che a fine turno dovrà ritornare a lasciare il Badge Provvisorio e a riprendere il proprio documento personale e a ritirare il proprio Badge Personale.
             </div>
-            <button class="btn-red" onclick="showStep('step_form_badge')">COMPILA MODULO</button>
+            <button class="btn-red" onclick="showStep('step_backoffice')">PROSEGUI CON STAMPA E BACKOFFICE</button>
         </div>
 
-        <div id="step_visitatori_info" class="card">
-            <h2>Badge Visitatore</h2>
+        <div id="step_backoffice" class="card">
+            <h2>Backoffice e Chiusura</h2>
             <div class="instruction-card">
-                1. Verifica richiesta via e-mail.<br>
-                2. Chiama il referente.<br>
-                3. Richiedi documento d'identità.<br>
-                4. Consegna Badge Visitatore.<br>
-                5. Registra dati qui sotto.
+                1. Stampare il Badge Personale.<br>
+                2. Compilare il modulo di ritiro badge (Azienda, Cognome, Nome, Numero Badge).<br>
+                3. Portare il Badge Personale e il modulo a <b>Loris Zatta</b>.<br>
+                4. Attendere il ritorno del modulo firmato (Visto).<br>
+                5. Lasciare il modulo nella cassetta di <b>Marco La Morgia</b>.
             </div>
-            <div class="form-group"><label>Nome e Cognome</label><input type="text" id="v_nome"></div>
-            <div class="form-group"><label>Telefono</label><input type="text" id="v_tel"></div>
-            <button onclick="alert('Registrato'); showStep('step_menu')">CONCLUDI REGISTRAZIONE</button>
-            <button class="btn-gray" onclick="showStep('step_menu')">INDIETRO</button>
+            <div class="nota-box">
+                <b>Competenza T3:</b><br>
+                • Prelevare modulo, verifica Excel (VTI External > Badge > Badge Stampati.xlsx > Apri in Excel online).<br>
+                • Rimuovere note sotto la persona.<br>
+                • Classificare: Azienda, Cognome, Nome e inserire nel raccoglitore.
+            </div>
+            <button onclick="showStep('step_menu')">COMPITO TERMINATO</button>
+        </div>
+
+        <div id="step_non_presente" class="card">
+            <h2 id="np_title">Non presente nel sistema</h2>
+            <div class="instruction-card">
+                La persona non è autorizzata ad entrare. Bisogna richiedere conferma a <b id="np_ref">Nijaz Pepeljak</b> indipendentemente dall'orario.
+            </div>
+            <div class="nota-box">Nota: Se non dovesse rispondere, la persona NON può assolutamente entrare. Attendere una risposta.</div>
+            <div class="instruction-card">
+                • Richiedere alla persona quanti giorni verrà a lavorare.<br>
+                • Richiedere conferma al referente per l'autorizzazione della durata del soggiorno.<br>
+                • Successivamente il referente dovrà decidere se farlo inserire nel sistema oppure no.
+            </div>
+            <button class="btn-red" onclick="alert('Seguire flussi Situazione 1/2 autorizzati dal referente'); showStep('step_menu')">FINE PROCEDURA</button>
         </div>
 
         <div id="step_admin" class="card">
@@ -111,63 +136,72 @@
             <button class="btn-outline" onclick="showStep('step_menu')">INDIETRO</button>
         </div>
 
-        <div id="step_form_badge" class="card">
-            <h2>Dati Modulo</h2>
-            <div class="form-group"><label>Azienda</label><input type="text" id="f_azienda"></div>
-            <div class="form-group"><label>Cognome</label><input type="text" id="f_cognome"></div>
-            <div class="form-group"><label>Nome</label><input type="text" id="f_nome"></div>
-            <div class="form-group"><label>Codice Badge</label><input type="text" id="f_badge"></div>
-            <button class="btn-red" onclick="generateModuloPDF()">GENERA PDF</button>
-        </div>
-        
-        <div id="step_logistica" class="card">
-            <h2>Iter di Chiusura</h2>
-            <div class="instruction-card">
-                Segna su Excel. Consegna a Zatta. Modulo a La Morgia. T3 archivia.
-            </div>
-            <button onclick="showStep('step_menu')">FINE</button>
-        </div>
     </div>
 
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
+        let aziendaSelezionata = "";
+
+        function selectAzienda(az) {
+            aziendaSelezionata = az;
+            document.getElementById('sys_title').innerText = "Azienda " + az + ": Dipendente nel sistema?";
+            showStep('step_sistema');
+        }
+
+        function checkSistema(presente) {
+            if (!presente) {
+                document.getElementById('np_title').innerText = aziendaSelezionata + ": Non presente";
+                document.getElementById('np_ref').innerText = (aziendaSelezionata === 'OFT') ? "Nijaz Pepeljak" : "Marco La Morgia";
+                showStep('step_non_presente');
+            } else {
+                if (aziendaSelezionata === 'OFT') showStep('step_formazione');
+                else showStep('step_foto'); // FFS salta formazione diretta a foto
+            }
+        }
+
+        function checkFormazione(fatta) {
+            if (fatta) showStep('step_foto');
+            else showSituazione1('formazione_no');
+        }
+
+        function showSituazione1(tipo) {
+            const header = document.getElementById('sit1_header');
+            if (tipo === 'formazione_no') {
+                header.innerText = "Ci comunica di non aver effettuato la formazione di sicurezza.";
+            } else {
+                header.innerText = "Formazione eseguita ma foto non presente.";
+            }
+            showStep('step_situazione1');
+        }
 
         function handleLogin() {
             const u = document.getElementById('login_user').value;
             const p = document.getElementById('login_pass').value;
             let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
             const user = (u === MASTER.email && p === MASTER.pass) ? MASTER : users.find(x => x.email === u && x.pass === p);
-
             if (user) {
-                if (user.blocked) { alert("Bloccato"); return; }
                 user.lastAccess = new Date().toLocaleString();
                 localStorage.setItem('nsif_users', JSON.stringify(users));
                 if(u === MASTER.email) document.getElementById('admin_area').style.display = 'block';
                 showStep('step_menu');
-            } else { alert("Errore"); }
+            } else { alert("Errore Login"); }
         }
 
-        function setFlow(t) { document.getElementById('flow_title_sys').innerText = t + ": Verifica Sistema"; showStep('step_sistema'); }
-        function showStep(id) { document.querySelectorAll('.card').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function showStep(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
         function showAdminPanel() { renderUsers(); showStep('step_admin'); }
-        
         function addUser() {
             let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
             u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, blocked: false, lastAccess: "Mai" });
             localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
         }
-
         function renderUsers() {
             const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
-                <tr><td>${x.email}</td><td>${x.pass}</td><td>${x.lastAccess}</td><td>${x.blocked ? 'OFF' : 'ON'}</td></tr>`).join('');
-        }
-
-        function generateModuloPDF() {
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text("Modulo Ritiro Badge", 20, 20);
-            doc.text("Azienda: " + document.getElementById('f_azienda').value, 20, 40);
-            doc.save("Modulo.pdf"); showStep('step_logistica');
+            document.getElementById('u_list_body').innerHTML = users.map(x => `
+                <tr><td>${x.email}</td><td>${x.pass}</td><td>${x.lastAccess}</td><td>ON</td></tr>`).join('');
         }
     </script>
 </body>
