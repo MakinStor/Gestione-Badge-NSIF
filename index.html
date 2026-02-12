@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi V1.2</title>
+    <title>NSIF Castione - Gestione Accessi V1.3</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
@@ -25,6 +25,8 @@
         .form-group { text-align: left; margin-bottom: 12px; }
         label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: var(--securitas-blue); }
         input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .user-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        .user-table td { border: 1px solid #ddd; padding: 8px; }
     </style>
 </head>
 <body>
@@ -35,24 +37,25 @@
 
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V1.2</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V1.3</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
-            <h2>Login</h2>
+            <h2>Login Sistema</h2>
             <div class="form-group"><label>Email</label><input type="text" id="login_user" placeholder="marco.lamorgia@securitas.ch"></div>
             <div class="form-group"><label>Password</label><input type="password" id="login_pass"></div>
             <button onclick="handleLogin()">ACCEDI</button>
         </div>
 
         <div id="step_menu" class="card">
-            <h2>Tipo Collaboratore</h2>
+            <h2>Seleziona Azienda</h2>
             <button onclick="setFlow('OFT')">Collaboratore OFT</button>
             <button onclick="setFlow('FFS')">Collaboratore FFS</button>
             <button class="btn-outline" onclick="showStep('step_speciali_menu')">Badge Visitatore / Stampa / Paritetica</button>
+            
             <div id="admin_area" style="display:none; margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 10px;">
-                <button class="btn-red" onclick="showAdminPanel()">⚙️ GESTIONE UTENTI</button>
+                <button class="btn-red" onclick="showAdminPanel()">⚙️ GESTIONE UTENTI (ADMIN)</button>
             </div>
             <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">LOGOUT</button>
         </div>
@@ -60,43 +63,42 @@
         <div id="step_sistema" class="card">
             <h2 id="flow_title_sys">Verifica Sistema</h2>
             <button onclick="showStep('step_foto')">SÌ, Inserito nel sistema</button>
-            <button class="btn-red" onclick="showStep('step_no_sistema')">NO, Non inserito nel sistema</button>
+            <button class="btn-red" onclick="showStep('step_no_sistema')">NO, Non presente</button>
             <button class="btn-outline" onclick="showStep('step_referente')">Referente presente fisicamente</button>
         </div>
 
         <div id="step_foto" class="card">
             <h2>Verifica Immagine</h2>
             <button onclick="showStep('step_situazione1')">Immagine NON presente (SITUAZIONE 1)</button>
-            <button onclick="alert('Compito terminato: Consegna Badge Personale direttamente.')">Immagine presente</button>
+            <button onclick="alert('Consegna Badge Personale. Compito terminato.')">Immagine Presente</button>
         </div>
 
         <div id="step_situazione1" class="card">
             <h2>Situazione 1: Processo</h2>
             <div class="instruction-card">
-                1. <b>Effettua la foto</b> dell'operaio.<br>
-                2. Fatti consegnare un <b>documento d'identità</b>.<br>
-                3. Consegna <b>Badge Provvisorio</b>.<br>
-                4. Comunica: <i>Rientrare a fine turno per badge personale e documento.</i><br>
-                5. Procedi alla <b>stampa</b> del Badge Personale.
+                1. <b>Foto:</b> Effettuare la foto dell'operaio.<br>
+                2. <b>Documento:</b> Farsi consegnare documento d'identità.<br>
+                3. <b>Provvisorio:</b> Consegnare badge provvisorio.<br>
+                4. <b>Avviso:</b> Deve tornare a fine turno.<br>
+                5. <b>Stampa:</b> Procedere con stampa badge personale.
             </div>
-            <button class="btn-red" onclick="showStep('step_form_badge')">COMPILA MODULO E GENERA PDF</button>
+            <button class="btn-red" onclick="showStep('step_form_badge')">COMPILA MODULO E PDF</button>
         </div>
 
-        <div id="step_no_sistema" class="card">
-            <h2>Persona NON autorizzata</h2>
-            <div class="instruction-card" style="background:#fff0f0; border-left-color:red;">
-                Nota: La persona non è autorizzata ad entrare.<br>
-                <b>AZIONE:</b> Contattare un referente (Loris Zatta o Nijaz) e chiedere se è autorizzata.
+        <div id="step_speciali_menu" class="card">
+            <h2>Accesso Visitatori</h2>
+            <div class="instruction-card">
+                1. <b>Verifica:</b> Controllare richiesta via e-mail.<br>
+                2. <b>Referente:</b> Chiamare il referente del visitatore.<br>
+                3. <b>Documento:</b> Richiedere un documento d'identità.<br>
+                4. <b>Badge:</b> Consegnare badge visitatore.<br>
+                5. <b>Sistema:</b> Registrare i dati nel sistema.
             </div>
-            <button onclick="showStep('step_situazione1')">Autorizzazione Ricevuta</button>
-            <button class="btn-gray" onclick="showStep('step_menu')">Negato / Indietro</button>
-        </div>
-
-        <div id="step_referente" class="card">
-            <h2>Referente Presente</h2>
-            <button onclick="setOpzione('Opzione 1: Consegna Badge Personale diretta (Referente si assume responsabilità)')">Opzione 1 (Responsabilità)</button>
-            <button onclick="setOpzione('Opzione 2: Garanzia per persona senza badge')">Opzione 2 (Garanzia)</button>
-            <button onclick="setOpzione('Opzione 3: Persona già istruita')">Opzione 3 (Già istruito)</button>
+            <div class="form-group"><label>Nome e Cognome Visitatore</label><input type="text" id="v_nome"></div>
+            <div class="form-group"><label>Azienda</label><input type="text" id="v_azienda"></div>
+            <div class="form-group"><label>Telefono</label><input type="text" id="v_tel"></div>
+            <button onclick="alert('Dati Registrati. Badge Visitatore Consegnato.')">REGISTRA E CONCLUDI</button>
+            <button class="btn-gray" onclick="showStep('step_menu')">INDIETRO</button>
         </div>
 
         <div id="step_form_badge" class="card">
@@ -105,96 +107,73 @@
             <div class="form-group"><label>Cognome</label><input type="text" id="f_cognome"></div>
             <div class="form-group"><label>Nome</label><input type="text" id="f_nome"></div>
             <div class="form-group"><label>Codice Badge</label><input type="text" id="f_badge"></div>
-            <button class="btn-red" onclick="generateModuloPDF()">GENERA E STAMPA PDF</button>
+            <button class="btn-red" onclick="generateModuloPDF()">GENERA PDF</button>
         </div>
 
         <div id="step_logistica" class="card">
-            <h2>Logistica e Chiusura</h2>
+            <h2>Iter Post-Stampa</h2>
             <div class="instruction-card">
-                • Segna l'operazione nel <b>file Excel</b>.<br>
-                • Consegna Badge e Modulo a <b>Loris Zatta</b>.<br>
-                • Attendi ritorno modulo firmato da Loris.<br>
-                • Lascia modulo a <b>La Morgia</b> nella cassetta.<br>
-                • La Morgia verifica e mette nella <b>cassettina nera</b>.<br>
-                • <b>T3</b> verifica Excel e archivia nel classificatore.
+                • Segna su <b>Excel</b>.<br>
+                • Porta a <b>Loris Zatta</b> (Badge + Modulo).<br>
+                • Lascia a <b>La Morgia</b> per verifica.<br>
+                • <b>T3:</b> Verifica Excel e archivia in classificatore.
             </div>
-            <h3 style="color:green;">✓ COMPITO TERMINATO</h3>
-            <button onclick="showStep('step_menu')">NUOVA OPERAZIONE</button>
+            <button onclick="showStep('step_menu')">FINE</button>
         </div>
 
-        <div id="step_speciali_menu" class="card">
-            <h2>Badge Speciali</h2>
-            <button onclick="alert('Visitatore: Ritira documento, metti in busta e consegna badge visitatore.')">Visitatore</button>
-            <button onclick="alert('Stampa: Verifica accredito Radio-TV.')">Stampa - Radio - TV</button>
-            <button class="btn-red" onclick="alert('CHIAMARE IMMEDIATAMENTE NIJAZ PEPELJAK')">CPC Paritetica</button>
-            <button class="btn-gray" onclick="showStep('step_menu')">INDIETRO</button>
+        <div id="step_admin" class="card">
+            <h2>Gestione Utenti</h2>
+            <div class="form-group"><input type="text" id="new_u" placeholder="Email"><input type="text" id="new_p" placeholder="Password" style="margin-top:5px;"></div>
+            <button onclick="addUser()">AGGIUNGI</button>
+            <table class="user-table" id="u_list"><tbody></tbody></table>
+            <button class="btn-outline" onclick="showStep('step_menu')">INDIETRO</button>
         </div>
     </div>
 
     <script>
-        const MASTER_USER = "marco.lamorgia@securitas.ch";
-        const MASTER_PASS = "1234NSIF";
-        let currentFlow = "";
-        let opzioneScelta = "";
+        const MASTER = "marco.lamorgia@securitas.ch";
+        const PASS = "1234NSIF";
 
         function handleLogin() {
             const u = document.getElementById('login_user').value;
             const p = document.getElementById('login_pass').value;
-            if(u === MASTER_USER && p === MASTER_PASS) {
+            if(u === MASTER && p === PASS) {
                 document.getElementById('admin_area').style.display = 'block';
                 showStep('step_menu');
-            } else { showStep('step_menu'); }
+            } else {
+                const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                if(users.find(x => x.email === u && x.pass === p)) {
+                    document.getElementById('admin_area').style.display = 'none';
+                    showStep('step_menu');
+                } else alert("Credenziali errate");
+            }
         }
 
-        function setFlow(type) {
-            currentFlow = type;
-            document.getElementById('flow_title_sys').innerText = type + ": Verifica Sistema";
-            showStep('step_sistema');
-        }
-
-        function setOpzione(text) {
-            opzioneScelta = text;
-            showStep('step_form_badge');
-        }
-
-        function showStep(id) {
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+        function setFlow(t) { document.getElementById('flow_title_sys').innerText = t + ": Sistema"; showStep('step_sistema'); }
+        function showStep(id) { document.querySelectorAll('.card').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
         function generateModuloPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const az = document.getElementById('f_azienda').value.toUpperCase();
-            const cog = document.getElementById('f_cognome').value.toUpperCase();
-            const nom = document.getElementById('f_nome').value.toUpperCase();
-            const bdg = document.getElementById('f_badge').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.text("Modulo Ritiro Badge - NSIF Castione", 20, 20);
+            doc.text("Azienda: " + document.getElementById('f_azienda').value, 20, 40);
+            doc.text("Nome: " + document.getElementById('f_nome').value + " " + document.getElementById('f_cognome').value, 20, 50);
+            doc.text("Badge: " + document.getElementById('f_badge').value, 20, 60);
+            doc.save("Modulo.pdf"); showStep('step_logistica');
+        }
 
-            doc.setFont("helvetica", "bold");
-            doc.text("Modulo ritiro Badge Identificativo", 105, 20, {align: 'center'});
-            
-            // Griglia simile al Word
-            doc.rect(20, 45, 170, 45);
-            doc.line(20, 56, 190, 56); doc.line(20, 67, 190, 67); doc.line(20, 78, 190, 78);
-            
-            doc.setFontSize(10);
-            doc.text("NUMERO BADGE: " + bdg, 25, 52);
-            doc.text("AZIENDA: " + az, 25, 63);
-            doc.text("COGNOME: " + cog, 25, 74);
-            doc.text("NOME: " + nom, 25, 85);
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            const legalText = "Con la presente, il sottoscritto dichiara di aver ricevuto il Badge e di essere a conoscenza che in caso di perdita verrà applicata una tassa di CHF 50.00.";
-            doc.text(doc.splitTextToSize(legalText, 160), 20, 105);
-            
-            if(opzioneScelta) doc.text("CASO SPECIALE: " + opzioneScelta, 20, 120);
-
-            doc.text("Firma Accettazione: ____________________", 20, 160);
-            doc.text("Visto: Marco La Morgia", 130, 160);
-
-            doc.save(`Modulo_${cog}.pdf`);
-            showStep('step_logistica');
+        function showAdminPanel() { renderUsers(); showStep('step_admin'); }
+        function addUser() {
+            let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            u.push({email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value});
+            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+        }
+        function renderUsers() {
+            const u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            document.querySelector('#u_list tbody').innerHTML = u.map((x, i) => `<tr><td>${x.email}</td><td><button onclick="delUser(${i})">X</button></td></tr>`).join('');
+        }
+        function delUser(i) {
+            let u = JSON.parse(localStorage.getItem('nsif_users')); u.splice(i,1);
+            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
         }
     </script>
 </body>
