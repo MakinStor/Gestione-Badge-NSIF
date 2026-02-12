@@ -3,178 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi V1.3</title>
+    <title>NSIF Castione - V1.4</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; }
-        .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
-        .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
-        .header { width: 100%; background: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); }
-        .logo-securitas { height: 32px; }
-        .container { width: 95%; max-width: 650px; margin: 20px auto; padding-bottom: 60px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; }
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 5px solid var(--securitas-red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { width: 95%; max-width: 800px; margin: 20px auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; }
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        h2 { color: var(--securitas-blue); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; }
-        button { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-blue { background: var(--securitas-blue); color: white; }
+        .btn-red { background: var(--securitas-red); color: white; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
-        .btn-red { background: var(--securitas-red); }
-        .btn-gray { background: #6c757d; }
-        .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px; border-radius: 4px; }
-        .form-group { text-align: left; margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: var(--securitas-blue); }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        .user-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
-        .user-table td { border: 1px solid #ddd; padding: 8px; }
+        .btn-gray { background: #6c757d; color: white; }
+        .instruction-card { background: #eef6ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; margin-bottom: 20px; font-size: 0.9rem; }
+        .form-group { text-align: left; margin-bottom: 15px; }
+        label { display: block; font-weight: bold; font-size: 0.8rem; color: var(--securitas-blue); margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f8f9fa; }
+        .status-blocked { color: red; font-weight: bold; }
+        .status-active { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="banner-container">
-        <img src="logo_nsif.jpg" alt="Banner NSIF" class="banner-top" onerror="this.style.display='none'">
-    </div>
-
     <div class="header">
-        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V1.3</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 1.2rem;">NSIF CASTIONE - GESTIONE ACCESSI V1.4</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
-            <h2>Login Sistema</h2>
-            <div class="form-group"><label>Email</label><input type="text" id="login_user" placeholder="marco.lamorgia@securitas.ch"></div>
+            <h2>Login</h2>
+            <div class="form-group"><label>Email</label><input type="text" id="login_user"></div>
             <div class="form-group"><label>Password</label><input type="password" id="login_pass"></div>
-            <button onclick="handleLogin()">ACCEDI</button>
+            <button class="btn-blue" onclick="handleLogin()">ACCEDI</button>
         </div>
 
         <div id="step_menu" class="card">
-            <h2>Seleziona Azienda</h2>
-            <button onclick="setFlow('OFT')">Collaboratore OFT</button>
-            <button onclick="setFlow('FFS')">Collaboratore FFS</button>
-            <button class="btn-outline" onclick="showStep('step_speciali_menu')">Badge Visitatore / Stampa / Paritetica</button>
-            
-            <div id="admin_area" style="display:none; margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 10px;">
-                <button class="btn-red" onclick="showAdminPanel()">⚙️ GESTIONE UTENTI (ADMIN)</button>
+            <h2>Tipo Collaboratore</h2>
+            <button class="btn-blue" onclick="setFlow('OFT')">Collaboratore OFT</button>
+            <button class="btn-blue" onclick="setFlow('FFS')">Collaboratore FFS</button>
+            <button class="btn-outline" onclick="showStep('step_visitatori')">Badge Visitatore / Stampa / Paritetica</button>
+            <div id="admin_area" style="display:none; margin-top:30px; border-top: 1px solid #ddd; padding-top: 20px;">
+                <button class="btn-red" onclick="showAdminPanel()">⚙️ GESTIONE UTENTI & SICUREZZA</button>
             </div>
-            <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()">LOGOUT</button>
         </div>
 
-        <div id="step_sistema" class="card">
-            <h2 id="flow_title_sys">Verifica Sistema</h2>
-            <button onclick="showStep('step_foto')">SÌ, Inserito nel sistema</button>
-            <button class="btn-red" onclick="showStep('step_no_sistema')">NO, Non presente</button>
-            <button class="btn-outline" onclick="showStep('step_referente')">Referente presente fisicamente</button>
-        </div>
-
-        <div id="step_foto" class="card">
-            <h2>Verifica Immagine</h2>
-            <button onclick="showStep('step_situazione1')">Immagine NON presente (SITUAZIONE 1)</button>
-            <button onclick="alert('Consegna Badge Personale. Compito terminato.')">Immagine Presente</button>
-        </div>
-
-        <div id="step_situazione1" class="card">
-            <h2>Situazione 1: Processo</h2>
+        <div id="step_visitatori" class="card">
+            <h2>Gestione Visitatori</h2>
             <div class="instruction-card">
-                1. <b>Foto:</b> Effettuare la foto dell'operaio.<br>
-                2. <b>Documento:</b> Farsi consegnare documento d'identità.<br>
-                3. <b>Provvisorio:</b> Consegnare badge provvisorio.<br>
-                4. <b>Avviso:</b> Deve tornare a fine turno.<br>
-                5. <b>Stampa:</b> Procedere con stampa badge personale.
+                1. <b>E-mail:</b> Verificare richiesta con nominativo.<br>
+                2. <b>Referente:</b> Chiamare il referente interno.<br>
+                3. <b>Documento:</b> Richiedere documento d'identità.<br>
+                4. <b>Consegna:</b> Fornire Badge Visitatore.<br>
+                5. <b>Registrazione:</b> Inserire i dati sotto.
             </div>
-            <button class="btn-red" onclick="showStep('step_form_badge')">COMPILA MODULO E PDF</button>
-        </div>
-
-        <div id="step_speciali_menu" class="card">
-            <h2>Accesso Visitatori</h2>
-            <div class="instruction-card">
-                1. <b>Verifica:</b> Controllare richiesta via e-mail.<br>
-                2. <b>Referente:</b> Chiamare il referente del visitatore.<br>
-                3. <b>Documento:</b> Richiedere un documento d'identità.<br>
-                4. <b>Badge:</b> Consegnare badge visitatore.<br>
-                5. <b>Sistema:</b> Registrare i dati nel sistema.
-            </div>
-            <div class="form-group"><label>Nome e Cognome Visitatore</label><input type="text" id="v_nome"></div>
+            <div class="form-group"><label>Nome e Cognome</label><input type="text" id="v_nome"></div>
             <div class="form-group"><label>Azienda</label><input type="text" id="v_azienda"></div>
             <div class="form-group"><label>Telefono</label><input type="text" id="v_tel"></div>
-            <button onclick="alert('Dati Registrati. Badge Visitatore Consegnato.')">REGISTRA E CONCLUDI</button>
+            <button class="btn-blue" onclick="alert('Visitatore Registrato correttamente'); showStep('step_menu')">REGISTRA ACCESSO</button>
             <button class="btn-gray" onclick="showStep('step_menu')">INDIETRO</button>
         </div>
 
-        <div id="step_form_badge" class="card">
-            <h2>Dati Modulo Ritiro</h2>
-            <div class="form-group"><label>Azienda</label><input type="text" id="f_azienda"></div>
-            <div class="form-group"><label>Cognome</label><input type="text" id="f_cognome"></div>
-            <div class="form-group"><label>Nome</label><input type="text" id="f_nome"></div>
-            <div class="form-group"><label>Codice Badge</label><input type="text" id="f_badge"></div>
-            <button class="btn-red" onclick="generateModuloPDF()">GENERA PDF</button>
-        </div>
-
-        <div id="step_logistica" class="card">
-            <h2>Iter Post-Stampa</h2>
-            <div class="instruction-card">
-                • Segna su <b>Excel</b>.<br>
-                • Porta a <b>Loris Zatta</b> (Badge + Modulo).<br>
-                • Lascia a <b>La Morgia</b> per verifica.<br>
-                • <b>T3:</b> Verifica Excel e archivia in classificatore.
-            </div>
-            <button onclick="showStep('step_menu')">FINE</button>
-        </div>
-
         <div id="step_admin" class="card">
-            <h2>Gestione Utenti</h2>
-            <div class="form-group"><input type="text" id="new_u" placeholder="Email"><input type="text" id="new_p" placeholder="Password" style="margin-top:5px;"></div>
-            <button onclick="addUser()">AGGIUNGI</button>
-            <table class="user-table" id="u_list"><tbody></tbody></table>
-            <button class="btn-outline" onclick="showStep('step_menu')">INDIETRO</button>
+            <h2>Pannello Controllo Utenti</h2>
+            <div class="instruction-card">Le password scadono ogni 30 giorni. Gli utenti bloccati non possono accedere.</div>
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 8px;">
+                <div class="form-group"><label>Nuova Email</label><input type="text" id="new_u"></div>
+                <div class="form-group"><label>Password</label><input type="text" id="new_p"></div>
+                <button class="btn-blue" onclick="addUser()">CREA ACCOUNT</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Utente / Pass</th>
+                        <th>Stato</th>
+                        <th>Ultimo Accesso</th>
+                        <th>Scad. Pass</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="u_list_body"></tbody>
+            </table>
+            <button class="btn-gray" onclick="showStep('step_menu')" style="margin-top:20px;">TORNA AL MENU</button>
         </div>
     </div>
 
     <script>
-        const MASTER = "marco.lamorgia@securitas.ch";
-        const PASS = "1234NSIF";
+        const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
+        const PASS_DURATION_DAYS = 30;
 
         function handleLogin() {
             const u = document.getElementById('login_user').value;
             const p = document.getElementById('login_pass').value;
-            if(u === MASTER && p === PASS) {
+            let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            
+            // Logica Master
+            if(u === MASTER.email && p === MASTER.pass) {
                 document.getElementById('admin_area').style.display = 'block';
                 showStep('step_menu');
+                return;
+            }
+
+            const user = users.find(x => x.email === u && x.pass === p);
+            if(user) {
+                if(user.blocked) { alert("ACCOUNT BLOCCATO. Contattare l'amministratore."); return; }
+                
+                // Verifica scadenza password (30gg)
+                const lastChange = new Date(user.passDate);
+                const diffDays = Math.floor((new Date() - lastChange) / (1000 * 60 * 60 * 24));
+                if(diffDays > PASS_DURATION_DAYS) {
+                    alert("PASSWORD SCADUTA (Oltre 30gg). Modificarla subito.");
+                }
+
+                user.lastAccess = new Date().toLocaleString('it-IT');
+                localStorage.setItem('nsif_users', JSON.stringify(users));
+                document.getElementById('admin_area').style.display = 'none';
+                showStep('step_menu');
             } else {
-                const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-                if(users.find(x => x.email === u && x.pass === p)) {
-                    document.getElementById('admin_area').style.display = 'none';
-                    showStep('step_menu');
-                } else alert("Credenziali errate");
+                alert("Credenziali errate o utente inesistente.");
             }
         }
 
-        function setFlow(t) { document.getElementById('flow_title_sys').innerText = t + ": Sistema"; showStep('step_sistema'); }
-        function showStep(id) { document.querySelectorAll('.card').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-
-        function generateModuloPDF() {
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text("Modulo Ritiro Badge - NSIF Castione", 20, 20);
-            doc.text("Azienda: " + document.getElementById('f_azienda').value, 20, 40);
-            doc.text("Nome: " + document.getElementById('f_nome').value + " " + document.getElementById('f_cognome').value, 20, 50);
-            doc.text("Badge: " + document.getElementById('f_badge').value, 20, 60);
-            doc.save("Modulo.pdf"); showStep('step_logistica');
+        function showAdminPanel() {
+            renderUsers();
+            showStep('step_admin');
         }
 
-        function showAdminPanel() { renderUsers(); showStep('step_admin'); }
         function addUser() {
-            let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            u.push({email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value});
-            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+            const u = document.getElementById('new_u').value;
+            const p = document.getElementById('new_p').value;
+            if(!u || !p) return;
+            let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            users.push({
+                email: u, 
+                pass: p, 
+                blocked: false, 
+                lastAccess: "Mai", 
+                passDate: new Date().toISOString()
+            });
+            localStorage.setItem('nsif_users', JSON.stringify(users));
+            renderUsers();
         }
+
         function renderUsers() {
-            const u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            document.querySelector('#u_list tbody').innerHTML = u.map((x, i) => `<tr><td>${x.email}</td><td><button onclick="delUser(${i})">X</button></td></tr>`).join('');
+            const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            const tbody = document.getElementById('u_list_body');
+            tbody.innerHTML = users.map((x, i) => {
+                const passDate = new Date(x.passDate);
+                const diff = Math.floor((new Date() - passDate) / (1000 * 60 * 60 * 24));
+                return `
+                <tr>
+                    <td><b>${x.email}</b><br><small>Pass: ${x.pass}</small></td>
+                    <td class="${x.blocked ? 'status-blocked' : 'status-active'}">${x.blocked ? 'BLOCCATO' : 'ATTIVO'}</td>
+                    <td>${x.lastAccess}</td>
+                    <td>${diff}/${PASS_DURATION_DAYS} gg</td>
+                    <td>
+                        <button onclick="toggleUser(${i})" style="padding:5px; font-size:0.7rem;">${x.blocked ? 'SBLOCCA' : 'BLOCCA'}</button>
+                        <button onclick="delUser(${i})" style="padding:5px; font-size:0.7rem; background:red; color:white;">ELIMINA</button>
+                    </td>
+                </tr>`;
+            }).join('');
         }
+
+        function toggleUser(i) {
+            let users = JSON.parse(localStorage.getItem('nsif_users'));
+            users[i].blocked = !users[i].blocked;
+            localStorage.setItem('nsif_users', JSON.stringify(users));
+            renderUsers();
+        }
+
         function delUser(i) {
-            let u = JSON.parse(localStorage.getItem('nsif_users')); u.splice(i,1);
-            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+            if(!confirm("Eliminare l'utente?")) return;
+            let users = JSON.parse(localStorage.getItem('nsif_users'));
+            users.splice(i, 1);
+            localStorage.setItem('nsif_users', JSON.stringify(users));
+            renderUsers();
         }
+
+        function showStep(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function setFlow(t) { showStep('step_menu'); alert("Flusso " + t + " avviato (Seguire procedura standard V1.3)"); }
     </script>
 </body>
 </html>
