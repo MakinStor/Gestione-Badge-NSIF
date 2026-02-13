@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione Hub - V2.9 FULL ADMIN & FLOW</title>
+    <title>NSIF Castione Hub - V3.0 STABLE</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -16,7 +16,7 @@
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         
-        /* Dashboard & Clocks */
+        /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .widget { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 3px solid var(--securitas-blue); }
         .clock { font-size: 1.1rem; font-weight: bold; color: var(--securitas-red); }
@@ -25,22 +25,19 @@
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
         .menu-item { padding: 25px; background: white; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; }
         .menu-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
-        .link-item { background: #f8f9fa; border-left: 5px solid var(--securitas-blue); }
-
+        
         button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-red { background: var(--securitas-red); }
         .btn-gray { background: #6c757d; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
 
-        /* Checklist Styles */
-        .checklist-section-title { background: var(--securitas-blue); color: white; padding: 10px; font-weight: bold; text-align: left; margin-top: 20px; border-radius: 4px; }
-        .checklist-item { text-align: left; padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; gap: 12px; }
-        .timestamp { font-size: 0.7rem; color: var(--success); font-weight: bold; white-space: nowrap; align-self: center; }
-        
         input[type="text"], input[type="password"], select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        .badge-status { padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.7rem; }
+
+        .checklist-item { text-align: left; padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; gap: 12px; }
+        .timestamp { font-size: 0.7rem; color: var(--success); font-weight: bold; margin-left: auto; }
+        .checklist-section-title { background: #eee; padding: 10px; font-weight: bold; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body onload="initApp()">
@@ -48,7 +45,7 @@
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div class="version-label">NSIF CASTIONE HUB - V2.9 FULL ADMIN</div>
+        <div class="version-label">NSIF CASTIONE HUB - V3.0 STABLE</div>
     </div>
 
     <div class="container">
@@ -57,61 +54,61 @@
             <input type="text" id="login_user" placeholder="Email Utente" onkeypress="handleEnter(event)">
             <input type="password" id="login_pass" placeholder="Password" onkeypress="handleEnter(event)">
             <button onclick="handleLogin()">ACCEDI</button>
-            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contatta marco.lamorgia@securitas.ch per resettare la password.')">Password dimenticata?</button>
+            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contattare Marco La Morgia per il reset.')">Password dimenticata?</button>
         </div>
 
         <div id="step_dashboard" class="card">
             <div class="dashboard-grid">
                 <div class="widget"><div id="clock_locarno" class="clock"></div><small>Castione (CH)</small></div>
                 <div class="widget"><div id="clock_ny" class="clock"></div><small>New York</small></div>
-                <div class="widget"><div id="clock_tokyo" class="clock"></div><small>Tokyo</small></div>
             </div>
             <div id="date_now" class="big-date"></div>
             <div class="menu-grid">
                 <div class="menu-item" onclick="showStep('step_menu_accessi')">🛂 CONTROLLO ACCESSI</div>
-                <div class="menu-item btn-red" style="color:white" onclick="showStep('step_checklist_menu')">📋 CHECK-LIST TURNI</div>
-                <div class="menu-item link-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 BAUSICHT</div>
-                <div id="admin_btn" class="menu-item btn-red" style="display:none; color:white;" onclick="openAdmin()">⚙️ ADMIN PANEL</div>
+                <div class="menu-item btn-red" style="color:white" onclick="showStep('step_checklist_menu')">📋 TURNO T1 / T2 / T3</div>
+                <div class="menu-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 BAUSICHT</div>
+                <div id="admin_btn" class="menu-item btn-red" style="display:none; color:white;" onclick="openAdmin()">⚙️ ADMIN</div>
             </div>
-            <button class="btn-gray" onclick="logout()" style="margin-top:30px;">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()" style="margin-top:30px;">LOGOUT</button>
         </div>
 
         <div id="step_menu_accessi" class="card">
-            <h2>GESTIONE ACCESSI</h2>
-            <button onclick="showStep('step_v_lost')">⚠️ BADGE SMARRITO / DIMENTICATO</button>
-            <button class="btn-outline" onclick="showStep('step_v_nuovo')">🆕 NUOVO BADGE (OFT/FFS)</button>
+            <h2>GESTIONE ACCESSI / VISITATORI</h2>
+            <button onclick="showStep('step_v_perdita')">⚠️ PERDITA / SMARRIMENTO BADGE</button>
+            <button class="btn-outline" onclick="alert('Flusso Azienda OFT: Seguire schema Excel...')">Azienda OFT (Nijaz)</button>
+            <button class="btn-outline" onclick="alert('Flusso Azienda FFS: Seguire schema Excel...')">Azienda FFS (La Morgia)</button>
             <hr>
             <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
 
-        <div id="step_v_lost" class="card">
-            <h3>BADGE SMARRITO / DIMENTICATO</h3>
-            <p style="text-align:left; font-size:0.9rem;">1. Accedere a <b>Bausicht</b><br>2. Cercare la persona<br>3. <b>Bloccare</b> il badge (Rosso) o <b>Sbloccare</b> (Verde)<br>4. Ritirare un <b>Documento d'identità</b> (Patente/Chiavi) fino a fine turno.</p>
-            <button class="btn-red" onclick="alert('Badge bloccato in Bausicht. Documento ritirato.')">CONFERMA OPERAZIONE</button>
+        <div id="step_v_perdita" class="card">
+            <h3>PERDITA / DIMENTICANZA BADGE</h3>
+            <div style="text-align:left; font-size:0.9rem; background:#f9f9f9; padding:15px; border-radius:8px;">
+                <b>SITUAZIONE 1 (Perso):</b> Bloccare su Bausicht, inserire nota, ritirare Documento/Chiavi.<br><br>
+                <b>SITUAZIONE 2 (Dimenticato):</b> Ritirare Documento, preparare Badge Provvisorio.<br><br>
+                <b>FINE TURNO:</b> Se ritrova il badge, sbloccare su Bausicht. Se NO, seguire schema smarrimento.
+            </div>
+            <button class="btn-red" onclick="alert('Operazione registrata in Bausicht.')">CONFERMA E CHIUDI</button>
             <button class="btn-gray" onclick="showStep('step_menu_accessi')">ANNULLA</button>
         </div>
 
         <div id="step_admin" class="card">
-            <h2>GESTIONE UTENTI & PRIVILEGI</h2>
-            <div style="background:#f0f0f0; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <h4>Aggiungi nuovo utente</h4>
-                <input type="text" id="adm_email" placeholder="Email">
-                <input type="text" id="adm_pass" placeholder="Password">
-                <select id="adm_role">
-                    <option value="user">User (Sola lettura/Checklist)</option>
-                    <option value="admin">Admin (Gestione Accessi)</option>
-                </select>
-                <button onclick="addUser()">CREA UTENTE</button>
+            <h2>ADMIN - GESTIONE UTENTI</h2>
+            <div style="background:#eee; padding:10px; border-radius:8px; margin-bottom:15px;">
+                <input type="text" id="adm_email" placeholder="Nuova Email" style="width:45%">
+                <input type="text" id="adm_pass" placeholder="Password" style="width:30%">
+                <select id="adm_role" style="width:20%"><option value="user">User</option><option value="admin">Admin</option></select>
+                <button onclick="addUser()" style="padding:10px;">AGGIUNGI</button>
             </div>
             <table id="user_table">
-                <thead><tr><th>Utente</th><th>Ruolo</th><th>Azioni</th></tr></thead>
+                <thead><tr><th>Email</th><th>Ruolo</th><th>Azioni</th></tr></thead>
                 <tbody id="u_body"></tbody>
             </table>
             <button class="btn-gray" onclick="showStep('step_dashboard')" style="margin-top:20px;">CHIUDI</button>
         </div>
 
         <div id="step_checklist_menu" class="card">
-            <h2>CHECK-LIST OPERATIVE</h2>
+            <h2>SELEZIONA IL TUO TURNO</h2>
             <button onclick="openChecklist('T1')">TURNO T1</button>
             <button onclick="openChecklist('T2')">TURNO T2</button>
             <button onclick="openChecklist('T3')">TURNO T3</button>
@@ -126,12 +123,12 @@
     </div>
 
     <script>
-        let currentUser = null;
-        const DEFAULT_ADMIN = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF", role: "superadmin" };
-        
+        // ACCOUNT MASTER SEMPRE PRESENTE
+        const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF", role: "superadmin" };
+
         function initApp() {
-            if(!localStorage.getItem('nsif_db')) {
-                localStorage.setItem('nsif_db', JSON.stringify([DEFAULT_ADMIN]));
+            if(!localStorage.getItem('nsif_users')) {
+                localStorage.setItem('nsif_users', JSON.stringify([MASTER]));
             }
             startTime();
         }
@@ -139,16 +136,20 @@
         function handleLogin() {
             const u = document.getElementById('login_user').value;
             const p = document.getElementById('login_pass').value;
-            const db = JSON.parse(localStorage.getItem('nsif_db'));
+            const users = JSON.parse(localStorage.getItem('nsif_users'));
             
-            const user = db.find(x => x.email === u && x.pass === p);
-            if(user) {
-                currentUser = user;
-                if(user.role === 'admin' || user.role === 'superadmin') {
+            const found = users.find(x => x.email.toLowerCase() === u.toLowerCase() && x.pass === p);
+            
+            if(found) {
+                if(found.role === 'admin' || found.role === 'superadmin') {
                     document.getElementById('admin_btn').style.display = 'flex';
+                } else {
+                    document.getElementById('admin_btn').style.display = 'none';
                 }
                 showStep('step_dashboard');
-            } else { alert("Credenziali non valide."); }
+            } else {
+                alert("Email o Password errati.");
+            }
         }
 
         function handleEnter(e) { if(e.key === 'Enter') handleLogin(); }
@@ -159,31 +160,31 @@
         }
 
         function addUser() {
-            const db = JSON.parse(localStorage.getItem('nsif_db'));
-            db.push({
+            const users = JSON.parse(localStorage.getItem('nsif_users'));
+            users.push({
                 email: document.getElementById('adm_email').value,
                 pass: document.getElementById('adm_pass').value,
                 role: document.getElementById('adm_role').value
             });
-            localStorage.setItem('nsif_db', JSON.stringify(db));
+            localStorage.setItem('nsif_users', JSON.stringify(users));
             renderUsers();
         }
 
         function renderUsers() {
-            const db = JSON.parse(localStorage.getItem('nsif_db'));
-            document.getElementById('u_body').innerHTML = db.map((u, i) => `
+            const users = JSON.parse(localStorage.getItem('nsif_users'));
+            document.getElementById('u_body').innerHTML = users.map((u, i) => `
                 <tr>
                     <td>${u.email}</td>
                     <td><b>${u.role.toUpperCase()}</b></td>
-                    <td>${u.role !== 'superadmin' ? `<button onclick="delUser(${i})" style="background:red; padding:5px;">Elimina</button>` : 'Protettore'}</td>
+                    <td>${u.role !== 'superadmin' ? `<button onclick="delUser(${i})" style="background:red; padding:5px; width:auto">X</button>` : '-'}</td>
                 </tr>
             `).join('');
         }
 
         function delUser(i) {
-            const db = JSON.parse(localStorage.getItem('nsif_db'));
-            db.splice(i, 1);
-            localStorage.setItem('nsif_db', JSON.stringify(db));
+            const users = JSON.parse(localStorage.getItem('nsif_users'));
+            users.splice(i, 1);
+            localStorage.setItem('nsif_users', JSON.stringify(users));
             renderUsers();
         }
 
@@ -192,13 +193,32 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function logout() { location.reload(); }
-
         function startTime() {
             const now = new Date();
-            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
             document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
             document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'America/New_York'});
-            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'Asia/Tokyo'});
             setTimeout(startTime, 1000);
         }
+
+        const data = {
+            T1: { "Inizio (06:00)": ["Aprire cancello Campo Base (6988)", "Ufficio Coordinamento (1907)", "Attivare telefono (6681)", "Apertura CAST07 (1907)"], "Durante": ["Controllo DPI", "Gestione Visitatori"], "Fine": ["Pulizia CAST07", "Passaggio consegna CAST09"], "Periodici": ["Check Defibrillatore (1° Lunedì)"] },
+            T2: { "Inizio (14:45)": ["Aprire CAST09 Entrata/Uscita (6988)", "Ufficio CAST09 (1907)", "Verifica barriera/luci", "Carica monopattino"], "Durante": ["Controllo DPI mezzi"], "Fine": ["Pulizia superfici", "Straccio terra (22:00)"] },
+            T3: { "Inizio (08:00)": ["Ritiro telefono CAST07", "Giro cantiere (verifica sbarramenti)", "Verifica moduli cassettino"], "Durante": ["Controllo CAST08", "Foto contromano CAST09"], "Fine": ["Riconsegna telefono CAST07"] }
+        };
+
+        function openChecklist(t) {
+            const cont = document.getElementById('checklist_content');
+            document.getElementById('checklist_title').innerText = "TURNO " + t;
+            cont.innerHTML = "";
+            for(let s in data[t]) {
+                cont.innerHTML += `<div class="checklist-section-title">${s}</div>`;
+                data[t][s].forEach(task => {
+                    cont.innerHTML += `<div class="checklist-item"><input type="checkbox" onchange="this.nextElementSibling.nextElementSibling.innerText=this.checked?new Date().toLocaleTimeString():''"> <label>${task}</label> <span class="timestamp"></span></div>`;
+                });
+            }
+            showStep('step_checklist_view');
+        }
+    </script>
+</body>
+</html>
