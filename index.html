@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Gestione Accessi V2.7</title>
+    <title>NSIF Castione - Gestione Accessi V2.8</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; }
@@ -31,16 +31,15 @@
         .task-text { font-size: 1rem; font-weight: 600; color: #333; display: block; }
         .task-note { font-size: 0.85rem; color: var(--securitas-red); font-style: italic; display: block; }
 
-        /* Admin Table Styles */
+        /* Admin Table */
         .admin-table-wrapper { overflow-x: auto; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background: #f8f9fa; color: var(--securitas-blue); }
-        .status-on { color: green; font-weight: bold; }
-        .status-off { color: red; font-weight: bold; }
-        .admin-input { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+        .admin-input { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
         input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        label { display: block; text-align: left; font-size: 0.8rem; font-weight: bold; color: var(--securitas-blue); margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -48,15 +47,15 @@
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner NSIF" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESS V2.7</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESS V2.8</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
             <h2>Accesso al Sistema</h2>
-            <div style="text-align:left;"><label>Email</label></div>
+            <label>Email</label>
             <input type="text" id="login_user" style="margin-bottom:15px;">
-            <div style="text-align:left;"><label>Password</label></div>
+            <label>Password</label>
             <input type="password" id="login_pass">
             <button onclick="Auth.login()" style="margin-top:20px;">ACCEDI</button>
             <p style="font-size: 0.8rem; color: var(--securitas-blue); cursor:pointer; text-decoration:underline;" onclick="Auth.forgotPassword()">Password dimenticata?</p>
@@ -64,20 +63,28 @@
 
         <div id="step_menu" class="card">
             <h2>Seleziona Attività</h2>
-            <button onclick="UI.showStep('step_azienda_tipo')">🛂 GESTIONE ACCESSI</button>
+            <button onclick="UI.showStep('step_azienda_tipo')">🛂 GESTIONE ACCESSI (OFT/FFS)</button>
             <button class="btn-red" onclick="UI.showStep('step_checklist_menu')">📋 CHECKLIST TURNI</button>
-            <button class="btn-outline" onclick="window.open('https://app.bausicht.com/', '_blank')">🌐 APRI BAUSICHT</button>
+            <button class="btn-outline" onclick="UI.openVTI()">📂 VTI EXTERNAL (SHAREPOINT)</button>
+            <button class="btn-outline" onclick="window.open('https://app.bausicht.com/', '_blank')">🌐 PORTALE BAUSICHT</button>
+            
             <div id="admin_area" style="display:none; margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 10px;">
                 <button class="btn-red" onclick="Admin.openPanel()">⚙️ PANNELLO AMMINISTRATORE</button>
             </div>
-            <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">LOGOUT (ESCI)</button>
         </div>
 
         <div id="step_azienda_tipo" class="card">
             <h2>Tipo Azienda</h2>
-            <button onclick="Flows.selectAzienda('OFT')">Azienda OFT</button>
-            <button onclick="Flows.selectAzienda('FFS')">Azienda FFS</button>
+            <button onclick="Flows.selectAzienda('OFT')">Azienda gestita da OFT</button>
+            <button onclick="Flows.selectAzienda('FFS')">Azienda gestita da FFS</button>
             <button class="btn-gray" onclick="UI.showStep('step_menu')">INDIETRO</button>
+        </div>
+
+        <div id="step_sistema" class="card">
+            <h2 id="sys_title">Dipendente nel sistema?</h2>
+            <button onclick="Flows.checkSistema(true)">SÌ</button>
+            <button class="btn-red" onclick="Flows.checkSistema(false)">NO</button>
         </div>
 
         <div id="step_checklist_menu" class="card">
@@ -95,24 +102,22 @@
         </div>
 
         <div id="step_admin" class="card">
-            <h2>Gestione Utenti & Password</h2>
-            <div style="background:#f9f9f9; padding:15px; border-radius:8px; text-align:left;">
-                <label>Nuovo Utente (Email)</label>
+            <h2>Gestione Utenti</h2>
+            <div style="background:#f9f9f9; padding:15px; border-radius:8px; text-align:left; margin-bottom:20px;">
+                <label>Nuova Email</label>
                 <input type="text" id="new_u" placeholder="email@securitas.ch" style="margin-bottom:10px;">
                 <label>Password</label>
                 <input type="text" id="new_p" placeholder="Password" style="margin-bottom:10px;">
                 <label>Validità (Giorni)</label>
-                <input type="number" id="new_v" value="30" style="margin-bottom:10px;">
-                <button onclick="Admin.addUser()">CREA ACCOUNT</button>
+                <input type="number" id="new_v" value="30">
+                <button onclick="Admin.addUser()" style="margin-top:10px;">CREA ACCOUNT</button>
             </div>
-
             <div class="admin-table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Email</th>
                             <th>Password</th>
-                            <th>Scad (gg)</th>
                             <th>Stato</th>
                             <th>Azioni</th>
                         </tr>
@@ -126,11 +131,18 @@
 
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
+        let aziendaSelezionata = "";
 
         const UI = {
             showStep: (id) => {
                 document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
+                const target = document.getElementById(id);
+                if(target) target.classList.add('active');
+                window.scrollTo(0,0);
+            },
+            openVTI: () => {
+                const url = "https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9&sharingv2=true&fromShare=true&at=9&clickparams=eyAiWC1BcHBOYW1lIiA6ICJNaWNyb3NvZnQgT3V0bG9vayIsICJYLUFwcFZlcnNpb24iIDogIjE2LjAuMTkyMzEuMjAyNDYiLCAiT1MiIDogIldpbmRvd3MiIH0%3D&CID=defbe0a1%2De03c%2De000%2D962a%2Dc3ca54328eab&cidOR=SPO&FolderCTID=0x01200090230CD6F45D0B4B90CA541D091FD821";
+                window.open(url, '_blank');
             }
         };
 
@@ -139,96 +151,109 @@
                 const u = document.getElementById('login_user').value;
                 const p = document.getElementById('login_pass').value;
                 let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-                
                 const user = (u === MASTER.email && p === MASTER.pass) ? MASTER : users.find(x => x.email === u && x.pass === p);
 
                 if (user) {
                     if (user.blocked) { alert("ACCOUNT BLOCCATO"); return; }
                     if (u === MASTER.email) document.getElementById('admin_area').style.display = 'block';
                     UI.showStep('step_menu');
-                } else { alert("Credenziali errate"); }
+                } else { alert("Credenziali errate."); }
             },
             forgotPassword: () => {
-                window.location.href = "mailto:marco.lamorgia@securitas.ch?subject=Reset Password NSIF";
+                window.location.href = "mailto:marco.lamorgia@securitas.ch?subject=Richiesta Reset Password NSIF";
             }
         };
 
-        const Admin = {
-            openPanel: function() { this.renderUsers(); UI.showStep('step_admin'); },
-            
-            addUser: function() {
-                const email = document.getElementById('new_u').value;
-                const pass = document.getElementById('new_p').value;
-                const validity = document.getElementById('new_v').value;
-                if(!email || !pass) return alert("Inserire dati");
-                
-                let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-                u.push({ email, pass, validity, blocked: false });
-                localStorage.setItem('nsif_users', JSON.stringify(u));
-                this.renderUsers();
-                document.getElementById('new_u').value = ""; document.getElementById('new_p').value = "";
-            },
-
-            renderUsers: function() {
-                const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-                document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
-                    <tr>
-                        <td>${x.email}</td>
-                        <td><input type="text" class="admin-input" value="${x.pass}" onchange="Admin.update(${i}, 'pass', this.value)"></td>
-                        <td><input type="number" class="admin-input" value="${x.validity}" onchange="Admin.update(${i}, 'validity', this.value)"></td>
-                        <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'BLOCC' : 'ATTIVO'}</td>
-                        <td style="display:flex; gap:5px;">
-                            <button onclick="Admin.toggle(${i})" style="padding:5px; font-size:0.7rem;">${x.blocked ? 'SBLOCC' : 'BLOCC'}</button>
-                            <button onclick="Admin.delete(${i})" class="btn-red" style="padding:5px; font-size:0.7rem;">ELIMINA</button>
-                        </td>
-                    </tr>`).join('');
-            },
-
-            update: function(i, field, val) {
-                let u = JSON.parse(localStorage.getItem('nsif_users'));
-                u[i][field] = val;
-                localStorage.setItem('nsif_users', JSON.stringify(u));
-            },
-
-            toggle: function(i) {
-                let u = JSON.parse(localStorage.getItem('nsif_users'));
-                u[i].blocked = !u[i].blocked;
-                localStorage.setItem('nsif_users', JSON.stringify(u));
-                this.renderUsers();
-            },
-
-            delete: function(i) {
-                if(confirm("Eliminare definitivamente l'account?")) {
-                    let u = JSON.parse(localStorage.getItem('nsif_users'));
-                    u.splice(i, 1);
-                    localStorage.setItem('nsif_users', JSON.stringify(u));
-                    this.renderUsers();
-                }
+        const Flows = {
+            selectAzienda: (az) => { aziendaSelezionata = az; UI.showStep('step_sistema'); },
+            checkSistema: (p) => {
+                if(!p) alert("Seguire flusso " + aziendaSelezionata + " - Non presente");
+                else alert("Procedere con i controlli.");
             }
         };
 
         const Checklist = {
             data: {
-                T1: [{ t: "Apertura Cancello Campo Base Nord", n: "Codice: 6988" }, { t: "Apertura Ufficio", n: "Codice: 1907" }],
-                T2: [{ t: "Apertura Cancelli CAST09", n: "Codice: 6988" }],
-                T3: [{ t: "Posteggio Coordinamento", n: "Verifica" }]
+                T1: [
+                    { t: "Apertura Cancello Campo Base Nord", n: "Codice: 6988" },
+                    { t: "Apertura Ufficio Campo Base Nord", n: "Codice: 1907" },
+                    { t: "Accensione Telefono Servizio", n: "Pin: 6681 / Sblocco: 1907" },
+                    { t: "Apertura CAST07", n: "Codice: 1907" },
+                    { t: "Pulizia CAST07", n: "Passare straccio a fine turno" }
+                ],
+                T2: [
+                    { t: "Apertura Cancelli CAST09", n: "Codice: 6988" },
+                    { t: "Apertura Ufficio CAST09", n: "Codice: 1907" },
+                    { t: "Pulizia CAST09", n: "Straccio a terra entro le 22:00" }
+                ],
+                T3: [
+                    { t: "Verifica Parcheggio Coordinamento", n: "Posto assegnato" },
+                    { t: "Prova Radio", n: "Canale 15" }
+                ]
             },
             open: function(turno) {
                 document.getElementById('checklist_title').innerText = "CHECKLIST " + turno;
                 const container = document.getElementById('checklist_items_container');
                 container.innerHTML = this.data[turno].map((item, i) => `
                     <div class="checklist-row">
-                        <div class="check-col"><input type="checkbox" onchange="this.parentElement.nextElementSibling.nextElementSibling.innerText=this.checked?new Date().toLocaleTimeString('it-CH',{hour:'2-digit',minute:'2-digit'}):''"></div>
+                        <div class="check-col"><input type="checkbox" onchange="Checklist.mark(this)"></div>
                         <div class="text-col"><span class="task-text">${item.t}</span><span class="task-note">${item.n}</span></div>
                         <div class="time-col"></div>
                     </div>
                 `).join('');
                 UI.showStep('step_checklist_view');
+            },
+            mark: (el) => {
+                const timeBox = el.parentElement.nextElementSibling.nextElementSibling;
+                timeBox.innerText = el.checked ? new Date().toLocaleTimeString('it-CH', {hour:'2-digit', minute:'2-digit'}) : "";
+            }
+        };
+
+        const Admin = {
+            openPanel: function() { this.renderUsers(); UI.showStep('step_admin'); },
+            addUser: function() {
+                const email = document.getElementById('new_u').value;
+                const pass = document.getElementById('new_p').value;
+                const validity = document.getElementById('new_v').value;
+                if(!email || !pass) return alert("Compilare i campi.");
+                let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                u.push({ email, pass, validity, blocked: false });
+                localStorage.setItem('nsif_users', JSON.stringify(u));
+                this.renderUsers();
+                document.getElementById('new_u').value = ""; document.getElementById('new_p').value = "";
+            },
+            renderUsers: function() {
+                const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
+                    <tr>
+                        <td>${x.email}</td>
+                        <td><input type="text" class="admin-input" value="${x.pass}" onchange="Admin.update(${i},'pass',this.value)"></td>
+                        <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'BLO' : 'OK'}</td>
+                        <td style="display:flex; gap:5px; justify-content:center;">
+                            <button onclick="Admin.toggle(${i})" style="padding:5px; font-size:0.7rem;">${x.blocked?'SBL':'BLO'}</button>
+                            <button onclick="Admin.delete(${i})" class="btn-red" style="padding:5px; font-size:0.7rem;">X</button>
+                        </td>
+                    </tr>`).join('');
+            },
+            update: (i,f,v) => {
+                let u = JSON.parse(localStorage.getItem('nsif_users'));
+                u[i][f] = v; localStorage.setItem('nsif_users', JSON.stringify(u));
+            },
+            toggle: function(i) {
+                let u = JSON.parse(localStorage.getItem('nsif_users'));
+                u[i].blocked = !u[i].blocked;
+                localStorage.setItem('nsif_users', JSON.stringify(u)); this.renderUsers();
+            },
+            delete: function(i) {
+                if(confirm("Eliminare account?")) {
+                    let u = JSON.parse(localStorage.getItem('nsif_users'));
+                    u.splice(i, 1); localStorage.setItem('nsif_users', JSON.stringify(u));
+                    this.renderUsers();
+                }
             }
         };
 
         document.getElementById('login_pass').addEventListener('keypress', (e) => { if(e.key==='Enter') Auth.login(); });
-        const Flows = { selectAzienda: (az) => UI.showStep('step_azienda_tipo') };
     </script>
 </body>
 </html>
