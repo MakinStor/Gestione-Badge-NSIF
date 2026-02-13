@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - GESTIONE INTEGRALE V4.2</title>
+    <title>NSIF Castione - GESTIONE INTEGRALE V4.3</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 0; }
@@ -24,7 +24,7 @@
         .btn-gray { background: #6c757d; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
 
-        /* Checklist */
+        /* Checklist UI */
         .counter-badge { background: var(--securitas-red); color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
         .checklist-row { display: flex; align-items: flex-start; padding: 12px; border-bottom: 1px solid #eee; background: #fff; gap: 15px; text-align: left; }
         .check-col input { width: 24px; height: 24px; cursor: pointer; }
@@ -32,11 +32,13 @@
         .task-note { font-size: 0.85rem; color: #555; background: #fdf2f2; border-left: 3px solid var(--securitas-red); padding: 8px; margin-top: 4px; display: block; white-space: pre-wrap; }
         .time-col { font-size: 0.8rem; color: var(--success); font-weight: bold; min-width: 60px; text-align: right; }
 
-        /* Admin */
+        /* Admin UI */
         .admin-section { margin-top: 25px; border-top: 2px solid #ddd; padding-top: 15px; text-align: left; }
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.75rem; }
         .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        
+        .flow-box { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; margin-bottom: 20px; border-radius: 4px; font-size: 0.9rem; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -44,7 +46,7 @@
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE OPERATIVA V4.2</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE INTEGRALE V4.3</div>
     </div>
 
     <div class="container">
@@ -57,7 +59,7 @@
 
         <div id="step_menu" class="card">
             <h2>Menu Principale</h2>
-            <button onclick="UI.showStep('step_azienda_tipo')">🛂 GESTIONE ACCESSI</button>
+            <button onclick="UI.showStep('step_azienda_tipo')">🛂 GESTIONE ACCESSI / BADGE</button>
             <button class="btn-red" onclick="UI.showStep('step_checklist_menu')">📋 CHECKLIST TURNI</button>
             <button class="btn-outline" onclick="UI.openVTI()">📂 VTI EXTERNAL (SHAREPOINT)</button>
             <div id="admin_area" style="display:none; border-top: 2px dashed #ccc; margin-top:20px; padding-top:10px;">
@@ -66,11 +68,25 @@
             <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">LOGOUT</button>
         </div>
 
+        <div id="step_azienda_tipo" class="card">
+            <h2>Tipo Azienda per Badge</h2>
+            <button onclick="Flows.start('OFT')">Azienda OFT</button>
+            <button onclick="Flows.start('FFS')">Azienda FFS</button>
+            <button class="btn-gray" onclick="UI.showStep('step_menu')">INDIETRO</button>
+        </div>
+
+        <div id="step_flow_details" class="card">
+            <h2 id="flow_title">Dettagli Procedura</h2>
+            <div id="flow_content" class="flow-box"></div>
+            <button onclick="UI.showStep('step_menu')">CONFERMA E CHIUDI</button>
+            <button class="btn-gray" onclick="UI.showStep('step_azienda_tipo')">INDIETRO</button>
+        </div>
+
         <div id="step_checklist_menu" class="card">
             <h2>Seleziona Turno</h2>
-            <button onclick="Checklist.open('T1')">TURNO T1</button>
-            <button onclick="Checklist.open('T2')">TURNO T2</button>
-            <button onclick="Checklist.open('T3')">TURNO T3</button>
+            <button onclick="Checklist.open('T1')">TURNO T1 (06:00-15:00 / 14:45-22:00)</button>
+            <button onclick="Checklist.open('T2')">TURNO T2 (06:00-15:00 / 14:45-22:00)</button>
+            <button onclick="Checklist.open('T3')">TURNO T3 (08:00-15:30 / 15:15-23:00)</button>
             <button class="btn-gray" onclick="UI.showStep('step_menu')">INDIETRO</button>
         </div>
 
@@ -85,8 +101,8 @@
             <h2>Pannello Amministratore</h2>
             
             <div class="admin-section">
-                <h3>1. Gestione Account Accesso</h3>
-                <input type="text" id="adm_new_u" placeholder="Nuova Email Securitas">
+                <h3>1. Gestione Account Operatori</h3>
+                <input type="text" id="adm_new_u" placeholder="Email Securitas">
                 <input type="text" id="adm_new_p" placeholder="Password">
                 <button onclick="Admin.addUser()">CREA ACCOUNT</button>
                 <table class="admin-table">
@@ -101,20 +117,18 @@
                     <option value="T1">Turno T1</option><option value="T2">Turno T2</option><option value="T3">Turno T3</option>
                 </select>
                 <select id="add_task_fase">
-                    <option value="inizio">Inizio Turno</option>
-                    <option value="durante">Durante il Turno</option>
-                    <option value="fine">Fine Turno</option>
+                    <option value="inizio">1. Inizio Turno</option>
+                    <option value="durante">2. Durante il Turno</option>
+                    <option value="fine">3. Fine Turno</option>
                 </select>
                 <input type="text" id="add_task_title" placeholder="Titolo Operazione">
-                <textarea id="add_task_note" placeholder="Note operative" rows="2"></textarea>
+                <textarea id="add_task_note" placeholder="Osservazioni / Note" rows="2"></textarea>
                 <button onclick="Admin.addTask()">AGGIUNGI OPERAZIONE</button>
                 
-                <div style="max-height: 300px; overflow-y: auto; margin-top:15px;">
-                    <table class="admin-table">
-                        <thead><tr><th>Turno/Fase</th><th>Descrizione</th><th>Azione</th></tr></thead>
-                        <tbody id="adm_tasks_body"></tbody>
-                    </table>
-                </div>
+                <table class="admin-table">
+                    <thead><tr><th>Turno/Fase</th><th>Descrizione</th><th>Azione</th></tr></thead>
+                    <tbody id="adm_tasks_body"></tbody>
+                </table>
             </div>
             <button class="btn-gray" onclick="UI.showStep('step_menu')" style="margin-top:20px;">ESCI</button>
         </div>
@@ -123,67 +137,60 @@
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
 
-        // DATI FEDELI AI DOCUMENTI ALLEGATI (SUDDIVISI PER FASI)
         const defaultTasks = {
             T1: {
                 inizio: [
-                    { t: "Apertura cancello Campo Base Nord", n: "Lucchetto codice 6988" },
+                    { t: "Apertura cancello principale Campo Base Nord", n: "Lucchetto codice 6988" },
                     { t: "Parcheggio Coordinamento Securitas", n: "Posto tutto a destra guardando la baracca" },
                     { t: "Apertura ufficio Campo Base Nord", n: "Codice 1907. Alzare tapparelle e verificare riscaldamento (pos 4)." },
-                    { t: "Telefono di servizio", n: "Pin 6681, Sblocco 1907. Tenerlo fino all'arrivo del T3." },
-                    { t: "Radio personale", n: "Accendere e prova su Canale 15." },
-                    { t: "Apertura CAST07", n: "Codice 1907. Verifica riscaldamento e tornelli/luci." },
-                    { t: "Verifica monopattino CAST07", n: "Verde=Carico, Rosso=In carica." }
+                    { t: "Telefono di servizio", n: "PIN 6681, Sblocco 1907. Tenerlo fino all'arrivo del T3." },
+                    { t: "Radio personale", n: "Prova collegamento su Canale 15." },
+                    { t: "Apertura CAST07", n: "Codice 1907. Verifica riscaldamento e tornelli/luci." }
                 ],
                 durante: [
                     { t: "Presidio CAST08 (Se richiesto)", n: "Registrare Nome, Azienda, Targa, Ore. Max 2 ore." },
-                    { t: "VTI External", n: "Aprire archivio documentazione." }
+                    { t: "VTI External", n: "Verifica documentazione e cartella Team." }
                 ],
                 fine: [
-                    { t: "Pulizia CAST07", n: "Passare lo straccio a terra e svuotare cestini." },
-                    { t: "Passaggio di consegna", n: "Recarsi al CAST09. Tempo max 15 minuti." }
+                    { t: "Pulizia CAST07", n: "Passare lo straccio a terra e svuotare cestini (Obbligatorio)." },
+                    { t: "Passaggio di consegna", n: "Recarsi al CAST09 (Max 15 min). Chiudere il CAST07." }
                 ]
             },
             T2: {
                 inizio: [
                     { t: "Apertura cancelli CAST09", n: "Entrata e Uscita. Codice 6988." },
                     { t: "Apertura ufficio CAST09", n: "Codice 1907. Alzare tapparelle e serrande." },
-                    { t: "Radio personale", n: "Accendere e prova su Canale 15." },
                     { t: "Verifica Barriera e Fotocellule", n: "In inverno pulire fotocellule se necessario." }
                 ],
                 durante: [
                     { t: "Campo Base Sud (Inverno)", n: "Aprire porta e chiudere rubinetti (Chiave in Keybox)." },
-                    { t: "Presidio CAST09", n: "Registrare mezzi pesanti: Nome, Azienda, DPI, Ore." },
-                    { t: "Verifica Badge provvisori", n: "Contattare responsabili se non in Bausicht." }
+                    { t: "Presidio CAST09", n: "Registrare mezzi pesanti: Nome, Azienda, DPI, Ore." }
                 ],
                 fine: [
-                    { t: "Pulizia postazione", n: "Straccio su superfici." },
-                    { t: "Pulizia pavimento", n: "Passare lo straccio entro le ore 22:00." },
-                    { t: "Passaggio di consegna", n: "Presso CAST09." }
+                    { t: "Pulizia pavimento CAST09", n: "Passare lo straccio entro le ore 22:00." },
+                    { t: "Consegna", n: "Effettuare il passaggio presso CAST09." }
                 ]
             },
             T3: {
                 inizio: [
                     { t: "Parcheggio Coordinamento", n: "Al centro." },
-                    { t: "Radio personale", n: "Accendere e prova su Canale 15." },
-                    { t: "Ritiro Telefono", n: "Recarsi al CAST07 e prelevarlo." },
-                    { t: "Giro perimetro interno", n: "Verificare punti sbarrati con monopattino CAST09." }
+                    { t: "Recupero Telefono", n: "Recarsi al CAST07 e prelevarlo." },
+                    { t: "Giro perimetro interno", n: "Con monopattino CAST09. Controllare punti sbarrati." }
                 ],
                 durante: [
-                    { t: "Controllo CAST08", n: "Verificare che non sia aperto senza presidio." },
-                    { t: "Controllo Pausa (12:00-13:00)", n: "Nessuno deve mangiare in cantiere." },
-                    { t: "Materiale DPI", n: "Verificare che chiunque entri ne sia munito." }
+                    { t: "Controllo Pausa (12:00-13:00)", n: "Nessun operaio deve mangiare in cantiere." },
+                    { t: "DPI", n: "Verificare che chiunque entri sia munito di casco e DPI." }
                 ],
                 fine: [
-                    { t: "Chiusura rubinetti (Inverno)", n: "Aprire leggermente acqua per evitare gelo." },
+                    { t: "Chiusura rubinetti (Inverno)", n: "Campo Base Sud: aprire leggermente per gelo." },
                     { t: "Chiusura uffici CSC", n: "Codice 6990. Verificare finestre e luci." },
                     { t: "Messa in carica", n: "Telefono di servizio e monopattini." }
                 ]
             }
         };
 
-        let checklistData = JSON.parse(localStorage.getItem('nsif_checklist_v4_2')) || defaultTasks;
-        let userData = JSON.parse(localStorage.getItem('nsif_users_v4_2')) || [];
+        let checklistData = JSON.parse(localStorage.getItem('nsif_checklist_v4_3')) || defaultTasks;
+        let userData = JSON.parse(localStorage.getItem('nsif_users_v4_3')) || [];
 
         const UI = {
             showStep: (id) => {
@@ -198,20 +205,16 @@
                 document.getElementById('checklist_title').innerText = "DISPOSIZIONI " + turno;
                 const container = document.getElementById('checklist_items_container');
                 let html = "";
-                
                 const fasi = { inizio: "1. INIZIO TURNO", durante: "2. DURANTE IL TURNO", fine: "3. FINE TURNO" };
-                
                 for (let fase in fasi) {
                     html += `<h3>${fasi[fase]}</h3>`;
-                    html += checklistData[turno][fase].map((item, i) => `
+                    html += checklistData[turno][fase].map(item => `
                         <div class="checklist-row">
                             <div class="check-col"><input type="checkbox" onchange="Checklist.update()"></div>
                             <div class="text-col"><span class="task-text">${item.t}</span><span class="task-note">${item.n}</span></div>
                             <div class="time-col"></div>
-                        </div>
-                    `).join('');
+                        </div>`).join('');
                 }
-                
                 container.innerHTML = html;
                 UI.showStep('step_checklist_view');
                 this.update();
@@ -230,52 +233,56 @@
             }
         };
 
+        const Flows = {
+            start: (az) => {
+                document.getElementById('flow_title').innerText = "Procedura Badge " + az;
+                let msg = az === 'OFT' ? 
+                    "1. Verificare presenza in Bausicht.<br>2. Se presente: Effettuare Induction.<br>3. Scattare Foto.<br>4. Rilasciare Badge Provvisorio." : 
+                    "1. Verificare presenza in Bausicht.<br>2. Se presente: Scattare Foto.<br>3. Rilasciare Badge Provvisorio (FFS non richiede Induction Securitas).";
+                document.getElementById('flow_content').innerHTML = msg;
+                UI.showStep('step_flow_details');
+            }
+        };
+
         const Admin = {
             openPanel: function() { this.renderUsers(); this.renderTasks(); UI.showStep('step_admin'); },
-            
             addUser: function() {
                 const u = document.getElementById('adm_new_u').value, p = document.getElementById('adm_new_p').value;
                 if(!u || !p) return;
                 userData.push({email:u, pass:p, blocked: false});
                 this.saveU(); this.renderUsers();
             },
-            toggleU: function(i) { userData[i].blocked = !userData[i].blocked; this.saveU(); this.renderUsers(); },
-            delU: function(i) { if(confirm("Eliminare account?")) { userData.splice(i,1); this.saveU(); this.renderUsers(); } },
-            renderUsers: function() {
+            toggleU: (i) => { userData[i].blocked = !userData[i].blocked; Admin.saveU(); Admin.renderUsers(); },
+            delU: (i) => { if(confirm("Eliminare?")) { userData.splice(i,1); Admin.saveU(); Admin.renderUsers(); } },
+            renderUsers: () => {
                 document.getElementById('adm_user_list').innerHTML = userData.map((x,i) => `
                     <tr><td>${x.email}</td><td>${x.pass}</td><td>${x.blocked?'BLO':'OK'}</td>
                     <td><button onclick="Admin.toggleU(${i})">B</button><button onclick="Admin.delU(${i})" class="btn-red">X</button></td></tr>`).join('');
             },
-            saveU: () => localStorage.setItem('nsif_users_v4_2', JSON.stringify(userData)),
-
+            saveU: () => localStorage.setItem('nsif_users_v4_3', JSON.stringify(userData)),
             addTask: function() {
-                const t = document.getElementById('add_task_turno').value, 
-                      f = document.getElementById('add_task_fase').value,
-                      title = document.getElementById('add_task_title').value, 
-                      note = document.getElementById('add_task_note').value;
+                const t = document.getElementById('add_task_turno').value, f = document.getElementById('add_task_fase').value,
+                      title = document.getElementById('add_task_title').value, note = document.getElementById('add_task_note').value;
                 if(!title) return;
                 checklistData[t][f].push({t: title, n: note});
                 this.saveT(); this.renderTasks();
             },
-            delT: function(t, f, i) { checklistData[t][f].splice(i,1); this.saveT(); this.renderTasks(); },
-            renderTasks: function() {
+            delT: (t, f, i) => { checklistData[t][f].splice(i,1); Admin.saveT(); Admin.renderTasks(); },
+            renderTasks: () => {
                 let html = "";
-                ["T1","T2","T3"].forEach(t => {
-                    ["inizio","durante","fine"].forEach(f => {
-                        checklistData[t][f].forEach((item,i) => {
-                            html += `<tr><td>${t} - ${f}</td><td>${item.t}</td><td><button onclick="Admin.delT('${t}','${f}',${i})">X</button></td></tr>`;
-                        });
+                ["T1","T2","T3"].forEach(t => ["inizio","durante","fine"].forEach(f => {
+                    checklistData[t][f].forEach((item,i) => {
+                        html += `<tr><td>${t}-${f}</td><td>${item.t}</td><td><button onclick="Admin.delT('${t}','${f}',${i})">X</button></td></tr>`;
                     });
-                });
+                }));
                 document.getElementById('adm_tasks_body').innerHTML = html;
             },
-            saveT: () => localStorage.setItem('nsif_checklist_v4_2', JSON.stringify(checklistData))
+            saveT: () => localStorage.setItem('nsif_checklist_v4_3', JSON.stringify(checklistData))
         };
 
         const Auth = {
             login: () => {
-                const u = document.getElementById('login_user').value;
-                const p = document.getElementById('login_pass').value;
+                const u = document.getElementById('login_user').value, p = document.getElementById('login_pass').value;
                 const found = (u === MASTER.email && p === MASTER.pass) ? MASTER : userData.find(x => x.email === u && x.pass === p);
                 if (found) {
                     if (found.blocked) return alert("Account bloccato.");
@@ -284,8 +291,6 @@
                 } else alert("Credenziali errate");
             }
         };
-
-        const Flows = { start: (az) => alert("Flusso " + az) };
     </script>
 </body>
 </html>
