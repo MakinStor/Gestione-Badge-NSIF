@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - SISTEMA TOTALE V4.4</title>
+    <title>NSIF Castione - GESTIONE INTEGRALE V4.6</title>
     <style>
-        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
+        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; --light-blue: #e7f3ff; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 0; }
         .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
         .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
@@ -24,18 +24,17 @@
         .btn-gray { background: #6c757d; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
 
-        .counter-badge { background: var(--securitas-red); color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
-        .checklist-row { display: flex; align-items: flex-start; padding: 12px; border-bottom: 1px solid #eee; background: #fff; gap: 15px; text-align: left; }
-        .check-col input { width: 24px; height: 24px; cursor: pointer; }
-        .task-text { font-size: 0.95rem; font-weight: 600; color: #333; display: block; }
-        .task-note { font-size: 0.85rem; color: #555; background: #fdf2f2; border-left: 3px solid var(--securitas-red); padding: 8px; margin-top: 4px; display: block; white-space: pre-wrap; }
-        .time-col { font-size: 0.8rem; color: var(--success); font-weight: bold; min-width: 60px; text-align: right; }
+        .flow-step-container { text-align: left; background: var(--light-blue); padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 5px solid var(--securitas-blue); }
+        .flow-step-item { display: flex; align-items: center; margin-bottom: 12px; font-weight: 500; }
+        .flow-step-item input { width: 22px; height: 22px; margin-right: 15px; cursor: pointer; }
+        .time-summary { background: #333; color: #7fff00; padding: 15px; border-radius: 8px; margin-top: 20px; font-family: 'Courier New', monospace; white-space: pre-wrap; text-align: left; }
 
-        .admin-section { margin-top: 25px; border-top: 2px solid #ddd; padding-top: 15px; text-align: left; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.75rem; }
+        .checklist-row { display: flex; align-items: flex-start; padding: 12px; border-bottom: 1px solid #eee; background: #fff; gap: 15px; text-align: left; }
+        .check-col input { width: 24px; height: 24px; }
+        .task-text { font-size: 0.95rem; font-weight: 600; color: #333; display: block; }
+        .task-note { font-size: 0.85rem; color: #555; background: #fdf2f2; border-left: 3px solid var(--securitas-red); padding: 8px; margin-top: 4px; display: block; }
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
         .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .flow-box { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; margin-bottom: 20px; border-radius: 4px; font-size: 0.9rem; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -43,7 +42,7 @@
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE INTEGRALE V4.4</div>
+        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE INTEGRALE V4.6</div>
     </div>
 
     <div class="container">
@@ -56,7 +55,7 @@
 
         <div id="step_menu" class="card">
             <h2>Menu Principale</h2>
-            <button onclick="UI.showStep('step_azienda_tipo')">🛂 GESTIONE ACCESSI / BADGE</button>
+            <button onclick="UI.showStep('step_badge_menu')">🛂 GESTIONE ACCESSI / BADGE</button>
             <button class="btn-red" onclick="UI.showStep('step_checklist_menu')">📋 CHECKLIST TURNI</button>
             <button class="btn-outline" onclick="UI.openVTI()">📂 VTI EXTERNAL (SHAREPOINT)</button>
             <div id="admin_area" style="display:none; border-top: 2px dashed #ccc; margin-top:20px; padding-top:10px;">
@@ -65,25 +64,35 @@
             <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">LOGOUT</button>
         </div>
 
-        <div id="step_azienda_tipo" class="card">
-            <h2>Tipo Azienda per Badge</h2>
-            <button onclick="Flows.start('OFT')">Azienda OFT</button>
-            <button onclick="Flows.start('FFS')">Azienda FFS</button>
+        <div id="step_badge_menu" class="card">
+            <h2>Selezione Azienda / Tipo Badge</h2>
+            <button onclick="Flows.init('OFT')">Aziende OFT</button>
+            <button onclick="Flows.init('FFS')">Aziende FFS</button>
+            <button onclick="UI.showStep('step_badge_speciali')">Badge Speciali (Visitatori/CPC/Stampa)</button>
             <button class="btn-gray" onclick="UI.showStep('step_menu')">INDIETRO</button>
         </div>
 
-        <div id="step_flow_details" class="card">
-            <h2 id="flow_title">Dettagli Procedura</h2>
-            <div id="flow_content" class="flow-box"></div>
-            <button onclick="UI.showStep('step_menu')">CONFERMA E CHIUDI</button>
-            <button class="btn-gray" onclick="UI.showStep('step_azienda_tipo')">INDIETRO</button>
+        <div id="step_badge_speciali" class="card">
+            <h2>Tipo Badge Speciale</h2>
+            <button onclick="Flows.init('VISITATORI')">Visitatori</button>
+            <button onclick="Flows.init('STAMPA')">Press / Stampa / TV</button>
+            <button onclick="Flows.init('CPC')">Commissione Paritetica (CPC)</button>
+            <button class="btn-gray" onclick="UI.showStep('step_badge_menu')">INDIETRO</button>
+        </div>
+
+        <div id="step_flow_exec" class="card">
+            <h2 id="flow_exec_title">Esecuzione</h2>
+            <div id="flow_steps_container" class="flow-step-container"></div>
+            <div id="flow_summary" class="time-summary" style="display:none;"></div>
+            <button id="btn_finish_flow" style="display:none;" onclick="UI.showStep('step_menu')">TERMINA E SALVA</button>
+            <button class="btn-gray" onclick="UI.showStep('step_badge_menu')">ANNULLA</button>
         </div>
 
         <div id="step_checklist_menu" class="card">
             <h2>Seleziona Turno</h2>
-            <button onclick="Checklist.open('T1')">TURNO T1</button>
-            <button onclick="Checklist.open('T2')">TURNO T2</button>
-            <button onclick="Checklist.open('T3')">TURNO T3</button>
+            <button onclick="Checklist.open('T1')">TURNO T1 (06:00-15:00 / 14:45-22:00)</button>
+            <button onclick="Checklist.open('T2')">TURNO T2 (06:00-15:00 / 14:45-22:00)</button>
+            <button onclick="Checklist.open('T3')">TURNO T3 (08:00-15:30 / 15:15-23:00)</button>
             <button class="btn-gray" onclick="UI.showStep('step_menu')">INDIETRO</button>
         </div>
 
@@ -96,9 +105,8 @@
 
         <div id="step_admin" class="card">
             <h2>Pannello Amministratore</h2>
-            
             <div class="admin-section">
-                <h3>1. Gestione Account Operatori</h3>
+                <h3>Gestione Account Operatori</h3>
                 <input type="text" id="adm_new_u" placeholder="Email Securitas">
                 <input type="text" id="adm_new_p" placeholder="Password">
                 <button onclick="Admin.addUser()">CREA ACCOUNT</button>
@@ -107,102 +115,117 @@
                     <tbody id="adm_user_list"></tbody>
                 </table>
             </div>
-
-            <div class="admin-section">
-                <h3>2. Modifica Checklist</h3>
-                <select id="add_task_turno">
-                    <option value="T1">T1</option><option value="T2">T2</option><option value="T3">T3</option>
-                </select>
-                <select id="add_task_fase">
-                    <option value="inizio">Inizio</option><option value="durante">Durante</option>
-                    <option value="fine">Fine</option><option value="mensile">Mensile (1° Lunedì)</option>
-                </select>
-                <input type="text" id="add_task_title" placeholder="Titolo">
-                <textarea id="add_task_note" placeholder="Note" rows="2"></textarea>
-                <button onclick="Admin.addTask()">AGGIUNGI</button>
-                <div style="max-height: 200px; overflow-y: auto;">
-                    <table class="admin-table">
-                        <tbody id="adm_tasks_body"></tbody>
-                    </table>
-                </div>
-            </div>
             <button class="btn-gray" onclick="UI.showStep('step_menu')" style="margin-top:20px;">ESCI</button>
         </div>
     </div>
 
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
+        let startTime, endTime;
 
-        const defaultTasks = {
+        // DATI CHECKLIST INTEGRALI DA FILE DOCX
+        const checklistData = {
             T1: {
                 inizio: [
-                    { t: "Apertura cancello principale Campo Base Nord", n: "Codice 6988" },
-                    { t: "Parcheggio Coordinamento", n: "Tutto a destra guardando la baracca" },
-                    { t: "Apertura ufficio Campo Base Nord", n: "Codice 1907. Alzare tapparelle. Riscaldamento pos. 4 inverno." },
-                    { t: "Telefono di servizio", n: "PIN 6681, Sblocco 1907. Tenerlo fino all'arrivo del T3." },
-                    { t: "Radio personale", n: "Prova su Canale 15." },
-                    { t: "Apertura CAST07", n: "Codice 1907. Riscaldamento 21°." },
-                    { t: "Verifica monopattino CAST07", n: "Verde=Carico, Rosso=In carica." }
+                    { t: "Aprire cancello Campo Base Nord", n: "Codice 6988" },
+                    { t: "Parcheggio Coordinamento", n: "Posto tutto a destra baracca" },
+                    { t: "Apertura ufficio Campo Base Nord", n: "Codice 1907. Alzare tapparelle. Riscaldamento pos 4." },
+                    { t: "Telefono di servizio", n: "PIN 6681, Sblocco 1907. Tenerlo fino al T3." },
+                    { t: "Radio personale", n: "Prova Canale 15." },
+                    { t: "Apertura CAST07", n: "Codice 1907. Verifica tornelli/luci." }
                 ],
                 durante: [
-                    { t: "Sblocco PC", n: "Password in mappetta gialla armadio." },
-                    { t: "VTI External", n: "Verifica documenti SharePoint." },
-                    { t: "Presidio CAST08", n: "Mezzi pesanti. Registrare dati. Max 2 ore." }
+                    { t: "Presidio CAST08", n: "Registrare mezzi pesanti. Max 2 ore." },
+                    { t: "VTI External", n: "Verifica cartelle SharePoint." }
                 ],
                 fine: [
                     { t: "Pulizia CAST07", n: "Straccio a terra e svuotare cestini." },
                     { t: "Passaggio consegna CAST09", n: "Max 15 min. Chiudere CAST07." }
                 ],
-                mensile: [ { t: "Check Defibrillatore e Borsa Sanitaria", n: "Materiale, scadenze, batterie. Modulo Excel." } ]
+                mensile: [ { t: "Check Defibrillatore e Borsa Sanitaria", n: "Scadenze e batterie. Modulo Excel." } ]
             },
             T2: {
                 inizio: [
-                    { t: "Apertura cancelli CAST09", n: "Entrata e Uscita. Codice 6988." },
-                    { t: "Parcheggio CAST09", n: "Dietro cartello con freccia." },
+                    { t: "Apertura cancelli CAST09", n: "Entrata/Uscita. Codice 6988." },
                     { t: "Apertura ufficio CAST09", n: "Codice 1907. Tapparelle e serrande." },
-                    { t: "Verifica Barriera", n: "Pulizia fotocellule in inverno." }
+                    { t: "Verifica Barriera/Fotocellule", n: "In inverno pulire se necessario." }
                 ],
                 durante: [
                     { t: "Campo Base Sud (Inverno)", n: "Chiudere rubinetti. Chiave Keybox." },
-                    { t: "Presidio CAST09", n: "Registrazione mezzi e DPI. Badge provvisori." }
+                    { t: "Presidio CAST09", n: "Registrazione mezzi e verifica DPI." }
                 ],
                 fine: [
-                    { t: "Pulizia postazione", n: "Superfici e straccio a terra entro le 22:00." },
-                    { t: "Passaggio consegna", n: "Al CAST09." }
+                    { t: "Pulizia pavimento CAST09", n: "Straccio entro le 22:00." },
+                    { t: "Passaggio consegna", n: "Presso CAST09." }
                 ],
-                mensile: [ { t: "Check Defibrillatore e Borsa Sanitaria", n: "Verifica completa e Excel." } ]
+                mensile: [ { t: "Check Defibrillatore e Borsa Sanitaria", n: "Inventario corretto." } ]
             },
             T3: {
                 inizio: [
                     { t: "Parcheggio Coordinamento", n: "Al centro." },
-                    { t: "Radio personale", n: "Canale 15." },
                     { t: "Cassettino Nero", n: "Classare moduli presenti." },
-                    { t: "Ritiro Telefono", n: "Recarsi al CAST07." },
-                    { t: "Giro perimetro", n: "Con monopattino CAST09. Controllare punti sbarrati." }
+                    { t: "Ritiro Telefono", n: "Recarsi al CAST07." }
                 ],
                 durante: [
-                    { t: "Controllo CAST08", n: "Verificare che non sia aperto senza presidio." },
-                    { t: "Controllo Pausa (12:00-13:00)", n: "Nessuno mangia in cantiere." },
-                    { t: "Verifica DPI", n: "Casco e scarpe per chiunque entri." }
+                    { t: "Giro perimetro", n: "Monopattino CAST09. Controllare punti sbarrati." },
+                    { t: "Controllo Pausa (12:00-13:00)", n: "Nessun operaio mangia in cantiere." }
                 ],
                 fine: [
-                    { t: "Chiusura rubinetti (Inverno)", n: "Aprire leggermente per evitare gelo." },
                     { t: "Chiusura uffici CSC", n: "Codice 6990. Finestre e luci." },
                     { t: "Messa in carica", n: "Telefono e monopattini." }
                 ],
-                mensile: [ { t: "Check Defibrillatore", n: "Verifica mensile borsa sanitaria." } ]
+                mensile: [ { t: "Check Sanitario", n: "Verifica mensile completa." } ]
             }
         };
 
-        let checklistData = JSON.parse(localStorage.getItem('nsif_db_v44_t')) || defaultTasks;
-        let userData = JSON.parse(localStorage.getItem('nsif_db_v44_u')) || [];
+        const flowDefinitions = {
+            OFT: [
+                "Verifica Bausicht (Se NO: chiamare Nijaz Pepeljak)",
+                "Verifica Formazione Induction (Se NO: eseguire formazione)",
+                "Scattare Foto",
+                "Emettere Badge Provvisorio",
+                "Registrazione Sistema Accessi",
+                "Classificazione modulo nel raccoglitore"
+            ],
+            FFS: [
+                "Verifica Bausicht (Se NO: chiamare Marco La Morgia)",
+                "Scattare Foto",
+                "Emettere Badge Provvisorio",
+                "Registrazione Sistema Bausicht",
+                "Compilazione modulo di rilascio"
+            ],
+            VISITATORI: ["Verifica annuncio referente", "Ritiro Documento/Patente/Chiavi", "Consegna Badge VISITATORE", "Registra in Bausicht", "Registra in Diario di Bordo"],
+            STAMPA: ["Verifica autorizzazione", "Ritiro Documento d'identità", "Consegna Badge STAMPA", "Registra in Bausicht", "Registra in Diario di Bordo"],
+            CPC: ["Verifica annuncio", "Ritiro Documento", "Consegna Badge CPC", "Registra in Bausicht", "Registra in Diario di Bordo"]
+        };
 
-        const UI = {
-            showStep: (id) => {
-                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
+        const Flows = {
+            init: function(type) {
+                startTime = new Date();
+                document.getElementById('flow_exec_title').innerText = "PROCEDURA BADGE: " + type;
+                const container = document.getElementById('flow_steps_container');
+                container.innerHTML = flowDefinitions[type].map((step, i) => `
+                    <div class="flow-step-item">
+                        <input type="checkbox" id="step_${i}" onchange="Flows.check('${type}')">
+                        <label for="step_${i}">${step}</label>
+                    </div>
+                `).join('');
+                document.getElementById('flow_summary').style.display = 'none';
+                document.getElementById('btn_finish_flow').style.display = 'none';
+                UI.showStep('step_flow_exec');
             },
-            openVTI: () => window.open("https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team", '_blank')
+            check: function(type) {
+                const total = flowDefinitions[type].length;
+                const checked = document.querySelectorAll('#flow_steps_container input:checked').length;
+                if(checked === total) {
+                    endTime = new Date();
+                    const diff = Math.floor((endTime - startTime) / 1000);
+                    const summary = document.getElementById('flow_summary');
+                    summary.style.display = 'block';
+                    summary.innerText = `>>> RIEPILOGO OPERAZIONE <<<\nInizio: ${startTime.toLocaleTimeString()}\nFine: ${endTime.toLocaleTimeString()}\nDurata: ${diff} secondi\nStato: LAVORO TERMINATO`;
+                    document.getElementById('btn_finish_flow').style.display = 'block';
+                }
+            }
         };
 
         const Checklist = {
@@ -210,9 +233,9 @@
                 document.getElementById('checklist_title').innerText = "DISPOSIZIONI " + turno;
                 const container = document.getElementById('checklist_items_container');
                 let html = "";
-                const fasi = { inizio: "1. INIZIO TURNO", durante: "2. DURANTE IL TURNO", fine: "3. FINE TURNO", mensile: "CONTROLLI PERIODICI (1° LUNEDÌ)" };
+                const fasi = { inizio: "1. INIZIO TURNO", durante: "2. DURANTE IL TURNO", fine: "3. FINE TURNO", mensile: "CONTROLLI PERIODICI" };
                 for (let f in fasi) {
-                    if(checklistData[turno][f].length > 0) {
+                    if(checklistData[turno][f]) {
                         html += `<h3>${fasi[f]}</h3>`;
                         html += checklistData[turno][f].map(item => `
                             <div class="checklist-row">
@@ -240,55 +263,47 @@
             }
         };
 
-        const Flows = {
-            start: (az) => {
-                document.getElementById('flow_title').innerText = "Procedura Badge " + az;
-                document.getElementById('flow_content').innerHTML = az === 'OFT' ? 
-                    "1. Cerca in Bausicht.<br>2. Se presente: Esegui Induction.<br>3. Foto.<br>4. Badge Provvisorio." : 
-                    "1. Cerca in Bausicht.<br>2. Se presente: Foto.<br>3. Badge Provvisorio.";
-                UI.showStep('step_flow_details');
-            }
-        };
-
         const Admin = {
-            openPanel: function() { this.renderUsers(); this.renderTasks(); UI.showStep('step_admin'); },
+            openPanel: function() { this.renderUsers(); UI.showStep('step_admin'); },
             addUser: function() {
                 const u = document.getElementById('adm_new_u').value, p = document.getElementById('adm_new_p').value;
-                if(u && p) { userData.push({email:u, pass:p, blocked: false}); this.saveU(); this.renderUsers(); }
+                if(u && p) {
+                    let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                    users.push({email:u, pass:p, blocked: false});
+                    localStorage.setItem('nsif_users', JSON.stringify(users));
+                    this.renderUsers();
+                }
             },
-            toggleU: (i) => { userData[i].blocked = !userData[i].blocked; Admin.saveU(); Admin.renderUsers(); },
-            delU: (i) => { if(confirm("Eliminare?")) { userData.splice(i,1); Admin.saveU(); Admin.renderUsers(); } },
             renderUsers: () => {
-                document.getElementById('adm_user_list').innerHTML = userData.map((x,i) => `
-                    <tr><td>${x.email}</td><td>${x.pass}</td><td>${x.blocked?'BLO':'OK'}</td>
-                    <td><button onclick="Admin.toggleU(${i})">B</button><button onclick="Admin.delU(${i})" class="btn-red">X</button></td></tr>`).join('');
+                let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                document.getElementById('adm_user_list').innerHTML = users.map((x,i) => `<tr><td>${x.email}</td><td>${x.pass}</td><td>OK</td><td><button class="btn-red" onclick="Admin.delUser(${i})">X</button></td></tr>`).join('');
             },
-            saveU: () => localStorage.setItem('nsif_db_v44_u', JSON.stringify(userData)),
-            addTask: function() {
-                const t = document.getElementById('add_task_turno').value, f = document.getElementById('add_task_fase').value,
-                      title = document.getElementById('add_task_title').value, note = document.getElementById('add_task_note').value;
-                if(title) { checklistData[t][f].push({t: title, n: note}); this.saveT(); this.renderTasks(); }
-            },
-            delT: (t, f, i) => { checklistData[t][f].splice(i,1); Admin.saveT(); Admin.renderTasks(); },
-            renderTasks: () => {
-                let html = "";
-                for(let t in checklistData) for(let f in checklistData[t]) checklistData[t][f].forEach((item,i) => {
-                    html += `<tr><td>${t}-${f}</td><td>${item.t}</td><td><button onclick="Admin.delT('${t}','${f}',${i})">X</button></td></tr>`;
-                });
-                document.getElementById('adm_tasks_body').innerHTML = html;
-            },
-            saveT: () => localStorage.setItem('nsif_db_v44_t', JSON.stringify(checklistData))
+            delUser: (i) => {
+                let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                users.splice(i,1);
+                localStorage.setItem('nsif_users', JSON.stringify(users));
+                Admin.renderUsers();
+            }
         };
 
         const Auth = {
             login: () => {
                 const u = document.getElementById('login_user').value, p = document.getElementById('login_pass').value;
-                const found = (u === MASTER.email && p === MASTER.pass) ? MASTER : userData.find(x => x.email === u && x.pass === p);
-                if (found && !found.blocked) {
+                let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+                const found = (u === MASTER.email && p === MASTER.pass) || users.find(x => x.email === u && x.pass === p);
+                if (found) {
                     if (u === MASTER.email) document.getElementById('admin_area').style.display = 'block';
                     UI.showStep('step_menu');
                 } else alert("Accesso negato.");
             }
+        };
+
+        const UI = {
+            showStep: (id) => {
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            },
+            openVTI: () => window.open("https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/...", '_blank')
         };
     </script>
 </body>
