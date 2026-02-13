@@ -3,253 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione Hub - V5.0 MODULAR SYSTEM</title>
+    <title>NSIF Castione Hub - V2.6 COMPLETA</title>
     <style>
-        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; color: #333; }
+        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
+        .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
+        .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
+        .header { width: 100%; background: white; padding: 10px 0; text-align: center; border-bottom: 5px solid var(--securitas-red); }
+        .logo-securitas { height: 30px; }
+        .version-label { font-size: 0.75rem; font-weight: bold; color: var(--securitas-blue); margin-top: 5px; }
+        .container { width: 95%; max-width: 900px; margin: 20px auto; padding-bottom: 60px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
+        .active { display: block; animation: fadeIn 0.3s; }
         
-        /* Layout */
-        .header { background: var(--white); padding: 15px; text-align: center; border-bottom: 4px solid var(--securitas-red); }
-        .logo { height: 35px; }
-        .container { width: 95%; max-width: 1000px; margin: 20px auto; padding-bottom: 50px; }
+        /* Dashboard & Clocks */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .widget { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 3px solid var(--securitas-blue); }
+        .clock { font-size: 1.1rem; font-weight: bold; color: var(--securitas-red); }
+        .big-date { font-size: 1.8rem; font-weight: 800; color: var(--securitas-blue); margin: 20px 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
-        /* Moduli (Card) */
-        .module { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
-        .active { display: block; animation: fadeIn 0.4s; }
-        
-        /* UI Elements */
-        .btn { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .btn-primary { background: var(--securitas-blue); color: white; }
-        .btn-danger { background: var(--securitas-red); color: white; }
+        /* Menu */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .menu-item { padding: 25px; background: white; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
+        .link-item { background: #f8f9fa; border-left: 5px solid var(--securitas-blue); }
+
+        button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .btn-red { background: var(--securitas-red); }
+        .btn-gray { background: #6c757d; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
-        .btn-secondary { background: #6c757d; color: white; }
-        
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        
-        .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .menu-card { background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .menu-card:hover { border-color: var(--securitas-red); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background: #f8f9fa; }
-
-        /* Flow & Checklist */
-        .flow-box { text-align: left; background: #fff5f5; border-left: 5px solid var(--securitas-red); padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
-        .check-row { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-        .timestamp { margin-left: auto; font-size: 0.8rem; color: var(--securitas-blue); font-weight: bold; }
+        /* Checklist Styles */
+        .checklist-section-title { background: #eee; padding: 8px; font-weight: bold; text-align: left; margin-top: 15px; border-radius: 4px; color: var(--securitas-blue); }
+        .checklist-item { text-align: left; padding: 10px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 12px; }
+        .checklist-item label { font-size: 0.9rem; line-height: 1.3; }
+        .checklist-item small { display: block; color: #666; font-style: italic; margin-top: 2px; }
+        .timestamp { font-size: 0.7rem; color: var(--success); font-weight: bold; margin-left: auto; white-space: nowrap; }
+        .alert-banner { background: var(--securitas-red); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; display: none; position: sticky; top: 10px; z-index: 100; }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        input[type="checkbox"] { transform: scale(1.3); margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     </style>
 </head>
-<body onload="App.init()">
+<body onload="startTime()">
 
+    <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
-        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo">
-        <div style="font-size: 0.8rem; font-weight: bold; color: var(--securitas-blue);">SISTEMA MODULARE NSIF - V5.0</div>
+        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
+        <div class="version-label">NSIF CASTIONE HUB - VERSIONE 2.6 COMPLETA</div>
     </div>
 
     <div class="container">
-
-        <div id="mod-login" class="module active">
-            <h2 style="text-align: center;">ACCESSO SISTEMA</h2>
-            <input type="text" id="login-email" placeholder="Email Utente">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button class="btn btn-primary" onclick="Auth.login()">ACCEDI</button>
+        <div id="step_login" class="card active">
+            <h2>LOGIN SISTEMA</h2>
+            <input type="text" id="login_user" placeholder="Email Utente" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+            <input type="password" id="login_pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+            <button onclick="handleLogin()">ACCEDI</button>
         </div>
 
-        <div id="mod-admin" class="module">
-            <h2>⚙️ GESTIONE UTENTI & PRIVILEGI</h2>
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <h4>Aggiungi / Modifica Utente</h4>
-                <input type="text" id="adm-email" placeholder="Email">
-                <input type="text" id="adm-pass" placeholder="Password (lascia vuoto per non cambiare)">
-                <select id="adm-role">
-                    <option value="user">User (Solo Checklist)</option>
-                    <option value="admin">Admin (Gestione Completa)</option>
-                </select>
-                <button class="btn btn-primary" onclick="Admin.saveUser()">SALVA / AGGIORNA UTENTE</button>
+        <div id="step_dashboard" class="card">
+            <div class="dashboard-grid">
+                <div class="widget"><div id="clock_locarno" class="clock"></div><small>Castione (CH)</small></div>
+                <div class="widget"><div id="clock_ny" class="clock"></div><small>New York</small></div>
+                <div class="widget"><div id="clock_tokyo" class="clock"></div><small>Tokyo</small></div>
+                <div class="widget"><div style="font-size:1.1rem;">☀️ 8°C</div><small>Meteo</small></div>
             </div>
-            <table id="user-table">
-                <thead><tr><th>Email</th><th>Ruolo</th><th>Azioni</th></tr></thead>
-                <tbody id="user-list"></tbody>
-            </table>
-            <button class="btn btn-secondary" onclick="Router.go('mod-menu')">TORNA AL MENU</button>
-        </div>
-
-        <div id="mod-menu" class="module">
-            <div id="display-date" style="text-align: center; font-size: 1.5rem; font-weight: 800; color: var(--securitas-blue); margin-bottom: 20px;"></div>
-            <div class="grid-menu">
-                <div class="menu-card" onclick="Router.go('mod-accessi')">🛂 CONTROLLO ACCESSI</div>
-                <div class="menu-card" style="background: var(--securitas-red); color: white;" onclick="Router.go('mod-checklist-menu')">📋 CHECK-LIST TURNI</div>
-                <div class="menu-card" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 APRI BAUSICHT</div>
-                <div id="btn-admin-panel" class="menu-card" style="display: none; border: 2px solid var(--securitas-red);" onclick="Admin.open()">⚙️ PANNELLO ADMIN</div>
+            <div id="date_now" class="big-date"></div>
+            <div class="menu-grid">
+                <div class="menu-item" onclick="showStep('step_menu_accessi')">🛂 CONTROLLO ACCESSI</div>
+                <div class="menu-item btn-red" style="color:white" onclick="showStep('step_checklist_menu')">📋 CHECK-LIST ATTIVITÀ</div>
+                <div class="menu-item link-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 PORTALE BAUSICHT</div>
+                <div class="menu-item link-item" onclick="window.open('https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team%2FBusiness%20Continuity&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9&sharingv2=true&fromShare=true&at=9&clickparams=eyAiWC1BcHBOYW1lIiA6ICJNaWNyb3NvZnQgT3V0bG9vayIsICJYLUFwcFZlcnNpb24iIDogIjE2LjAuMTkyMzEuMjAyNDYiLCAiT1MiIDogIldpbmRvd3MiIH0%3D&CID=defbe0a1%2De03c%2De000%2D962a%2Dc3ca54328eab&cidOR=SPO&FolderCTID=0x01200090230CD6F45D0B4B90CA541D091FD821', '_blank')">📁 VTI EXTERNAL</div>
+                <div class="menu-item btn-red" id="admin_btn" style="display:none; color:white;" onclick="showAdminPanel()">⚙️ ADMIN</div>
             </div>
-            <button class="btn btn-secondary" onclick="location.reload()" style="margin-top: 40px;">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()" style="margin-top:30px;">LOGOUT</button>
         </div>
 
-        <div id="mod-accessi" class="module">
-            <h2>GESTIONE ACCESSI E BADGE</h2>
-            <button class="btn btn-danger" onclick="Router.go('mod-flow-badge')">⚠️ BADGE SMARRITO / DIMENTICATO</button>
-            <button class="btn btn-outline" onclick="Accessi.showOFT()">🏢 AZIENDA GESTITA DA OFT (Nijaz)</button>
-            <button class="btn btn-outline" onclick="Accessi.showFFS()">🏢 AZIENDA GESTITA DA FFS (La Morgia)</button>
+        <div id="step_menu_accessi" class="card">
+            <h2>CONTROLLO ACCESSI</h2>
+            <button onclick="alert('Flusso OFT...')">Azienda gestita da OFT</button>
+            <button onclick="alert('Flusso FFS...')">Azienda gestita da FFS</button>
+            <button class="btn-outline" onclick="showStep('step_visitatori_root')">Badge Visitatori / Stampa / CPC</button>
             <hr>
-            <button class="btn btn-secondary" onclick="Router.go('mod-menu')">TORNA AL MENU</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
 
-        <div id="mod-flow-badge" class="module">
-            <h3>PROCESSO GESTIONE BADGE</h3>
-            
-            <div class="flow-box">
-                <b>FASE 1: VERIFICA</b><br>
-                Cercare il nominativo su <b>Bausicht</b>. Se non esiste, deve registrarsi.
-            </div>
-            <div class="flow-box">
-                <b>FASE 2: AZIONE SU BAUSICHT</b><br>
-                - Se <b>SMARRITO</b>: Cliccare sul profilo -> Blocca Badge (Stato diventa Rosso).<br>
-                - Se <b>DIMENTICATO</b>: Lasciare stato attivo ma procedere al ritiro garanzia.
-            </div>
-            <div class="flow-box">
-                <b>FASE 3: RITIRO DOCUMENTO</b><br>
-                Ritirare un documento d'identità originale o chiavi del veicolo personale. Custodire in cassaforte/ufficio.
-            </div>
-            <div class="flow-box">
-                <b>FASE 4: BADGE PROVVISORIO</b><br>
-                Consegnare il Badge Visitatore numerato. Registrare il numero consegnato.
-            </div>
-            <div class="flow-box">
-                <b>FASE 5: RICONSEGNA</b><br>
-                Al termine del turno: restituire il documento <u>SOLO</u> dopo aver ricevuto indietro il badge provvisorio.
-            </div>
-            <button class="btn btn-primary" onclick="Router.go('mod-accessi')">PROCEDURA COMPLETATA</button>
+        <div id="step_visitatori_root" class="card">
+            <h2>VISITATORI / CPC / STAMPA</h2>
+            <button onclick="showStep('step_v_reg')">SÌ, Annunciata</button>
+            <button class="btn-red" onclick="alert('Accesso negato.');">NO, Non annunciata</button>
+            <button class="btn-gray" onclick="showStep('step_menu_accessi')">INDIETRO</button>
+        </div>
+        <div id="step_v_reg" class="card"><h2>RILASCIO BADGE...</h2><button onclick="showStep('step_dashboard')">FINE</button></div>
+
+        <div id="step_checklist_menu" class="card">
+            <h2>SCEGLI TURNO</h2>
+            <button onclick="openChecklist('T1')">TURNO T1 (06:00 - 15:00)</button>
+            <button onclick="openChecklist('T2')">TURNO T2 (14:45 - 22:00)</button>
+            <button onclick="openChecklist('T3')">TURNO T3 (08:00 - 23:00)</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
 
-        <div id="mod-checklist-menu" class="module">
-            <h2>SELEZIONA TURNO</h2>
-            <button class="btn btn-primary" onclick="Checklist.render('T1')">TURNO T1 (06:00 - 15:00)</button>
-            <button class="btn btn-primary" onclick="Checklist.render('T2')">TURNO T2 (14:45 - 22:00)</button>
-            <button class="btn btn-primary" onclick="Checklist.render('T3')">TURNO T3 (08:00 - 15:30)</button>
-            <button class="btn btn-secondary" onclick="Router.go('mod-menu')">INDIETRO</button>
+        <div id="step_checklist_view" class="card" style="text-align:left;">
+            <div id="checklist_alert" class="alert-banner"></div>
+            <h2 id="checklist_title" style="text-align:center;"></h2>
+            <div id="checklist_content"></div>
+            <button class="btn-gray" onclick="showStep('step_checklist_menu')" style="margin-top:20px;">CHIUDI CHECK-LIST</button>
         </div>
 
-        <div id="mod-checklist-view" class="module">
-            <h2 id="check-title" style="text-align: center;"></h2>
-            <div id="check-content"></div>
-            <button class="btn btn-secondary" onclick="Router.go('mod-checklist-menu')" style="margin-top: 20px;">INDIETRO</button>
+        <div id="step_admin" class="card">
+            <h2>GESTIONE UTENTI</h2>
+            <div style="display:flex; gap:5px; margin-bottom:15px;">
+                <input type="text" id="new_u" placeholder="Email" style="width:100px;">
+                <input type="text" id="new_p" placeholder="Pass">
+                <input type="number" id="new_v" value="30" style="width:60px;">
+                <button onclick="addUser()" style="width:80px;">CREA</button>
+            </div>
+            <table id="user_table">
+                <thead><tr><th>Email</th><th>Pass</th><th>GG</th><th>Stato</th><th>Azioni</th></tr></thead>
+                <tbody id="u_list_body"></tbody>
+            </table>
+            <button class="btn-outline" onclick="showStep('step_dashboard')" style="margin-top:20px;">CHIUDI</button>
         </div>
-
     </div>
 
     <script>
-        // --- 1. MODULO CORE (ROUTING E DATABASE) ---
-        const App = {
-            dbKey: 'nsif_v5_db',
-            init: function() {
-                if(!localStorage.getItem(this.dbKey)) {
-                    const master = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF", role: "superadmin" };
-                    localStorage.setItem(this.dbKey, JSON.stringify([master]));
-                }
-                this.updateClock();
+        const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
+        
+        const dataChecklists = {
+            T1: {
+                "INIZIO TURNO": [
+                    { t: "Aprire cancello Campo Base Nord", o: "Codice 6988" },
+                    { t: "Parcheggio Coordinamento Securitas", o: "Posto tutto a destra" },
+                    { t: "Aprire ufficio Campo Base Nord", o: "Codice 1907" },
+                    { t: "Alzare tapparelle", o: "" },
+                    { t: "Verifica riscaldamento", o: "Pos. 4 inverno / spento estate" },
+                    { t: "Accendere telefono servizio", o: "Pin 6681 / Sblocco 1907" },
+                    { t: "Prova radio collegamento", o: "Canale 15" },
+                    { t: "Aprire cancello pedonale", o: "Codice 6988" },
+                    { t: "Apertura CAST07", o: "Codice 1907" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Controllo DPI entrate/uscite", o: "" },
+                    { t: "Gestione Badge Visitatori/Stampa", o: "Seguire processo" },
+                    { t: "Monitoraggio transiti", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Pulizia ufficio e straccio terra", o: "CAST07" },
+                    { t: "Passaggio di consegna CAST09", o: "Chiudere il CAST07" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore e borsa sanitaria", o: "Batterie, scadenze, inventario" }
+                ]
             },
-            updateClock: function() {
-                const now = new Date();
-                const opt = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                document.getElementById('display-date').innerText = now.toLocaleDateString('it-IT', opt).toUpperCase();
-                setTimeout(() => this.updateClock(), 1000);
-            }
-        };
-
-        const Router = {
-            go: function(id) {
-                document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
-                window.scrollTo(0,0);
-            }
-        };
-
-        // --- 2. MODULO AUTH & ADMIN ---
-        const Auth = {
-            currentUser: null,
-            login: function() {
-                const e = document.getElementById('login-email').value.trim();
-                const p = document.getElementById('login-pass').value.trim();
-                const users = JSON.parse(localStorage.getItem(App.dbKey));
-                const found = users.find(u => u.email === e && u.pass === p);
-                
-                if(found) {
-                    this.currentUser = found;
-                    if(found.role === 'admin' || found.role === 'superadmin') {
-                        document.getElementById('btn-admin-panel').style.display = 'block';
-                    }
-                    Router.go('mod-menu');
-                } else { alert("Credenziali errate."); }
-            }
-        };
-
-        const Admin = {
-            open: function() { this.renderTable(); Router.go('mod-admin'); },
-            saveUser: function() {
-                const email = document.getElementById('adm-email').value;
-                const pass = document.getElementById('adm-pass').value;
-                const role = document.getElementById('adm-role').value;
-                let users = JSON.parse(localStorage.getItem(App.dbKey));
-                
-                const idx = users.findIndex(u => u.email === email);
-                if(idx > -1) {
-                    if(pass !== "") users[idx].pass = pass;
-                    users[idx].role = role;
-                } else {
-                    users.push({email, pass, role});
-                }
-                localStorage.setItem(App.dbKey, JSON.stringify(users));
-                this.renderTable();
-                alert("Utente aggiornato.");
+            T2: {
+                "INIZIO TURNO": [
+                    { t: "Aprire cancello entrata CAST09", o: "Codice 6988" },
+                    { t: "Aprire cancello uscita CAST09", o: "Codice 6988" },
+                    { t: "Parcheggio dietro baracca", o: "" },
+                    { t: "Aprire ufficio CAST09", o: "Codice 1907" },
+                    { t: "Alzare tapparelle e serrande tornello", o: "" },
+                    { t: "Verifica riscaldamento", o: "Leva 3/4 inverno" },
+                    { t: "Prova radio", o: "Canale 15" },
+                    { t: "Verifica tornelli, barriera, luci", o: "Pulizia fotocellule se necessario" },
+                    { t: "Verifica carica monopattino", o: "Luce Verde = Carico" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Controllo DPI entrate/uscite", o: "" },
+                    { t: "Gestione flussi veicolari", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Pulizia postazione", o: "Straccio su superfici" },
+                    { t: "Passaggio di consegna", o: "CAST09" },
+                    { t: "Passare lo straccio a terra", o: "Entro le 22:00" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore/borsa sanitaria", o: "Annotare su modulo excel" }
+                ]
             },
-            renderTable: function() {
-                const users = JSON.parse(localStorage.getItem(App.dbKey));
-                document.getElementById('user-list').innerHTML = users.map((u, i) => `
-                    <tr>
-                        <td>${u.email}</td>
-                        <td>${u.role}</td>
-                        <td>${u.role !== 'superadmin' ? `<button class="btn-danger" style="padding:5px" onclick="Admin.delete(${i})">Elimina</button>` : 'System'}</td>
-                    </tr>
-                `).join('');
-            },
-            delete: function(i) {
-                let users = JSON.parse(localStorage.getItem(App.dbKey));
-                users.splice(i, 1);
-                localStorage.setItem(App.dbKey, JSON.stringify(users));
-                this.renderTable();
+            T3: {
+                "INIZIO TURNO": [
+                    { t: "Parcheggio Coordinamento", o: "Al centro" },
+                    { t: "Prova radio", o: "Canale 15" },
+                    { t: "Verifica moduli cassettino nero", o: "Da classare" },
+                    { t: "Ritiro telefono servizio CAST07", o: "" },
+                    { t: "Giro perlustrazione cantiere", o: "Verifica spostamenti/emergenza" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Supporto colleghi postazioni", o: "" },
+                    { t: "Controllo CAST08", o: "Verifica che non sia aperto senza presidio" },
+                    { t: "Segnalazione contromano CAST09", o: "Foto targa a La Morgia" },
+                    { t: "Verifica DPI operai", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Riconsegna telefono CAST07", o: "" },
+                    { t: "Passaggio di consegna finale", o: "" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore/borsa sanitaria", o: "" }
+                ]
             }
         };
 
-        // --- 3. MODULO ACCESSI ---
-        const Accessi = {
-            showOFT: function() { alert("FLUSSO OFT:\n1. Riferimento: Nijaz\n2. Verificare autorizzazione\n3. Compilare modulo accompagnamento"); },
-            showFFS: function() { alert("FLUSSO FFS:\n1. Riferimento: Marco La Morgia\n2. Verificare Bausicht\n3. Controllo DPI"); }
-        };
+        function startTime() {
+            const now = new Date();
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
+            document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'America/New_York'});
+            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'Asia/Tokyo'});
+            setTimeout(startTime, 1000);
+        }
 
-        // --- 4. MODULO CHECKLIST ---
-        const Checklist = {
-            data: {
-                T1: { "Inizio": ["Apertura Campo Base (6988)", "Ufficio Coordinamento (1907)", "Attivazione Telefono (6681)", "Radio Canale 15", "Apertura CAST07"], "Fine": ["Pulizia ufficio", "Passaggio consegna CAST09"] },
-                T2: { "Inizio": ["Apertura CAST09 (6988)", "Ufficio CAST09 (1907)", "Verifica barriere", "Carica monopattino"], "Fine": ["Pulizia superfici", "Straccio terra (22:00)"] },
-                T3: { "Inizio": ["Ritiro telefono CAST07", "Giro cantiere monopattino", "Verifica moduli"], "Fine": ["Riconsegna telefono CAST07"] }
-            },
-            render: function(turno) {
-                const cont = document.getElementById('check-content');
-                document.getElementById('check-title').innerText = "TURNO " + turno;
-                cont.innerHTML = "";
-                for(let sec in this.data[turno]) {
-                    cont.innerHTML += `<div style="background:#003366; color:white; padding:10px; font-weight:bold; margin-top:15px;">${sec}</div>`;
-                    this.data[turno][sec].forEach(task => {
-                        cont.innerHTML += `<div class="check-row"><input type="checkbox" onchange="this.nextElementSibling.nextElementSibling.innerText=this.checked?new Date().toLocaleTimeString():''"> <label>${task}</label> <span class="timestamp"></span></div>`;
-                    });
-                }
-                Router.go('mod-checklist-view');
+        function handleLogin() {
+            const u = document.getElementById('login_user').value;
+            const p = document.getElementById('login_pass').value;
+            if (u === MASTER.email && p === MASTER.pass) {
+                document.getElementById('admin_btn').style.display = 'flex';
+                showStep('step_dashboard');
+            } else { alert("Dati errati"); }
+        }
+
+        function showStep(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function openChecklist(turno) {
+            const title = document.getElementById('checklist_title');
+            const content = document.getElementById('checklist_content');
+            title.innerText = "CHECK-LIST INTEGRALE " + turno;
+            content.innerHTML = "";
+            
+            const sections = dataChecklists[turno];
+            for (let sec in sections) {
+                content.innerHTML += `<div class="checklist-section-title">${sec}</div>`;
+                sections[sec].forEach((item, i) => {
+                    const id = `chk_${turno}_${sec.replace(/\s/g,'')}_${i}`;
+                    content.innerHTML += `
+                        <div class="checklist-item">
+                            <input type="checkbox" id="${id}" onchange="mark('${id}')">
+                            <label for="${id}">
+                                <b>${item.t}</b>
+                                ${item.o ? `<small>${item.o}</small>` : ''}
+                            </label>
+                            <span id="ts_${id}" class="timestamp"></span>
+                        </div>`;
+                });
             }
-        };
+            updateAlert();
+            showStep('step_checklist_view');
+        }
+
+        function mark(id) {
+            const cb = document.getElementById(id);
+            const ts = document.getElementById('ts_' + id);
+            ts.innerText = cb.checked ? "OK: " + new Date().toLocaleTimeString('it-CH', {hour:'2-digit', minute:'2-digit'}) : "";
+            updateAlert();
+        }
+
+        function updateAlert() {
+            const all = document.querySelectorAll('#checklist_content input[type="checkbox"]').length;
+            const checked = document.querySelectorAll('#checklist_content input[type="checkbox"]:checked').length;
+            const banner = document.getElementById('checklist_alert');
+            if (checked < all) {
+                banner.style.display = 'block';
+                banner.innerText = `⚠️ MANCANO ${all - checked} ATTIVITÀ AL COMPLETAMENTO`;
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        // --- ADMIN (Invariato) ---
+        function showAdminPanel() { renderUsers(); showStep('step_admin'); }
+        function addUser() {
+            let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, validity: document.getElementById('new_v').value, blocked: false });
+            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+        }
+        function renderUsers() {
+            const u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            document.getElementById('u_list_body').innerHTML = u.map((x, i) => `<tr><td>${x.email}</td><td>${x.pass}</td><td>${x.validity}</td><td>${x.blocked?'OFF':'ON'}</td><td><button onclick="delUser(${i})" class="btn-red" style="padding:5px; font-size:0.6rem;">X</button></td></tr>`).join('');
+        }
     </script>
 </body>
 </html>
