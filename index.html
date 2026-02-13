@@ -3,145 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione - Sistema Integrale V2.1</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>NSIF Hub - Castione V2.2</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
         .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
         .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
         .header { width: 100%; background: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); }
         .logo-securitas { height: 32px; }
-        .container { width: 95%; max-width: 750px; margin: 20px auto; padding-bottom: 60px; }
+        .container { width: 95%; max-width: 850px; margin: 20px auto; padding-bottom: 60px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        h2 { color: var(--securitas-blue); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; }
+        
+        /* Dashboard Styles */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .widget { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 3px solid var(--securitas-blue); }
+        .clock { font-size: 1.2rem; font-weight: bold; color: var(--securitas-red); }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 30px; }
+        .menu-item { padding: 30px; background: white; border-radius: 15px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; }
+        .menu-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
+        .menu-item i { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+        /* Buttons & Forms */
         button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-red { background: var(--securitas-red); }
         .btn-gray { background: #6c757d; }
-        .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px; border-radius: 4px; }
-        .nota-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.85rem; text-align: left; color: #856404; }
-        .form-group { text-align: left; margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: var(--securitas-blue); }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.75rem; background: white; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        .status-on { color: green; font-weight: bold; }
-        .status-off { color: red; font-weight: bold; }
+        .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; border-radius: 4px; }
+        .nota-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.8rem; text-align: left; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
     </style>
 </head>
-<body>
+<body onload="startTime()">
 
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner NSIF" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div style="font-weight: bold; color: var(--securitas-blue); font-size: 0.9rem; margin-top:5px;">NSIF CASTIONE - GESTIONE ACCESSI V2.1</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
-            <h2>Accesso al Sistema</h2>
-            <div class="form-group"><label>Email</label><input type="text" id="login_user"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="login_pass"></div>
+            <h2>NSIF CASTIONE - LOGIN</h2>
+            <div style="margin-bottom:15px;"><input type="text" id="login_user" placeholder="Email"></div>
+            <div style="margin-bottom:15px;"><input type="password" id="login_pass" placeholder="Password"></div>
             <button onclick="handleLogin()">ACCEDI</button>
-            <button class="btn-outline" style="border:none; font-size:0.8rem; text-decoration:underline;" onclick="alert('Contattare l\'amministratore (Marco La Morgia) per il reset della password.')">Password dimenticata?</button>
+            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contattare l\'amministratore per il reset.')">Password dimenticata?</button>
         </div>
 
-        <div id="step_menu" class="card">
-            <h2>Seleziona Azienda</h2>
+        <div id="step_dashboard" class="card">
+            <div class="dashboard-grid">
+                <div class="widget">
+                    <div id="date_now" style="font-weight:bold;"></div>
+                    <div id="clock_locarno" class="clock"></div>
+                    <small>Locarno (CH)</small>
+                </div>
+                <div class="widget">
+                    <div id="clock_ny" class="clock"></div>
+                    <small>New York</small>
+                </div>
+                <div class="widget">
+                    <div id="clock_tokyo" class="clock"></div>
+                    <small>Tokyo</small>
+                </div>
+                <div class="widget">
+                    <div style="font-size:1.2rem;">☀️ 7°C</div>
+                    <small>Meteo Castione</small>
+                </div>
+            </div>
+
+            <h2>Menu Principale</h2>
+            <div class="menu-grid">
+                <div class="menu-item" onclick="showStep('step_menu_accessi')">
+                    <b>🛂 Controllo Accessi</b>
+                </div>
+                <div class="menu-item" onclick="showStep('step_visitatori_root')">
+                    <b>👥 Visitatori / CPC</b>
+                </div>
+                <div class="menu-item" id="admin_btn" style="display:none;" onclick="showAdminPanel()">
+                    <b>⚙️ Amministrazione</b>
+                </div>
+            </div>
+            <button class="btn-gray" onclick="location.reload()" style="margin-top:40px;">LOGOUT</button>
+        </div>
+
+        <div id="step_menu_accessi" class="card">
+            <h2>Controllo Accessi</h2>
             <button onclick="selectAzienda('OFT')">Azienda gestita da OFT</button>
             <button onclick="selectAzienda('FFS')">Azienda gestita da FFS</button>
-            <button class="btn-outline" onclick="showStep('step_visitatori')">Badge Visitatore / Stampa / Paritetica</button>
-            <div id="admin_area" style="display:none; margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 10px;">
-                <button class="btn-red" onclick="showAdminPanel()">⚙️ PANNELLO AMMINISTRATORE</button>
-            </div>
-            <button class="btn-gray" onclick="location.reload()" style="margin-top:20px;">ESCI (LOGOUT)</button>
+            <button class="btn-outline" onclick="showStep('step_dashboard')">TORNA ALLA DASHBOARD</button>
         </div>
 
-        <div id="step_np" class="card">
-            <h2 id="np_title">Non presente nel sistema</h2>
+        <div id="step_visitatori_root" class="card">
+            <h2>Badge Visitatori / Stampa / CPC</h2>
+            <div class="instruction-card">La persona è stata annunciata tramite e-mail o portale?</div>
+            <button onclick="showStep('step_v_dati')">SÌ, Annunciata</button>
+            <button class="btn-red" onclick="alert('Non può entrare. Contattare il referente per l\'annuncio.');">NO, Non annunciata</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
+        </div>
+
+        <div id="step_v_dati" class="card">
+            <h2>Registrazione Documento</h2>
             <div class="instruction-card">
-                La persona non è autorizzata ad entrare. Bisogna richiedere conferma a <b id="np_referente">Referente</b> indipendentemente dall'orario.
+                1. Richiedere e trattenere un documento d'identità valido.<br>
+                2. Identificare il tipo di Badge necessario.
             </div>
-            <div class="nota-box">Nota: Se non dovesse rispondere, la persona NON può assolutamente entrare. Attendere una risposta.</div>
+            <button onclick="regBadge('VISITATORE')">Badge VISITATORE</button>
+            <button onclick="regBadge('STAMPA')">Badge STAMPA</button>
+            <button onclick="regBadge('PARITETICA/CPC')">Badge CPC</button>
+        </div>
+
+        <div id="step_v_finale" class="card">
+            <h2 id="v_titolo_finale">Consegna</h2>
             <div class="instruction-card">
-                1. Richiedere alla persona quanti giorni verrà a lavorare in cantiere.<br>
-                2. Richiedere conferma al referente per l'autorizzazione della durata del soggiorno.<br>
-                3. Successivamente il referente dovrà decidere se farlo inserire nel sistema oppure no.
+                • Badge <b id="badge_tipo"></b> consegnato.<br>
+                • Registrare il numero del badge nel sistema gestionale.<br><br>
+                <b>AZIONE OBBLIGATORIA:</b><br>
+                • Chiamare il referente interno per l'accompagnamento in cantiere.
             </div>
-            
-            <div class="nota-box" style="background:#fce4ec; border-color:#e91e63; color:#880e4f;">
-                <b>SITUAZIONE 1 (Autorizzato):</b> Farsi consegnare Documento/Patente/Chiavi. Preparare Badge Provvisorio (specificare motivo nota). Informare l'operaio di tornare a fine turno.<br><br>
-                <b>SITUAZIONE 2 (Negato):</b> Comunicare che non ha il permesso di accedere. Osservare che non provi ad entrare. Segnalare a La Morgia anomalie.
-            </div>
-            <button class="btn-gray" onclick="showStep('step_menu')">TORNA AL MENU</button>
+            <button onclick="showStep('step_dashboard')">COMPLETA E TORNA ALLA DASHBOARD</button>
         </div>
 
         <div id="step_sistema" class="card">
-            <h2 id="sys_title">Dipendente nel sistema?</h2>
+            <h2 id="sys_title">Nel sistema?</h2>
             <button onclick="checkSistema(true)">SÌ</button>
             <button class="btn-red" onclick="checkSistema(false)">NO</button>
         </div>
-
+        
         <div id="step_formazione" class="card">
-            <h2>Formazione "Induction" eseguita?</h2>
+            <h2>Formazione Induction eseguita?</h2>
             <button onclick="checkFormazione(true)">SÌ</button>
             <button class="btn-red" onclick="checkFormazione(false)">NO</button>
         </div>
 
-        <div id="step_foto" class="card">
-            <h2>Foto presente nel sistema?</h2>
-            <button onclick="alert('SITUAZIONE 2: Compito terminato.'); showStep('step_menu');">SÌ</button>
-            <button class="btn-red" onclick="showSituazione1()">NO</button>
-        </div>
-
         <div id="step_situazione1" class="card">
             <h2>SITUAZIONE 1</h2>
-            <div id="sit1_header" class="instruction-card"></div>
-            <div class="nota-box">Nota: Nel 99% delle persone che si presentano sul posto e che non hanno la foto nel sistema Bausicht, non hanno effettuato la formazione di sicurezza.</div>
-            <div class="instruction-card">
-                • Effettuare la foto all'operaio.<br>
-                • Farsi consegnare il Documento personale, Patente o chiavi della macchina.<br>
-                <div class="nota-box" style="background:transparent; border:none; margin:0; padding:0; font-style:italic;">Nota: Questo serve per far sì che la persona ritorna da noi per riconsegnare il Badge</div>
-                • Preparare il Badge Provvisorio inserendo nella nota del sistema il motivo per cui viene rilasciato questo Badge.<br>
-                • Comunicare all'operaio che a fine turno dovrà ritornare a lasciare il Badge Provvisorio e a riprendere il proprio documento personale e a ritirare il proprio Badge Personale.
-            </div>
-            <button class="btn-red" onclick="showStep('step_backoffice')">VAI A BACKOFFICE E CHIUSURA</button>
-        </div>
-
-        <div id="step_backoffice" class="card">
-            <h2>Backoffice e Chiusura</h2>
-            <div class="instruction-card">
-                1. Stampare il Badge Personale.<br>
-                2. Compilare il modulo di ritiro badge (Azienda, Cognome, Nome, Numero Badge).<br>
-                3. Portare il Badge Personale e il modulo a <b>Loris Zatta</b>.<br>
-                4. Attendere il ritorno del modulo firmato (Visto).<br>
-                5. Lasciare il modulo nella cassetta di <b>Marco La Morgia</b>.
-            </div>
-            <div class="nota-box">
-                <b>Competenza T3:</b><br>
-                • Prelevare modulo, verifica Excel: VTI External > Sharing Documenti > Badge > Badge Stampati.xlsx > Apri in Excel online.<br>
-                • Rimuovere le note sotto la persona.<br>
-                • Classificare: Azienda, Cognome, Nome e inserire nel raccoglitore.
-            </div>
-            <button onclick="showStep('step_menu')">COMPITO TERMINATO</button>
+            <div class="instruction-card" id="sit1_txt"></div>
+            <button class="btn-red" onclick="showStep('step_dashboard')">TERMINA PROCESSO</button>
         </div>
 
         <div id="step_admin" class="card">
             <h2>Gestione Utenti</h2>
-            <div class="form-group">
+            <div style="display:flex; gap:5px; margin-bottom:15px;">
                 <input type="text" id="new_u" placeholder="Email">
-                <input type="text" id="new_p" placeholder="Password" style="margin-top:5px;">
-                <input type="number" id="new_v" placeholder="Validità (giorni)" value="30" style="margin-top:5px;">
+                <input type="text" id="new_p" placeholder="Pass">
+                <button onclick="addUser()" style="width:100px;">AGGIUNGI</button>
             </div>
-            <button onclick="addUser()">AGGIUNGI UTENTE</button>
-            <table style="width:100%; font-size:0.7rem;">
-                <thead><tr><th>Email</th><th>Password</th><th>Scad (gg)</th><th>Stato</th><th>Azione</th></tr></thead>
+            <table>
+                <thead><tr><th>Email</th><th>Password</th><th>Stato</th><th>Azione</th></tr></thead>
                 <tbody id="u_list_body"></tbody>
             </table>
-            <button class="btn-outline" onclick="showStep('step_menu')" style="margin-top:20px;">INDIETRO</button>
+            <button class="btn-outline" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
     </div>
 
@@ -149,7 +163,17 @@
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
         let aziendaSelezionata = "";
 
-        // TASTO ENTER
+        // Orologio e Data
+        function startTime() {
+            const now = new Date();
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-CH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
+            document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('en-US', {timeZone:'America/New_York'});
+            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('ja-JP', {timeZone:'Asia/Tokyo'});
+            setTimeout(startTime, 1000);
+        }
+
+        // Login con tasto Enter
         document.getElementById('login_pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
         function handleLogin() {
@@ -158,58 +182,55 @@
             let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
             const user = (u === MASTER.email && p === MASTER.pass) ? MASTER : users.find(x => x.email === u && x.pass === p);
 
-            if (user) {
-                if (user.blocked) { alert("ACCOUNT BLOCCATO"); return; }
-                if(u === MASTER.email) document.getElementById('admin_area').style.display = 'block';
-                showStep('step_menu');
-            } else { alert("Email o Password errati."); }
+            if (user && !user.blocked) {
+                if(u === MASTER.email) document.getElementById('admin_btn').style.display = 'block';
+                showStep('step_dashboard');
+            } else { alert("Accesso negato."); }
         }
-
-        function selectAzienda(az) { aziendaSelezionata = az; document.getElementById('sys_title').innerText = "Azienda " + az + ": Nel sistema?"; showStep('step_sistema'); }
-        
-        function checkSistema(presente) {
-            if (!presente) {
-                document.getElementById('np_title').innerText = aziendaSelezionata + ": Non presente";
-                document.getElementById('np_referente').innerText = (aziendaSelezionata === 'OFT') ? "Nijaz Pepeljak" : "Marco La Morgia";
-                showStep('step_np');
-            } else {
-                (aziendaSelezionata === 'OFT') ? showStep('step_formazione') : showStep('step_foto');
-            }
-        }
-
-        function checkFormazione(fatta) {
-            const h = document.getElementById('sit1_header');
-            h.innerText = fatta ? "Formazione eseguita - Foto non presente" : "Ci comunica di non aver effettuato la formazione di sicurezza";
-            showStep(fatta ? 'step_foto' : 'step_situazione1');
-        }
-
-        function showSituazione1() { showStep('step_situazione1'); }
 
         function showStep(id) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // --- ADMIN FUNCTIONS ---
+        // Flussi Controllo Accessi
+        function selectAzienda(az) { aziendaSelezionata = az; showStep('step_sistema'); }
+        function checkSistema(si) {
+            if(!si) alert("Chiamare Referente (Pepeljak o La Morgia)");
+            else (aziendaSelezionata === 'OFT') ? showStep('step_formazione') : showStep('step_situazione1');
+        }
+        function checkFormazione(si) {
+            document.getElementById('sit1_txt').innerText = si ? "Foto mancante: Seguire Situazione 1" : "Formazione non fatta: Seguire Situazione 1 + Nota 99% Bausicht";
+            showStep('step_situazione1');
+        }
+
+        // Flusso Visitatori
+        function regBadge(tipo) {
+            document.getElementById('badge_tipo').innerText = tipo;
+            showStep('step_v_finale');
+        }
+
+        // Admin
         function showAdminPanel() { renderUsers(); showStep('step_admin'); }
         function addUser() {
             let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, validity: document.getElementById('new_v').value, blocked: false });
+            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, blocked: false });
             localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+        }
+        function deleteUser(i) {
+            let u = JSON.parse(localStorage.getItem('nsif_users'));
+            u.splice(i, 1);
+            localStorage.setItem('nsif_users', JSON.stringify(u));
+            renderUsers();
         }
         function renderUsers() {
             const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
             document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
                 <tr>
-                    <td>${x.email}</td>
-                    <td><input type="text" value="${x.pass}" onchange="updateUser(${i}, 'pass', this.value)" style="width:60px; font-size:0.7rem;"></td>
-                    <td><input type="number" value="${x.validity}" onchange="updateUser(${i}, 'validity', this.value)" style="width:30px; font-size:0.7rem;"></td>
-                    <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'OFF' : 'ON'}</td>
-                    <td><button onclick="toggleUser(${i})" style="padding:4px; font-size:0.6rem;">${x.blocked ? 'SBLOCCA' : 'BLOCCA'}</button></td>
+                    <td>${x.email}</td><td>${x.pass}</td><td>${x.blocked ? 'OFF' : 'ON'}</td>
+                    <td><button onclick="deleteUser(${i})" class="btn-red" style="padding:5px; font-size:0.7rem;">CANCELLA</button></td>
                 </tr>`).join('');
         }
-        function updateUser(i, f, v) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i][f] = v; localStorage.setItem('nsif_users', JSON.stringify(u)); }
-        function toggleUser(i) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i].blocked = !u[i].blocked; localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers(); }
     </script>
 </body>
 </html>
