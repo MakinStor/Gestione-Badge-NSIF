@@ -3,38 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Hub - Castione V2.2</title>
+    <title>NSIF Castione Hub - V2.3</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
         .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
         .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
-        .header { width: 100%; background: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--securitas-red); }
+        .header { width: 100%; background: white; padding: 15px 0; text-align: center; border-bottom: 5px solid var(--securitas-red); }
         .logo-securitas { height: 32px; }
-        .container { width: 95%; max-width: 850px; margin: 20px auto; padding-bottom: 60px; }
+        .container { width: 95%; max-width: 900px; margin: 20px auto; padding-bottom: 60px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Dashboard Styles */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        /* Dashboard Widgets */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .widget { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 3px solid var(--securitas-blue); }
-        .clock { font-size: 1.2rem; font-weight: bold; color: var(--securitas-red); }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 30px; }
-        .menu-item { padding: 30px; background: white; border-radius: 15px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; }
-        .menu-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
-        .menu-item i { font-size: 2rem; display: block; margin-bottom: 10px; }
+        .clock { font-size: 1.1rem; font-weight: bold; color: var(--securitas-red); }
+        
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+        .menu-item { padding: 25px; background: white; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; font-weight: bold; }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
+        .link-item { background: #f8f9fa; border-left: 4px solid var(--securitas-blue); text-align: left; }
 
-        /* Buttons & Forms */
+        /* Buttons & Layout */
         button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-red { background: var(--securitas-red); }
         .btn-gray { background: #6c757d; }
-        .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; border-radius: 4px; }
+        .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; }
         .nota-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.8rem; text-align: left; }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        
+        /* Table Admin */
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .status-on { color: green; font-weight: bold; }
+        .status-off { color: red; font-weight: bold; }
     </style>
 </head>
 <body onload="startTime()">
@@ -50,80 +55,53 @@
             <div style="margin-bottom:15px;"><input type="text" id="login_user" placeholder="Email"></div>
             <div style="margin-bottom:15px;"><input type="password" id="login_pass" placeholder="Password"></div>
             <button onclick="handleLogin()">ACCEDI</button>
-            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contattare l\'amministratore per il reset.')">Password dimenticata?</button>
+            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contattare Marco La Morgia per il reset.')">Password dimenticata?</button>
         </div>
 
         <div id="step_dashboard" class="card">
             <div class="dashboard-grid">
-                <div class="widget">
-                    <div id="date_now" style="font-weight:bold;"></div>
-                    <div id="clock_locarno" class="clock"></div>
-                    <small>Locarno (CH)</small>
-                </div>
-                <div class="widget">
-                    <div id="clock_ny" class="clock"></div>
-                    <small>New York</small>
-                </div>
-                <div class="widget">
-                    <div id="clock_tokyo" class="clock"></div>
-                    <small>Tokyo</small>
-                </div>
-                <div class="widget">
-                    <div style="font-size:1.2rem;">☀️ 7°C</div>
-                    <small>Meteo Castione</small>
-                </div>
+                <div class="widget"><div id="date_now" style="font-size:0.8rem;"></div><div id="clock_locarno" class="clock"></div><small>Castione (CH)</small></div>
+                <div class="widget"><div id="clock_ny" class="clock"></div><small>New York</small></div>
+                <div class="widget"><div id="clock_tokyo" class="clock"></div><small>Tokyo</small></div>
+                <div class="widget"><div style="font-size:1.1rem;">☀️ 8°C</div><small>Meteo locale</small></div>
             </div>
 
-            <h2>Menu Principale</h2>
+            <h2>Dashboard Operativa</h2>
             <div class="menu-grid">
-                <div class="menu-item" onclick="showStep('step_menu_accessi')">
-                    <b>🛂 Controllo Accessi</b>
-                </div>
-                <div class="menu-item" onclick="showStep('step_visitatori_root')">
-                    <b>👥 Visitatori / CPC</b>
-                </div>
-                <div class="menu-item" id="admin_btn" style="display:none;" onclick="showAdminPanel()">
-                    <b>⚙️ Amministrazione</b>
-                </div>
+                <div class="menu-item" onclick="showStep('step_menu_accessi')">🛂 CONTROLLO ACCESSI</div>
+                <div class="menu-item link-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 PORTALE BAUSICHT</div>
+                <div class="menu-item link-item" onclick="window.open('https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team%2FBusiness%20Continuity&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9&sharingv2=true&fromShare=true&at=9&clickparams=eyAiWC1BcHBOYW1lIiA6ICJNaWNyb3NvZnQgT3V0bG9vayIsICJYLUFwcFZlcnNpb24iIDogIjE2LjAuMTkyMzEuMjAyNDYiLCAiT1MiIDogIldpbmRvd3MiIH0%3D&CID=defbe0a1%2De03c%2De000%2D962a%2Dc3ca54328eab&cidOR=SPO&FolderCTID=0x01200090230CD6F45D0B4B90CA541D091FD821', '_blank')">📁 VTI EXTERNAL</div>
+                <div class="menu-item btn-red" id="admin_btn" style="display:none; color:white;" onclick="showAdminPanel()">⚙️ AMMINISTRAZIONE</div>
             </div>
-            <button class="btn-gray" onclick="location.reload()" style="margin-top:40px;">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()" style="margin-top:30px;">ESCI (LOGOUT)</button>
         </div>
 
         <div id="step_menu_accessi" class="card">
             <h2>Controllo Accessi</h2>
             <button onclick="selectAzienda('OFT')">Azienda gestita da OFT</button>
             <button onclick="selectAzienda('FFS')">Azienda gestita da FFS</button>
-            <button class="btn-outline" onclick="showStep('step_dashboard')">TORNA ALLA DASHBOARD</button>
-        </div>
-
-        <div id="step_visitatori_root" class="card">
-            <h2>Badge Visitatori / Stampa / CPC</h2>
-            <div class="instruction-card">La persona è stata annunciata tramite e-mail o portale?</div>
-            <button onclick="showStep('step_v_dati')">SÌ, Annunciata</button>
-            <button class="btn-red" onclick="alert('Non può entrare. Contattare il referente per l\'annuncio.');">NO, Non annunciata</button>
+            <button class="btn-outline" onclick="showStep('step_visitatori_root')">Badge Visitatori / Stampa / CPC</button>
+            <hr>
             <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
 
-        <div id="step_v_dati" class="card">
-            <h2>Registrazione Documento</h2>
-            <div class="instruction-card">
-                1. Richiedere e trattenere un documento d'identità valido.<br>
-                2. Identificare il tipo di Badge necessario.
-            </div>
-            <button onclick="regBadge('VISITATORE')">Badge VISITATORE</button>
-            <button onclick="regBadge('STAMPA')">Badge STAMPA</button>
-            <button onclick="regBadge('PARITETICA/CPC')">Badge CPC</button>
+        <div id="step_visitatori_root" class="card">
+            <h2>Badge Visitatori / CPC / Stampa</h2>
+            <div class="instruction-card">La persona è stata annunciata (E-mail / Portale)?</div>
+            <button onclick="showStep('step_v_reg')">SÌ, Annunciata</button>
+            <button class="btn-red" onclick="alert('Accesso negato. Contattare il referente per l\'annuncio.');">NO, Non annunciata</button>
+            <button class="btn-gray" onclick="showStep('step_menu_accessi')">INDIETRO</button>
         </div>
 
-        <div id="step_v_finale" class="card">
-            <h2 id="v_titolo_finale">Consegna</h2>
+        <div id="step_v_reg" class="card">
+            <h2>Procedura Rilascio</h2>
             <div class="instruction-card">
-                • Badge <b id="badge_tipo"></b> consegnato.<br>
-                • Registrare il numero del badge nel sistema gestionale.<br><br>
-                <b>AZIONE OBBLIGATORIA:</b><br>
-                • Chiamare il referente interno per l'accompagnamento in cantiere.
+                1. <b>Documento:</b> Richiedere e trattenere un documento originale.<br>
+                2. <b>Consegna:</b> Rilasciare il badge richiesto (Visitatore, Stampa o CPC).<br>
+                3. <b>Registrazione:</b> Inserire il numero badge nel sistema.<br>
+                4. <b>Accompagnamento:</b> Chiamare il referente per il ritiro della persona.
             </div>
-            <button onclick="showStep('step_dashboard')">COMPLETA E TORNA ALLA DASHBOARD</button>
+            <button onclick="showStep('step_dashboard')">CONFERMA E CHIUDI</button>
         </div>
 
         <div id="step_sistema" class="card">
@@ -131,31 +109,22 @@
             <button onclick="checkSistema(true)">SÌ</button>
             <button class="btn-red" onclick="checkSistema(false)">NO</button>
         </div>
-        
-        <div id="step_formazione" class="card">
-            <h2>Formazione Induction eseguita?</h2>
-            <button onclick="checkFormazione(true)">SÌ</button>
-            <button class="btn-red" onclick="checkFormazione(false)">NO</button>
-        </div>
-
-        <div id="step_situazione1" class="card">
-            <h2>SITUAZIONE 1</h2>
-            <div class="instruction-card" id="sit1_txt"></div>
-            <button class="btn-red" onclick="showStep('step_dashboard')">TERMINA PROCESSO</button>
-        </div>
 
         <div id="step_admin" class="card">
             <h2>Gestione Utenti</h2>
             <div style="display:flex; gap:5px; margin-bottom:15px;">
                 <input type="text" id="new_u" placeholder="Email">
-                <input type="text" id="new_p" placeholder="Pass">
-                <button onclick="addUser()" style="width:100px;">AGGIUNGI</button>
+                <input type="text" id="new_p" placeholder="Password">
+                <input type="number" id="new_v" placeholder="Validità (gg)" value="30" style="width:120px;">
+                <button onclick="addUser()" style="width:150px;">AGGIUNGI</button>
             </div>
-            <table>
-                <thead><tr><th>Email</th><th>Password</th><th>Stato</th><th>Azione</th></tr></thead>
-                <tbody id="u_list_body"></tbody>
-            </table>
-            <button class="btn-outline" onclick="showStep('step_dashboard')">INDIETRO</button>
+            <div style="overflow-x:auto;">
+                <table id="user_table">
+                    <thead><tr><th>Email</th><th>Password</th><th>Validità (gg)</th><th>Stato</th><th>Azioni</th></tr></thead>
+                    <tbody id="u_list_body"></tbody>
+                </table>
+            </div>
+            <button class="btn-outline" onclick="showStep('step_dashboard')" style="margin-top:20px;">TORNA ALLA DASHBOARD</button>
         </div>
     </div>
 
@@ -163,17 +132,15 @@
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
         let aziendaSelezionata = "";
 
-        // Orologio e Data
         function startTime() {
             const now = new Date();
-            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-CH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-CH', { weekday: 'short', day: '2-digit', month: 'short' });
             document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
-            document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('en-US', {timeZone:'America/New_York'});
-            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('ja-JP', {timeZone:'Asia/Tokyo'});
+            document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'America/New_York'}) + " (NY)";
+            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'Asia/Tokyo'}) + " (TYO)";
             setTimeout(startTime, 1000);
         }
 
-        // Login con tasto Enter
         document.getElementById('login_pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
         function handleLogin() {
@@ -185,7 +152,7 @@
             if (user && !user.blocked) {
                 if(u === MASTER.email) document.getElementById('admin_btn').style.display = 'block';
                 showStep('step_dashboard');
-            } else { alert("Accesso negato."); }
+            } else { alert("Credenziali errate o account bloccato."); }
         }
 
         function showStep(id) {
@@ -193,42 +160,35 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // Flussi Controllo Accessi
         function selectAzienda(az) { aziendaSelezionata = az; showStep('step_sistema'); }
         function checkSistema(si) {
-            if(!si) alert("Chiamare Referente (Pepeljak o La Morgia)");
-            else (aziendaSelezionata === 'OFT') ? showStep('step_formazione') : showStep('step_situazione1');
-        }
-        function checkFormazione(si) {
-            document.getElementById('sit1_txt').innerText = si ? "Foto mancante: Seguire Situazione 1" : "Formazione non fatta: Seguire Situazione 1 + Nota 99% Bausicht";
-            showStep('step_situazione1');
+            if(!si) alert("Seguire flusso: " + aziendaSelezionata + "-Non presente. Chiamare referente.");
+            else alert("Proseguire con verifica Formazione e Situazione 1/2");
         }
 
-        // Flusso Visitatori
-        function regBadge(tipo) {
-            document.getElementById('badge_tipo').innerText = tipo;
-            showStep('step_v_finale');
-        }
-
-        // Admin
+        // --- ADMIN FUNCTIONS ---
         function showAdminPanel() { renderUsers(); showStep('step_admin'); }
         function addUser() {
             let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, blocked: false });
+            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, validity: document.getElementById('new_v').value, blocked: false });
             localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
         }
-        function deleteUser(i) {
-            let u = JSON.parse(localStorage.getItem('nsif_users'));
-            u.splice(i, 1);
-            localStorage.setItem('nsif_users', JSON.stringify(u));
-            renderUsers();
-        }
+        function deleteUser(i) { if(confirm("Eliminare l'utente?")) { let u = JSON.parse(localStorage.getItem('nsif_users')); u.splice(i,1); localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers(); } }
+        function toggleUser(i) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i].blocked = !u[i].blocked; localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers(); }
+        function updateUser(i, field, value) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i][field] = value; localStorage.setItem('nsif_users', JSON.stringify(u)); }
+
         function renderUsers() {
             const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
             document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
                 <tr>
-                    <td>${x.email}</td><td>${x.pass}</td><td>${x.blocked ? 'OFF' : 'ON'}</td>
-                    <td><button onclick="deleteUser(${i})" class="btn-red" style="padding:5px; font-size:0.7rem;">CANCELLA</button></td>
+                    <td>${x.email}</td>
+                    <td><input type="text" value="${x.pass}" onchange="updateUser(${i}, 'pass', this.value)"></td>
+                    <td><input type="number" value="${x.validity}" onchange="updateUser(${i}, 'validity', this.value)"></td>
+                    <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'BLOCC' : 'ATTIVO'}</td>
+                    <td style="display:flex; gap:2px;">
+                        <button onclick="toggleUser(${i})" style="padding:5px; font-size:0.6rem;">${x.blocked ? 'SBLOCCA' : 'BLOCCA'}</button>
+                        <button onclick="deleteUser(${i})" class="btn-red" style="padding:5px; font-size:0.6rem;">X</button>
+                    </td>
                 </tr>`).join('');
         }
     </script>
