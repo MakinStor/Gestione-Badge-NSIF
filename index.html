@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione Hub - V2.7 FULL</title>
+    <title>NSIF Castione Hub - V2.8 FIXED</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -32,16 +32,15 @@
         .btn-gray { background: #6c757d; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
 
-        /* Checklist Integrale */
+        /* Checklist */
         .checklist-section-title { background: var(--securitas-blue); color: white; padding: 10px; font-weight: bold; text-align: left; margin-top: 20px; border-radius: 4px; font-size: 0.9rem; }
-        .checklist-item { text-align: left; padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; gap: 12px; transition: 0.2s; }
-        .checklist-item:hover { background: #fdfdfd; }
+        .checklist-item { text-align: left; padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; gap: 12px; }
         .checklist-item label { font-size: 0.9rem; flex-grow: 1; cursor: pointer; }
-        .checklist-item small { display: block; color: #e30613; font-weight: 600; margin-top: 3px; font-size: 0.75rem; }
+        .checklist-item small { display: block; color: var(--securitas-red); font-weight: 600; margin-top: 3px; font-size: 0.75rem; }
         .timestamp { font-size: 0.7rem; color: var(--success); font-weight: bold; white-space: nowrap; align-self: center; }
-        .alert-banner { background: var(--securitas-red); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; display: none; position: sticky; top: 10px; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .alert-banner { background: var(--securitas-red); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; display: none; position: sticky; top: 10px; z-index: 1000; }
         
-        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; margin-top: 2px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     </style>
@@ -51,15 +50,16 @@
     <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div class="version-label">NSIF CASTIONE HUB - VERSIONE 2.7 FULL</div>
+        <div class="version-label">NSIF CASTIONE HUB - VERSIONE 2.8 FIXED</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
             <h2>LOGIN SISTEMA</h2>
-            <input type="text" id="login_user" placeholder="Email Utente" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-            <input type="password" id="login_pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+            <input type="text" id="login_user" placeholder="Email Utente" onkeypress="handleEnter(event)">
+            <input type="password" id="login_pass" placeholder="Password" onkeypress="handleEnter(event)">
             <button onclick="handleLogin()">ACCEDI</button>
+            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contattare Marco La Morgia per il reset della password.')">Password dimenticata?</button>
         </div>
 
         <div id="step_dashboard" class="card">
@@ -92,88 +92,173 @@
             <div id="checklist_alert" class="alert-banner"></div>
             <h2 id="checklist_title" style="text-align:center; color: var(--securitas-blue);"></h2>
             <div id="checklist_content"></div>
-            <button class="btn-gray" onclick="showStep('step_checklist_menu')" style="margin-top:25px;">TORNA AI TURNI</button>
+            <button class="btn-gray" onclick="showStep('step_checklist_menu')" style="margin-top:25px;">CHIUDI E TORNA AI TURNI</button>
         </div>
 
         <div id="step_menu_accessi" class="card">
             <h2>CONTROLLO ACCESSI</h2>
-            <button onclick="alert('Flusso Azienda OFT...')">Azienda gestita da OFT</button>
-            <button onclick="alert('Flusso Azienda FFS...')">Azienda gestita da FFS</button>
+            <button onclick="alert('Flusso OFT...')">Azienda gestita da OFT</button>
+            <button onclick="alert('Flusso FFS...')">Azienda gestita da FFS</button>
             <button class="btn-outline" onclick="showStep('step_visitatori_root')">Badge Visitatori / Stampa / CPC</button>
-            <hr>
             <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
-
         <div id="step_visitatori_root" class="card">
-            <h2>VISITATORI / CPC / STAMPA</h2>
+            <h2>VISITATORI</h2>
             <button onclick="showStep('step_v_reg')">SÌ, Annunciata</button>
-            <button class="btn-red" onclick="alert('Accesso negato.');">NO, Non annunciata</button>
+            <button class="btn-red" onclick="alert('Accesso negato.');">NO</button>
             <button class="btn-gray" onclick="showStep('step_menu_accessi')">INDIETRO</button>
         </div>
         <div id="step_v_reg" class="card"><h2>RILASCIO BADGE...</h2><button onclick="showStep('step_dashboard')">FINE</button></div>
-
         <div id="step_admin" class="card">
-            <h2>GESTIONE UTENTI</h2>
-            <table id="user_table">
-                <thead><tr><th>Email</th><th>Pass</th><th>Stato</th><th>Azioni</th></tr></thead>
-                <tbody id="u_list_body"></tbody>
-            </table>
+            <h2>ADMIN</h2>
+            <div id="admin_content">Pannello di controllo utenti attivo.</div>
             <button class="btn-outline" onclick="showStep('step_dashboard')" style="margin-top:20px;">CHIUDI</button>
         </div>
     </div>
 
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
-        
-        // DATA INTEGRALE DAI DOCUMENTI WORD
+
         const fullChecklists = {
             T1: {
                 "INIZIO TURNO (06:00)": [
                     { t: "Aprire cancello principale Campo Base Nord", o: "Codice 6988" },
-                    { t: "Parcheggiare l'auto di fronte ufficio Coordinamento", o: "Posto tutto a destra della baracca" },
+                    { t: "Parcheggiare l'auto di fronte ufficio Coordinamento", o: "Posto tutto a destra" },
                     { t: "Aprire ufficio Campo Base Nord", o: "Codice 1907" },
                     { t: "Alzare le tapparelle", o: "" },
                     { t: "Verificare riscaldamento (Inverno pos. 4 / Estate spento)", o: "" },
                     { t: "Accendere telefono servizio", o: "Pin 6681 / Sblocco 1907" },
-                    { t: "Prova radio collegamento con colleghi", o: "Canale 15" },
+                    { t: "Prova radio collegamento", o: "Canale 15" },
                     { t: "Aprire cancello pedonale", o: "Codice 6988" },
-                    { t: "Recarsi al CAST07 ed effettuare apertura", o: "Codice 1907" },
-                    { t: "Verifica riscaldamento CAST07 (Inverno temp 2 / Estate spento)", o: "" }
+                    { t: "Recarsi al CAST07 ed effettuarne l’apertura", o: "Codice 1907" },
+                    { t: "Verificare riscaldamento CAST07", o: "Acceso temp 2 / Spento estate" }
                 ],
                 "DURANTE IL TURNO": [
                     { t: "Controllo DPI entrate/uscite", o: "" },
-                    { t: "Gestione Badge Visitatori/Stampa/CPC", o: "" },
-                    { t: "Monitoraggio transiti e segnalazioni", o: "" }
+                    { t: "Gestione Badge Visitatori/Stampa/CPC", o: "" }
                 ],
                 "FINE TURNO": [
-                    { t: "Pulizia ufficio e passare lo straccio a terra", o: "Presso CAST07" },
-                    { t: "Passaggio di consegna presso CAST09", o: "Chiudere il CAST07 prima di andare" },
-                    { t: "Comunicare criticità al collega subentrante", o: "Tempo max 15 minuti" }
+                    { t: "Pulizia ufficio e passare lo straccio a terra", o: "CAST07" },
+                    { t: "Passaggio di consegna CAST09", o: "Chiudere il CAST07 prima" }
                 ],
-                "CONTROLLI PERIODICI (1° LUNEDÌ MESE)": [
-                    { t: "Check defibrillatore e borsa sanitaria", o: "Scadenze, batterie, inventario materiale" },
-                    { t: "Annotare su modulo Excel e segnalare anomalie", o: "" }
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore e borsa sanitaria", o: "Scadenze, batterie, inventario" }
                 ]
             },
             T2: {
                 "INIZIO TURNO (14:45)": [
                     { t: "Aprire cancello 'entrata' CAST09", o: "Codice 6988" },
                     { t: "Aprire cancello 'uscita' CAST09", o: "Codice 6988" },
-                    { t: "Parcheggiare dietro baracca CAST09", o: "Utilizzare posti auto riservati" },
+                    { t: "Parcheggiare dietro baracca CAST09", o: "Posti riservati" },
                     { t: "Aprire ufficio CAST09", o: "Codice 1907" },
                     { t: "Alzare tapparelle e serrande tornello", o: "" },
-                    { t: "Verifica riscaldamento (Inverno leva 3/4)", o: "" },
+                    { t: "Verifica riscaldamento", o: "Leva 3/4 inverno" },
                     { t: "Prova radio collegamento", o: "Canale 15" },
                     { t: "Verifica tornelli, barriera e luci", o: "Pulizia fotocellule se freddo" },
                     { t: "Verifica carica monopattino", o: "Luce Verde = Carico" }
                 ],
                 "DURANTE IL TURNO": [
                     { t: "Controllo DPI (Casco, scarpe, gilet)", o: "" },
-                    { t: "Gestione flussi e assistenza mezzi", o: "" },
-                    { t: "Monitoraggio entrate/uscite", o: "" }
+                    { t: "Gestione flussi veicolari", o: "" }
                 ],
                 "FINE TURNO": [
                     { t: "Pulizia postazione (straccio su superfici)", o: "" },
-                    { t: "Passaggio di consegna finale", o: "CAST09" },
-                    { t: "Passare lo straccio a terra", o: "Entro le ore 22:00" }
+                    { t: "Passaggio di consegna CAST09", o: "" },
+                    { t: "Passare lo straccio a terra", o: "Entro le 22:00" }
                 ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore e borsa sanitaria", o: "Annotare su Excel" }
+                ]
+            },
+            T3: {
+                "INIZIO TURNO (08:00)": [
+                    { t: "Parcheggiare auto Coordinamento", o: "Al centro" },
+                    { t: "Prova radio collegamento", o: "Canale 15" },
+                    { t: "Verifica moduli cassettino nero", o: "Da classare" },
+                    { t: "Recarsi al CAST07 e ritirare telefono", o: "" },
+                    { t: "Giro interno cantiere con monopattino", o: "Da CAST09, verifica sbarramenti" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Supporto colleghi postazioni", o: "" },
+                    { t: "Controllo CAST08 (aperto/presidiato)", o: "" },
+                    { t: "Segnalazione contromano CAST09", o: "Foto targa a La Morgia" },
+                    { t: "Verifica DPI operai", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Riconsegna telefono al CAST07", o: "" },
+                    { t: "Passaggio di consegna finale", o: "" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore e borsa sanitaria", o: "" }
+                ]
+            }
+        };
+
+        function startTime() {
+            const now = new Date();
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
+            document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'America/New_York'});
+            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'Asia/Tokyo'});
+            setTimeout(startTime, 1000);
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('login_user').value;
+            const p = document.getElementById('login_pass').value;
+            if (u === MASTER.email && p === MASTER.pass) {
+                document.getElementById('admin_btn').style.display = 'flex';
+                showStep('step_dashboard');
+            } else { alert("Dati errati"); }
+        }
+
+        function handleEnter(e) { if (e.key === "Enter") handleLogin(); }
+
+        function showStep(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function openChecklist(turno) {
+            const title = document.getElementById('checklist_title');
+            const content = document.getElementById('checklist_content');
+            title.innerText = "CHECK-LIST " + turno;
+            content.innerHTML = "";
+            const sections = fullChecklists[turno];
+            for (let sec in sections) {
+                content.innerHTML += `<div class="checklist-section-title">${sec}</div>`;
+                sections[sec].forEach((item, i) => {
+                    const id = `chk_${turno}_${sec.replace(/\s/g,'')}_${i}`;
+                    content.innerHTML += `
+                        <div class="checklist-item">
+                            <input type="checkbox" id="${id}" onchange="markTask('${id}')">
+                            <label for="${id}"><b>${item.t}</b>${item.o ? `<small>${item.o}</small>` : ''}</label>
+                            <span id="ts_${id}" class="timestamp"></span>
+                        </div>`;
+                });
+            }
+            updateChecklistAlert();
+            showStep('step_checklist_view');
+        }
+
+        function markTask(id) {
+            const cb = document.getElementById(id);
+            const ts = document.getElementById('ts_' + id);
+            ts.innerText = cb.checked ? "✓ " + new Date().toLocaleTimeString('it-CH', {hour:'2-digit', minute:'2-digit'}) : "";
+            updateChecklistAlert();
+        }
+
+        function updateChecklistAlert() {
+            const boxes = document.querySelectorAll('#checklist_content input[type="checkbox"]');
+            const done = document.querySelectorAll('#checklist_content input[type="checkbox"]:checked');
+            const banner = document.getElementById('checklist_alert');
+            if (done.length < boxes.length && boxes.length > 0) {
+                banner.style.display = 'block';
+                banner.innerText = `⚠️ ATTENZIONE: MANCANO ${boxes.length - done.length} ATTIVITÀ AL COMPLETAMENTO DEL TURNO`;
+            } else { banner.style.display = 'none'; }
+        }
+
+        function showAdminPanel() { showStep('step_admin'); }
+    </script>
+</body>
+</html>
