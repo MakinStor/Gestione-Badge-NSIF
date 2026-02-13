@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione Hub - V2.4</title>
+    <title>NSIF Castione Hub - V2.5</title>
     <style>
-        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; }
+        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
         .banner-container { width: 100%; background: white; text-align: center; border-bottom: 1px solid #ddd; }
         .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
@@ -17,139 +17,111 @@
         .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Dashboard Widgets */
+        /* Dashboard & Clocks */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .widget { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 3px solid var(--securitas-blue); }
         .clock { font-size: 1.1rem; font-weight: bold; color: var(--securitas-red); }
         .big-date { font-size: 1.8rem; font-weight: 800; color: var(--securitas-blue); margin: 20px 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
-        .menu-item { padding: 25px; background: white; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 60px; }
+        /* Menu Items */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .menu-item { padding: 20px; background: white; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 50px; }
         .menu-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
         .link-item { background: #f8f9fa; border-left: 5px solid var(--securitas-blue); }
 
+        /* Buttons */
         button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
-        .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
         .btn-red { background: var(--securitas-red); }
         .btn-gray { background: #6c757d; }
-        .instruction-card { background: #e7f3ff; border-left: 5px solid var(--securitas-blue); padding: 15px; text-align: left; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        .status-on { color: green; font-weight: bold; }
-        .status-off { color: red; font-weight: bold; }
+        /* Check-list specific */
+        .checklist-item { text-align: left; padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; }
+        .checklist-item input[type="checkbox"] { transform: scale(1.5); cursor: pointer; }
+        .timestamp { font-size: 0.75rem; color: var(--success); font-weight: bold; margin-left: auto; }
+        .alert-banner { background: var(--securitas-red); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; display: none; }
     </style>
 </head>
 <body onload="startTime()">
 
-    <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner NSIF" class="banner-top" onerror="this.style.display='none'"></div>
+    <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
         <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
-        <div class="version-label">NSIF CASTIONE HUB - VERSIONE 2.4</div>
+        <div class="version-label">NSIF CASTIONE HUB - VERSIONE 2.5</div>
     </div>
 
     <div class="container">
         <div id="step_login" class="card active">
             <h2>LOGIN SISTEMA</h2>
-            <div style="margin-bottom:15px;"><input type="text" id="login_user" placeholder="Email Utente"></div>
-            <div style="margin-bottom:15px;"><input type="password" id="login_pass" placeholder="Password"></div>
+            <input type="text" id="login_user" placeholder="Email Utente" style="margin-bottom:10px; width:100%; padding:10px;">
+            <input type="password" id="login_pass" placeholder="Password" style="margin-bottom:10px; width:100%; padding:10px;">
             <button onclick="handleLogin()">ACCEDI</button>
-            <button class="btn-outline" style="border:none; font-size:0.8rem;" onclick="alert('Contattare Marco La Morgia per il reset.')">Password dimenticata?</button>
         </div>
 
         <div id="step_dashboard" class="card">
             <div class="dashboard-grid">
                 <div class="widget"><div id="clock_locarno" class="clock"></div><small>Castione (CH)</small></div>
-                <div class="widget"><div id="clock_ny" class="clock"></div><small>New York (USA)</small></div>
-                <div class="widget"><div id="clock_tokyo" class="clock"></div><small>Tokyo (JPN)</small></div>
-                <div class="widget"><div style="font-size:1.1rem;">☀️ 8°C</div><small>Meteo Locali</small></div>
+                <div class="widget"><div id="clock_ny" class="clock"></div><small>New York</small></div>
+                <div class="widget"><div id="clock_tokyo" class="clock"></div><small>Tokyo</small></div>
+                <div class="widget"><div style="font-size:1.1rem;">☀️ 8°C</div><small>Meteo</small></div>
             </div>
-
             <div id="date_now" class="big-date"></div>
-
-            <h2>MENU OPERATIVO</h2>
             <div class="menu-grid">
                 <div class="menu-item" onclick="showStep('step_menu_accessi')">🛂 CONTROLLO ACCESSI</div>
-                <div class="menu-item link-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 PORTALE BAUSICHT</div>
-                <div class="menu-item link-item" onclick="window.open('https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team%2FBusiness%20Continuity&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9&sharingv2=true&fromShare=true&at=9&clickparams=eyAiWC1BcHBOYW1lIiA6ICJNaWNyb3NvZnQgT3V0bG9vayIsICJYLUFwcFZlcnNpb24iIDogIjE2LjAuMTkyMzEuMjAyNDYiLCAiT1MiIDogIldpbmRvd3MiIH0%3D&CID=defbe0a1%2De03c%2De000%2D962a%2Dc3ca54328eab&cidOR=SPO&FolderCTID=0x01200090230CD6F45D0B4B90CA541D091FD821', '_blank')">📁 VTI EXTERNAL</div>
+                <div class="menu-item btn-red" style="color:white" onclick="showStep('step_checklist_menu')">📋 CHECK-LIST ATTIVITÀ</div>
+                <div class="menu-item link-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 BAUSICHT</div>
+                <div class="menu-item link-item" onclick="window.open('https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/...', '_blank')">📁 VTI EXTERNAL</div>
                 <div class="menu-item btn-red" id="admin_btn" style="display:none; color:white;" onclick="showAdminPanel()">⚙️ ADMIN</div>
             </div>
-            <button class="btn-gray" onclick="location.reload()" style="margin-top:30px;">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()">LOGOUT</button>
+        </div>
+
+        <div id="step_checklist_menu" class="card">
+            <h2>SELEZIONA TURNO</h2>
+            <button onclick="openChecklist('T1')">TURNO T1 (06:00 - 15:00)</button>
+            <button onclick="openChecklist('T2')">TURNO T2 (14:45 - 22:00)</button>
+            <button onclick="openChecklist('T3')">TURNO T3 (08:00 - 23:00)</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
+        </div>
+
+        <div id="step_checklist_view" class="card">
+            <div id="checklist_alert" class="alert-banner">⚠️ ATTENZIONE: ATTIVITÀ MANCANTI ALLA CONCLUSIONE DEL TURNO</div>
+            <h2 id="checklist_title">Check-list</h2>
+            <div id="checklist_content"></div>
+            <button class="btn-gray" onclick="showStep('step_checklist_menu')">TORNA AI TURNI</button>
         </div>
 
         <div id="step_menu_accessi" class="card">
             <h2>CONTROLLO ACCESSI</h2>
-            <button onclick="selectAzienda('OFT')">Azienda gestita da OFT</button>
-            <button onclick="selectAzienda('FFS')">Azienda gestita da FFS</button>
-            <button class="btn-outline" onclick="showStep('step_visitatori_root')">Badge Visitatori / Stampa / CPC</button>
-            <hr>
-            <button class="btn-gray" onclick="showStep('step_dashboard')">TORNA ALLA DASHBOARD</button>
-        </div>
-
-        <div id="step_visitatori_root" class="card">
-            <h2>VISITATORI / CPC / STAMPA</h2>
-            <div class="instruction-card">La persona è stata annunciata (E-mail / Portale)?</div>
-            <button onclick="showStep('step_v_reg')">SÌ, Annunciata</button>
-            <button class="btn-red" onclick="alert('Accesso negato. Contattare il referente per l\'annuncio.');">NO, Non annunciata</button>
-            <button class="btn-gray" onclick="showStep('step_menu_accessi')">INDIETRO</button>
-        </div>
-
-        <div id="step_v_reg" class="card">
-            <h2>RILASCIO BADGE</h2>
-            <div class="instruction-card">
-                1. <b>Ritiro:</b> Farsi consegnare e trattenere un documento originale.<br>
-                2. <b>Consegna:</b> Rilasciare Badge Visitatore, Stampa o CPC.<br>
-                3. <b>Sistema:</b> Registrare il numero badge a sistema.<br>
-                4. <b>Contatto:</b> Chiamare il referente per il ritiro della persona.
-            </div>
-            <button onclick="showStep('step_dashboard')">COMPLETA OPERAZIONE</button>
-        </div>
-
-        <div id="step_admin" class="card">
-            <h2>GESTIONE UTENTI</h2>
-            <div style="display:flex; gap:5px; margin-bottom:15px;">
-                <input type="text" id="new_u" placeholder="Email">
-                <input type="text" id="new_p" placeholder="Password">
-                <input type="number" id="new_v" placeholder="GG Validità" value="30" style="width:110px;">
-                <button onclick="addUser()" style="width:130px;">CREA</button>
-            </div>
-            <div style="overflow-x:auto;">
-                <table id="user_table">
-                    <thead><tr><th>Email</th><th>Password</th><th>Validità (gg)</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody id="u_list_body"></tbody>
-                </table>
-            </div>
-            <button class="btn-outline" onclick="showStep('step_dashboard')" style="margin-top:20px;">CHIUDI</button>
+            <button onclick="alert('Flusso Azienda OFT...')">Azienda gestita da OFT</button>
+            <button onclick="alert('Flusso Azienda FFS...')">Azienda gestita da FFS</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
     </div>
 
     <script>
         const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
-        let aziendaSelezionata = "";
+        const dataTasks = {
+            T1: ["Apertura cancello Base Nord (Cod. 6988)", "Parcheggio auto Coordinamento", "Apertura ufficio Base Nord (Cod. 1907)", "Verifica riscaldamento uffici", "Accensione telefono servizio (Pin 6681)", "Prova radio (Canale 15)", "Apertura CAST07", "Passaggio di consegna CAST09"],
+            T2: ["Apertura cancelli CAST09", "Apertura ufficio CAST09 (Cod. 1907)", "Verifica tornelli e barriere", "Verifica carica monopattino", "Controllo DPI entrate/uscite", "Pulizia postazione", "Passaggio di consegna CAST09", "Passare lo straccio a terra"],
+            T3: ["Parcheggio auto Centro", "Ritiro telefono servizio CAST07", "Giro perlustrazione cantiere", "Controllo modulo cassettino nero", "Supporto colleghi postazioni", "Controllo CAST08 (chiuso/presidiato)", "Segnalazione contromano CAST09", "Verifica DPI operai"]
+        };
 
         function startTime() {
             const now = new Date();
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', options).toUpperCase();
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
             document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
             document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'America/New_York'});
             document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'Asia/Tokyo'});
             setTimeout(startTime, 1000);
         }
 
-        document.getElementById('login_pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-
         function handleLogin() {
             const u = document.getElementById('login_user').value;
             const p = document.getElementById('login_pass').value;
-            let users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            const user = (u === MASTER.email && p === MASTER.pass) ? MASTER : users.find(x => x.email === u && x.pass === p);
-
-            if (user && !user.blocked) {
-                if(u === MASTER.email) document.getElementById('admin_btn').style.display = 'flex';
+            if (u === MASTER.email && p === MASTER.pass) {
+                document.getElementById('admin_btn').style.display = 'flex';
                 showStep('step_dashboard');
-            } else { alert("Dati errati o utente bloccato."); }
+            } else { alert("Dati errati"); }
         }
 
         function showStep(id) {
@@ -157,30 +129,45 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // --- ADMIN FUNCTIONS ---
-        function showAdminPanel() { renderUsers(); showStep('step_admin'); }
-        function addUser() {
-            let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, validity: document.getElementById('new_v').value, blocked: false });
-            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+        function openChecklist(turno) {
+            document.getElementById('checklist_title').innerText = "CHECK-LIST " + turno;
+            const container = document.getElementById('checklist_content');
+            container.innerHTML = "";
+            dataTasks[turno].forEach((task, index) => {
+                container.innerHTML += `
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task_${turno}_${index}" onchange="toggleTask('${turno}', ${index})">
+                        <label for="task_${turno}_${index}">${task}</label>
+                        <span id="time_${turno}_${index}" class="timestamp"></span>
+                    </div>`;
+            });
+            updateAlert(turno);
+            showStep('step_checklist_view');
         }
-        function deleteUser(i) { if(confirm("Eliminare definitivamente?")) { let u = JSON.parse(localStorage.getItem('nsif_users')); u.splice(i,1); localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers(); } }
-        function toggleUser(i) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i].blocked = !u[i].blocked; localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers(); }
-        function updateUser(i, field, value) { let u = JSON.parse(localStorage.getItem('nsif_users')); u[i][field] = value; localStorage.setItem('nsif_users', JSON.stringify(u)); }
 
-        function renderUsers() {
-            const users = JSON.parse(localStorage.getItem('nsif_users') || "[]");
-            document.getElementById('u_list_body').innerHTML = users.map((x, i) => `
-                <tr>
-                    <td>${x.email}</td>
-                    <td><input type="text" value="${x.pass}" onchange="updateUser(${i}, 'pass', this.value)"></td>
-                    <td><input type="number" value="${x.validity}" onchange="updateUser(${i}, 'validity', this.value)"></td>
-                    <td class="${x.blocked ? 'status-off' : 'status-on'}">${x.blocked ? 'OFF' : 'ON'}</td>
-                    <td style="display:flex; gap:2px;">
-                        <button onclick="toggleUser(${i})" style="padding:5px; font-size:0.6rem;">${x.blocked ? 'ON' : 'OFF'}</button>
-                        <button onclick="deleteUser(${i})" class="btn-red" style="padding:5px; font-size:0.6rem;">X</button>
-                    </td>
-                </tr>`).join('');
+        function toggleTask(turno, index) {
+            const cb = document.getElementById(`task_${turno}_${index}`);
+            const ts = document.getElementById(`time_${turno}_${index}`);
+            if (cb.checked) {
+                const now = new Date();
+                ts.innerText = "Eseguito alle: " + now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+            } else {
+                ts.innerText = "";
+            }
+            updateAlert(turno);
+        }
+
+        function updateAlert(turno) {
+            const checkboxes = document.querySelectorAll('#checklist_content input[type="checkbox"]');
+            const checked = document.querySelectorAll('#checklist_content input[type="checkbox"]:checked');
+            const alertBanner = document.getElementById('checklist_alert');
+            
+            if (checked.length < checkboxes.length) {
+                alertBanner.style.display = 'block';
+                alertBanner.innerText = `⚠️ ATTENZIONE: ${checkboxes.length - checked.length} ATTIVITÀ MANCANTI ALLA CONCLUSIONE`;
+            } else {
+                alertBanner.style.display = 'none';
+            }
         }
     </script>
 </body>
