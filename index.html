@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF Castione Hub - V4.0 MODULAR</title>
+    <title>NSIF Castione Hub - V2.6 COMPLETA</title>
     <style>
         :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f4f7f9; --success: #28a745; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -11,212 +11,279 @@
         .banner-top { width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; }
         .header { width: 100%; background: white; padding: 10px 0; text-align: center; border-bottom: 5px solid var(--securitas-red); }
         .logo-securitas { height: 30px; }
+        .version-label { font-size: 0.75rem; font-weight: bold; color: var(--securitas-blue); margin-top: 5px; }
         .container { width: 95%; max-width: 900px; margin: 20px auto; padding-bottom: 60px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; text-align: center; }
         .active { display: block; animation: fadeIn 0.3s; }
         
-        /* Layout & Menu */
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
-        .menu-item { padding: 25px; background: white; border-radius: 12px; cursor: pointer; border: 1px solid #eee; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 60px; }
-        .menu-item:hover { border-color: var(--securitas-red); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        /* Dashboard & Clocks */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .widget { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 3px solid var(--securitas-blue); }
+        .clock { font-size: 1.1rem; font-weight: bold; color: var(--securitas-red); }
+        .big-date { font-size: 1.8rem; font-weight: 800; color: var(--securitas-blue); margin: 20px 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
-        button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-weight: 600; cursor: pointer; }
+        /* Menu */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .menu-item { padding: 25px; background: white; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid #eee; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 60px; text-align: center; }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--securitas-red); }
+        .link-item { background: #f8f9fa; border-left: 5px solid var(--securitas-blue); }
+
+        button { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 8px; background-color: var(--securitas-blue); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-red { background: var(--securitas-red); }
         .btn-gray { background: #6c757d; }
         .btn-outline { background: transparent; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); }
 
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 0.85rem; }
+        /* Checklist Styles */
+        .checklist-section-title { background: #eee; padding: 8px; font-weight: bold; text-align: left; margin-top: 15px; border-radius: 4px; color: var(--securitas-blue); }
+        .checklist-item { text-align: left; padding: 10px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 12px; }
+        .checklist-item label { font-size: 0.9rem; line-height: 1.3; }
+        .checklist-item small { display: block; color: #666; font-style: italic; margin-top: 2px; }
+        .timestamp { font-size: 0.7rem; color: var(--success); font-weight: bold; margin-left: auto; white-space: nowrap; }
+        .alert-banner { background: var(--securitas-red); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; display: none; position: sticky; top: 10px; z-index: 100; }
         
-        /* Flow & Checklist */
-        .flow-step { text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--securitas-red); }
-        .checklist-item { text-align: left; padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; gap: 12px; }
-        .timestamp { font-size: 0.75rem; color: var(--success); font-weight: bold; margin-left: auto; }
+        input[type="checkbox"] { transform: scale(1.3); margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     </style>
 </head>
-<body onload="initApp()">
+<body onload="startTime()">
 
-    <div class="banner-container"><img src="logo_nsif.jpg" class="banner-top" onerror="this.style.display='none'"></div>
+    <div class="banner-container"><img src="logo_nsif.jpg" alt="Banner" class="banner-top" onerror="this.style.display='none'"></div>
     <div class="header">
-        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas">
-        <div style="font-size:0.7rem; font-weight:bold;">NSIF CASTIONE - MODULAR V4.0</div>
+        <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas" class="logo-securitas">
+        <div class="version-label">NSIF CASTIONE HUB - VERSIONE 2.6 COMPLETA</div>
     </div>
 
     <div class="container">
-        
-        <div id="mod_login" class="card active">
-            <h2 style="text-align:center">LOGIN SISTEMA</h2>
-            <input type="text" id="log_user" placeholder="Email" onkeypress="handleEnter(event)">
-            <input type="password" id="log_pass" placeholder="Password" onkeypress="handleEnter(event)">
-            <button onclick="authLogin()">ACCEDI</button>
-            <button class="btn-outline" style="border:none" onclick="alert('Reset tramite Marco La Morgia.')">Password dimenticata?</button>
+        <div id="step_login" class="card active">
+            <h2>LOGIN SISTEMA</h2>
+            <input type="text" id="login_user" placeholder="Email Utente" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+            <input type="password" id="login_pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+            <button onclick="handleLogin()">ACCEDI</button>
         </div>
 
-        <div id="mod_menu" class="card">
-            <div id="date_now" style="font-weight:800; font-size:1.4rem; color:var(--securitas-blue); text-align:center; margin-bottom:20px;"></div>
+        <div id="step_dashboard" class="card">
+            <div class="dashboard-grid">
+                <div class="widget"><div id="clock_locarno" class="clock"></div><small>Castione (CH)</small></div>
+                <div class="widget"><div id="clock_ny" class="clock"></div><small>New York</small></div>
+                <div class="widget"><div id="clock_tokyo" class="clock"></div><small>Tokyo</small></div>
+                <div class="widget"><div style="font-size:1.1rem;">☀️ 8°C</div><small>Meteo</small></div>
+            </div>
+            <div id="date_now" class="big-date"></div>
             <div class="menu-grid">
-                <div class="menu-item" onclick="showMod('mod_accessi')">🛂 GESTIONE ACCESSI</div>
-                <div class="menu-item btn-red" style="color:white" onclick="showMod('mod_checklist_menu')">📋 CHECK-LIST TURNI</div>
-                <div class="menu-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 BAUSICHT</div>
-                <div id="adm_btn" class="menu-item btn-red" style="display:none; color:white" onclick="openAdmin()">⚙️ ADMIN</div>
+                <div class="menu-item" onclick="showStep('step_menu_accessi')">🛂 CONTROLLO ACCESSI</div>
+                <div class="menu-item btn-red" style="color:white" onclick="showStep('step_checklist_menu')">📋 CHECK-LIST ATTIVITÀ</div>
+                <div class="menu-item link-item" onclick="window.open('https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard', '_blank')">🌐 PORTALE BAUSICHT</div>
+                <div class="menu-item link-item" onclick="window.open('https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team%2FBusiness%20Continuity&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9&sharingv2=true&fromShare=true&at=9&clickparams=eyAiWC1BcHBOYW1lIiA6ICJNaWNyb3NvZnQgT3V0bG9vayIsICJYLUFwcFZlcnNpb24iIDogIjE2LjAuMTkyMzEuMjAyNDYiLCAiT1MiIDogIldpbmRvd3MiIH0%3D&CID=defbe0a1%2De03c%2De000%2D962a%2Dc3ca54328eab&cidOR=SPO&FolderCTID=0x01200090230CD6F45D0B4B90CA541D091FD821', '_blank')">📁 VTI EXTERNAL</div>
+                <div class="menu-item btn-red" id="admin_btn" style="display:none; color:white;" onclick="showAdminPanel()">⚙️ ADMIN</div>
             </div>
-            <button class="btn-gray" onclick="location.reload()" style="margin-top:30px">LOGOUT</button>
+            <button class="btn-gray" onclick="location.reload()" style="margin-top:30px;">LOGOUT</button>
         </div>
 
-        <div id="mod_accessi" class="card">
+        <div id="step_menu_accessi" class="card">
             <h2>CONTROLLO ACCESSI</h2>
-            <button onclick="showMod('mod_flow_lost')">⚠️ BADGE SMARRITO / DIMENTICATO</button>
-            <button class="btn-outline" onclick="showMod('mod_flow_visitor')">🆕 NUOVO BADGE VISITATORE / CPC</button>
-            <button class="btn-outline" onclick="alert('Seguire procedura OFT nel modulo Excel Nijaz')">🏢 AZIENDA OFT</button>
+            <button onclick="alert('Flusso OFT...')">Azienda gestita da OFT</button>
+            <button onclick="alert('Flusso FFS...')">Azienda gestita da FFS</button>
+            <button class="btn-outline" onclick="showStep('step_visitatori_root')">Badge Visitatori / Stampa / CPC</button>
             <hr>
-            <button class="btn-gray" onclick="showMod('mod_menu')">TORNA AL MENU</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
 
-        <div id="mod_flow_lost" class="card">
-            <h3>PROCEDURA SMARRIMENTO</h3>
-            <div class="flow-step">
-                <b>1. RICERCA:</b> Verificare il nominativo sul portale <b>Bausicht</b>.
-            </div>
-            <div class="flow-step">
-                <b>2. AZIONE:</b> Se perso, cliccare su "Blocca Badge" (Stato Rosso). Se dimenticato, procedere al punto 3.
-            </div>
-            <div class="flow-step">
-                <b>3. GARANZIA:</b> Ritirare un documento (Patente/ID) o chiavi auto. Inserire il dato in Bausicht.
-            </div>
-            <div class="flow-step">
-                <b>4. CONSEGNA:</b> Fornire badge provvisorio. Restituire il documento solo alla riconsegna del badge.
-            </div>
-            <button onclick="showMod('mod_accessi')">CHIUDI FLUSSO</button>
+        <div id="step_visitatori_root" class="card">
+            <h2>VISITATORI / CPC / STAMPA</h2>
+            <button onclick="showStep('step_v_reg')">SÌ, Annunciata</button>
+            <button class="btn-red" onclick="alert('Accesso negato.');">NO, Non annunciata</button>
+            <button class="btn-gray" onclick="showStep('step_menu_accessi')">INDIETRO</button>
+        </div>
+        <div id="step_v_reg" class="card"><h2>RILASCIO BADGE...</h2><button onclick="showStep('step_dashboard')">FINE</button></div>
+
+        <div id="step_checklist_menu" class="card">
+            <h2>SCEGLI TURNO</h2>
+            <button onclick="openChecklist('T1')">TURNO T1 (06:00 - 15:00)</button>
+            <button onclick="openChecklist('T2')">TURNO T2 (14:45 - 22:00)</button>
+            <button onclick="openChecklist('T3')">TURNO T3 (08:00 - 23:00)</button>
+            <button class="btn-gray" onclick="showStep('step_dashboard')">INDIETRO</button>
         </div>
 
-        <div id="mod_admin" class="card">
-            <h2>PANNELLO AMMINISTRATORE</h2>
-            <div style="background:#eee; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <h4>Aggiungi o Modifica Utente</h4>
-                <input type="text" id="adm_mail" placeholder="Email Utente">
-                <input type="text" id="adm_pwd" placeholder="Nuova Password">
-                <select id="adm_role">
-                    <option value="user">User (Sola lettura)</option>
-                    <option value="admin">Admin (Gestione)</option>
-                </select>
-                <button onclick="saveUser()">SALVA UTENTE / MODIFICA PASSWORD</button>
+        <div id="step_checklist_view" class="card" style="text-align:left;">
+            <div id="checklist_alert" class="alert-banner"></div>
+            <h2 id="checklist_title" style="text-align:center;"></h2>
+            <div id="checklist_content"></div>
+            <button class="btn-gray" onclick="showStep('step_checklist_menu')" style="margin-top:20px;">CHIUDI CHECK-LIST</button>
+        </div>
+
+        <div id="step_admin" class="card">
+            <h2>GESTIONE UTENTI</h2>
+            <div style="display:flex; gap:5px; margin-bottom:15px;">
+                <input type="text" id="new_u" placeholder="Email" style="width:100px;">
+                <input type="text" id="new_p" placeholder="Pass">
+                <input type="number" id="new_v" value="30" style="width:60px;">
+                <button onclick="addUser()" style="width:80px;">CREA</button>
             </div>
             <table id="user_table">
-                <thead><tr><th>Email</th><th>Ruolo</th><th>Azione</th></tr></thead>
-                <tbody id="user_list"></tbody>
+                <thead><tr><th>Email</th><th>Pass</th><th>GG</th><th>Stato</th><th>Azioni</th></tr></thead>
+                <tbody id="u_list_body"></tbody>
             </table>
-            <button class="btn-gray" onclick="showMod('mod_menu')" style="margin-top:20px">CHIUDI ADMIN</button>
+            <button class="btn-outline" onclick="showStep('step_dashboard')" style="margin-top:20px;">CHIUDI</button>
         </div>
-
-        <div id="mod_checklist_menu" class="card">
-            <h2>SCELTA TURNO</h2>
-            <button onclick="renderCheck('T1')">TURNO T1 (06:00-15:00)</button>
-            <button onclick="renderCheck('T2')">TURNO T2 (14:45-22:00)</button>
-            <button onclick="renderCheck('T3')">TURNO T3 (08:00-15:30)</button>
-            <button class="btn-gray" onclick="showMod('mod_menu')">INDIETRO</button>
-        </div>
-
-        <div id="mod_checklist_view" class="card">
-            <h2 id="check_title" style="text-align:center"></h2>
-            <div id="check_content"></div>
-            <button class="btn-gray" onclick="showMod('mod_checklist_menu')" style="margin-top:20px">INDIETRO</button>
-        </div>
-
     </div>
 
     <script>
-        // --- MODULO CORE: DATI & PERSISTENZA ---
-        const MASTER_ADMIN = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF", role: "superadmin" };
-
-        function initApp() {
-            if(!localStorage.getItem('nsif_modular_db')) {
-                localStorage.setItem('nsif_users', JSON.stringify([MASTER_ADMIN]));
-                localStorage.setItem('nsif_modular_db', 'true');
+        const MASTER = { email: "marco.lamorgia@securitas.ch", pass: "1234NSIF" };
+        
+        const dataChecklists = {
+            T1: {
+                "INIZIO TURNO": [
+                    { t: "Aprire cancello Campo Base Nord", o: "Codice 6988" },
+                    { t: "Parcheggio Coordinamento Securitas", o: "Posto tutto a destra" },
+                    { t: "Aprire ufficio Campo Base Nord", o: "Codice 1907" },
+                    { t: "Alzare tapparelle", o: "" },
+                    { t: "Verifica riscaldamento", o: "Pos. 4 inverno / spento estate" },
+                    { t: "Accendere telefono servizio", o: "Pin 6681 / Sblocco 1907" },
+                    { t: "Prova radio collegamento", o: "Canale 15" },
+                    { t: "Aprire cancello pedonale", o: "Codice 6988" },
+                    { t: "Apertura CAST07", o: "Codice 1907" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Controllo DPI entrate/uscite", o: "" },
+                    { t: "Gestione Badge Visitatori/Stampa", o: "Seguire processo" },
+                    { t: "Monitoraggio transiti", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Pulizia ufficio e straccio terra", o: "CAST07" },
+                    { t: "Passaggio di consegna CAST09", o: "Chiudere il CAST07" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore e borsa sanitaria", o: "Batterie, scadenze, inventario" }
+                ]
+            },
+            T2: {
+                "INIZIO TURNO": [
+                    { t: "Aprire cancello entrata CAST09", o: "Codice 6988" },
+                    { t: "Aprire cancello uscita CAST09", o: "Codice 6988" },
+                    { t: "Parcheggio dietro baracca", o: "" },
+                    { t: "Aprire ufficio CAST09", o: "Codice 1907" },
+                    { t: "Alzare tapparelle e serrande tornello", o: "" },
+                    { t: "Verifica riscaldamento", o: "Leva 3/4 inverno" },
+                    { t: "Prova radio", o: "Canale 15" },
+                    { t: "Verifica tornelli, barriera, luci", o: "Pulizia fotocellule se necessario" },
+                    { t: "Verifica carica monopattino", o: "Luce Verde = Carico" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Controllo DPI entrate/uscite", o: "" },
+                    { t: "Gestione flussi veicolari", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Pulizia postazione", o: "Straccio su superfici" },
+                    { t: "Passaggio di consegna", o: "CAST09" },
+                    { t: "Passare lo straccio a terra", o: "Entro le 22:00" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore/borsa sanitaria", o: "Annotare su modulo excel" }
+                ]
+            },
+            T3: {
+                "INIZIO TURNO": [
+                    { t: "Parcheggio Coordinamento", o: "Al centro" },
+                    { t: "Prova radio", o: "Canale 15" },
+                    { t: "Verifica moduli cassettino nero", o: "Da classare" },
+                    { t: "Ritiro telefono servizio CAST07", o: "" },
+                    { t: "Giro perlustrazione cantiere", o: "Verifica spostamenti/emergenza" }
+                ],
+                "DURANTE IL TURNO": [
+                    { t: "Supporto colleghi postazioni", o: "" },
+                    { t: "Controllo CAST08", o: "Verifica che non sia aperto senza presidio" },
+                    { t: "Segnalazione contromano CAST09", o: "Foto targa a La Morgia" },
+                    { t: "Verifica DPI operai", o: "" }
+                ],
+                "FINE TURNO": [
+                    { t: "Riconsegna telefono CAST07", o: "" },
+                    { t: "Passaggio di consegna finale", o: "" }
+                ],
+                "PERIODICI (1° LUNEDÌ MESE)": [
+                    { t: "Check defibrillatore/borsa sanitaria", o: "" }
+                ]
             }
-            startClock();
+        };
+
+        function startTime() {
+            const now = new Date();
+            document.getElementById('date_now').innerHTML = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            document.getElementById('clock_locarno').innerHTML = now.toLocaleTimeString('it-CH');
+            document.getElementById('clock_ny').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'America/New_York'});
+            document.getElementById('clock_tokyo').innerHTML = new Date().toLocaleTimeString('it-CH', {timeZone:'Asia/Tokyo'});
+            setTimeout(startTime, 1000);
         }
 
-        function getDB() { return JSON.parse(localStorage.getItem('nsif_users')); }
-        function setDB(data) { localStorage.setItem('nsif_users', JSON.stringify(data)); }
-
-        // --- MODULO 1: AUTENTICAZIONE ---
-        function authLogin() {
-            const u = document.getElementById('log_user').value.trim();
-            const p = document.getElementById('log_pass').value.trim();
-            const db = getDB();
-            const user = db.find(x => x.email === u && x.pass === p);
-
-            if(user) {
-                if(user.role === 'admin' || user.role === 'superadmin') document.getElementById('adm_btn').style.display = 'flex';
-                showMod('mod_menu');
-            } else { alert("Dati non corretti."); }
+        function handleLogin() {
+            const u = document.getElementById('login_user').value;
+            const p = document.getElementById('login_pass').value;
+            if (u === MASTER.email && p === MASTER.pass) {
+                document.getElementById('admin_btn').style.display = 'flex';
+                showStep('step_dashboard');
+            } else { alert("Dati errati"); }
         }
-        function handleEnter(e) { if(e.key === 'Enter') authLogin(); }
 
-        // --- MODULO 2: NAVIGAZIONE ---
-        function showMod(id) {
+        function showStep(id) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // --- MODULO 4: LOGICA ADMIN ---
-        function openAdmin() { renderUserTable(); showMod('mod_admin'); }
-
-        function saveUser() {
-            const email = document.getElementById('adm_mail').value;
-            const pass = document.getElementById('adm_pwd').value;
-            const role = document.getElementById('adm_role').value;
-            let db = getDB();
-            const idx = db.findIndex(x => x.email === email);
+        function openChecklist(turno) {
+            const title = document.getElementById('checklist_title');
+            const content = document.getElementById('checklist_content');
+            title.innerText = "CHECK-LIST INTEGRALE " + turno;
+            content.innerHTML = "";
             
-            if(idx > -1) db[idx] = {email, pass, role}; // Aggiorna (modifica password o ruolo)
-            else db.push({email, pass, role}); // Aggiunge nuovo
-            
-            setDB(db);
-            renderUserTable();
-            alert("Utente salvato/aggiornato con successo.");
-        }
-
-        function renderUserTable() {
-            const db = getDB();
-            document.getElementById('user_list').innerHTML = db.map((u, i) => `
-                <tr>
-                    <td>${u.email}</td>
-                    <td><b>${u.role.toUpperCase()}</b></td>
-                    <td>${u.role !== 'superadmin' ? `<button onclick="deleteUser(${i})" style="background:red; width:auto; padding:5px">Elimina</button>` : '-'}</td>
-                </tr>
-            `).join('');
-        }
-
-        function deleteUser(i) {
-            let db = getDB(); db.splice(i, 1); setDB(db); renderUserTable();
-        }
-
-        // --- MODULO 5: LOGICA CHECKLIST ---
-        const checklistSource = {
-            T1: { "Inizio": ["Apertura Campo Base (6988)", "Ufficio Coordinamento (1907)", "Accensione Telefono (6681)", "Radio Canale 15", "Apertura CAST07"], "Fine": ["Pulizia ufficio", "Passaggio consegna CAST09"] },
-            T2: { "Inizio": ["Apertura CAST09 (6988)", "Ufficio CAST09 (1907)", "Verifica barriere/tornelli", "Carica monopattino"], "Fine": ["Pulizia superfici", "Straccio terra (22:00)"] },
-            T3: { "Inizio": ["Ritiro telefono CAST07", "Giro cantiere monopattino", "Verifica moduli"], "Fine": ["Riconsegna telefono CAST07", "Passaggio consegna finale"] }
-        };
-
-        function renderCheck(turno) {
-            const container = document.getElementById('check_content');
-            document.getElementById('check_title').innerText = "CHECKLIST " + turno;
-            container.innerHTML = "";
-            for(let sec in checklistSource[turno]) {
-                container.innerHTML += `<div style="background:var(--securitas-blue); color:white; padding:10px; font-weight:bold; margin-top:15px">${sec}</div>`;
-                checklistSource[turno][sec].forEach(task => {
-                    container.innerHTML += `<div class="checklist-item"><input type="checkbox" onchange="this.nextElementSibling.nextElementSibling.innerText=this.checked?new Date().toLocaleTimeString():''"> <label>${task}</label> <span class="timestamp"></span></div>`;
+            const sections = dataChecklists[turno];
+            for (let sec in sections) {
+                content.innerHTML += `<div class="checklist-section-title">${sec}</div>`;
+                sections[sec].forEach((item, i) => {
+                    const id = `chk_${turno}_${sec.replace(/\s/g,'')}_${i}`;
+                    content.innerHTML += `
+                        <div class="checklist-item">
+                            <input type="checkbox" id="${id}" onchange="mark('${id}')">
+                            <label for="${id}">
+                                <b>${item.t}</b>
+                                ${item.o ? `<small>${item.o}</small>` : ''}
+                            </label>
+                            <span id="ts_${id}" class="timestamp"></span>
+                        </div>`;
                 });
             }
-            showMod('mod_checklist_view');
+            updateAlert();
+            showStep('step_checklist_view');
         }
 
-        function startClock() {
-            const now = new Date();
-            document.getElementById('date_now').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-            setTimeout(startClock, 1000);
+        function mark(id) {
+            const cb = document.getElementById(id);
+            const ts = document.getElementById('ts_' + id);
+            ts.innerText = cb.checked ? "OK: " + new Date().toLocaleTimeString('it-CH', {hour:'2-digit', minute:'2-digit'}) : "";
+            updateAlert();
+        }
+
+        function updateAlert() {
+            const all = document.querySelectorAll('#checklist_content input[type="checkbox"]').length;
+            const checked = document.querySelectorAll('#checklist_content input[type="checkbox"]:checked').length;
+            const banner = document.getElementById('checklist_alert');
+            if (checked < all) {
+                banner.style.display = 'block';
+                banner.innerText = `⚠️ MANCANO ${all - checked} ATTIVITÀ AL COMPLETAMENTO`;
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        // --- ADMIN (Invariato) ---
+        function showAdminPanel() { renderUsers(); showStep('step_admin'); }
+        function addUser() {
+            let u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            u.push({ email: document.getElementById('new_u').value, pass: document.getElementById('new_p').value, validity: document.getElementById('new_v').value, blocked: false });
+            localStorage.setItem('nsif_users', JSON.stringify(u)); renderUsers();
+        }
+        function renderUsers() {
+            const u = JSON.parse(localStorage.getItem('nsif_users') || "[]");
+            document.getElementById('u_list_body').innerHTML = u.map((x, i) => `<tr><td>${x.email}</td><td>${x.pass}</td><td>${x.validity}</td><td>${x.blocked?'OFF':'ON'}</td><td><button onclick="delUser(${i})" class="btn-red" style="padding:5px; font-size:0.6rem;">X</button></td></tr>`).join('');
         }
     </script>
 </body>
