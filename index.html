@@ -33,12 +33,10 @@
 
         #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; }
-        .check-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #fff; margin-bottom: 5px; border-radius: 5px; }
-        
-        /* Nuovi stili Login */
         .login-footer { margin-top: 15px; font-size: 0.75rem; color: #888; display: flex; flex-direction: column; gap: 8px; }
         .forgot-link { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 600; }
-        .forgot-link:hover { text-decoration: underline; }
+        
+        .check-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #fff; margin-bottom: 5px; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -49,9 +47,8 @@
             <input type="text" id="log_u" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
             <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
             <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
-            
             <div class="login-footer">
-                <span class="forgot-link" onclick="alert('Contattare l\'Amministratore di sistema per il reset della password.')">Password dimenticata?</span>
+                <span class="forgot-link" onclick="alert('Contattare l\'Amministratore per il reset.')">Password dimenticata?</span>
                 <span>Versione 1.18.1 BETA</span>
             </div>
         </div>
@@ -111,14 +108,6 @@
             </div>
         </div>
 
-        <div id="section_badge" class="container">
-            <div class="card">
-                <h3>Gestione Flussi Badge</h3>
-                <div id="badge_start_btns" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;"></div>
-                <div id="flow_render_area"></div>
-            </div>
-        </div>
-
         <div id="section_giornale" class="container">
             <div class="card">
                 <h3>Diario di Bordo</h3>
@@ -144,15 +133,28 @@
         </div>
 
         <div id="section_admin" class="container">
+            <div class="card" style="border-left: 10px solid orange;">
+                <h3>Configurazione Collegamenti Home (URL)</h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="cfg_link_name" placeholder="Nome Pulsante (es: Bausicht)" style="flex:1">
+                    <input type="text" id="cfg_link_url" placeholder="https://..." style="flex:2">
+                    <button class="nav-btn" onclick="addHomeLink()">AGGIUNGI LINK</button>
+                </div>
+                <table>
+                    <thead><tr><th>Nome</th><th>URL</th><th>Azione</th></tr></thead>
+                    <tbody id="tbody_cfg_links"></tbody>
+                </table>
+            </div>
+
             <div class="card" style="border-left: 10px solid #007bff;">
                 <h3>Configurazione Checklist Turni</h3>
                 <div style="display:flex; gap:10px; flex-wrap: wrap; margin-bottom: 15px;">
                     <input type="text" id="cfg_turn_name" placeholder="Nome Turno">
                     <select id="cfg_fase"><option value="Inizio">Inizio</option><option value="Durante">Durante</option><option value="Fine">Fine</option></select>
                     <input type="text" id="cfg_title" placeholder="Attività" style="flex-grow:1">
-                    <button class="nav-btn" onclick="addCheckItem()">AGGIUNGI</button>
+                    <button class="nav-btn" onclick="addCheckItem()">AGGIUNGI ATTIVITÀ</button>
                 </div>
-                <table>
+                <table id="table_cfg_check">
                     <thead><tr><th>Turno</th><th>Fase</th><th>Attività</th><th>Elimina</th></tr></thead>
                     <tbody id="tbody_cfg_check"></tbody>
                 </table>
@@ -186,16 +188,12 @@
 
         let currentUser = null;
         let tempFileData = null;
-        let currentCatEdit = null;
 
         function save() { localStorage.setItem('nsif_v18_db', JSON.stringify(db)); }
 
-        // --- GESTIONE LOGIN MEMORY ---
         window.onload = function() {
             const lastUser = localStorage.getItem('nsif_last_user');
-            if(lastUser) {
-                document.getElementById('log_u').value = lastUser;
-            }
+            if(lastUser) document.getElementById('log_u').value = lastUser;
         };
 
         function login() {
@@ -204,7 +202,7 @@
             const user = db.users.find(x => x.e === u && x.p === p);
             if(user) {
                 currentUser = user;
-                localStorage.setItem('nsif_last_user', u); // Salva l'ultimo utente
+                localStorage.setItem('nsif_last_user', u);
                 document.getElementById('page_login').style.display = 'none';
                 document.getElementById('main_ui').style.display = 'block';
                 if(user.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
@@ -214,7 +212,7 @@
 
         function initApp() {
             updateClock(); setInterval(updateClock, 1000);
-            renderHomeLinks(); renderGiornale(); renderRunTurnBtns(); renderBadgeStartBtns(); renderFornitori();
+            renderHomeLinks(); renderGiornale(); renderRunTurnBtns(); renderFornitori();
             setupDragDrop();
         }
 
@@ -223,6 +221,24 @@
             document.getElementById(id).classList.add('active-page');
             if(id === 'section_admin') renderAdminAll();
             if(id === 'section_docs') renderDocsGrid();
+        }
+
+        // --- GESTIONE LINKS (RIPRISTINATA) ---
+        function addHomeLink() {
+            const n = document.getElementById('cfg_link_name').value;
+            const u = document.getElementById('cfg_link_url').value;
+            if(!n || !u) return;
+            db.links.push({ n, u });
+            save(); renderAdminAll(); renderHomeLinks();
+            document.getElementById('cfg_link_name').value = "";
+            document.getElementById('cfg_link_url').value = "";
+        }
+
+        function renderHomeLinks() {
+            document.getElementById('home_links').innerHTML = db.links.map(l => `
+                <button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:15px 30px;" 
+                onclick="window.open('${l.u}')">${l.n}</button>
+            `).join('');
         }
 
         // --- FORNITORI ---
@@ -310,20 +326,7 @@
             renderAdminAll();
         }
 
-        // --- BADGE ---
-        function renderBadgeStartBtns() {
-            document.getElementById('badge_start_btns').innerHTML = Object.keys(db.badge_flows).map(cat => `<button class="nav-btn" style="background:orange" onclick="runFlow('${cat}', 'inizio')">${cat}</button>`).join('');
-        }
-
-        function runFlow(cat, nodeId) {
-            const area = document.getElementById('flow_render_area');
-            if(nodeId === 'fine') { area.innerHTML = `<div style="text-align:center"><h2>FINE</h2><button class="nav-btn" onclick="area.innerHTML=''">CHIUDI</button></div>`; return; }
-            const node = db.badge_flows[cat][nodeId];
-            if(!node) return alert("Errore: Nodo non trovato");
-            area.innerHTML = `<div class="card" style="text-align:center"><p>${node.text}</p><div>${node.options.map(o => `<button class="nav-btn" style="margin:5px" onclick="runFlow('${cat}', '${o.target}')">${o.val}</button>`).join('')}</div></div>`;
-        }
-
-        // --- UTILS ---
+        // --- UTILS & ADMIN RENDER ---
         function addGiornale() {
             db.giornale.push({ t: new Date().toLocaleString(), a: currentUser.n+" "+currentUser.c, l: document.getElementById('gb_luogo').value, d: document.getElementById('gb_desc').value, r: document.getElementById('gb_risolto').value });
             save(); renderGiornale();
@@ -337,16 +340,26 @@
         function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
 
         function renderAdminAll() {
+            // Render Tabella Links
+            document.getElementById('tbody_cfg_links').innerHTML = db.links.map((l, i) => `
+                <tr><td>${l.n}</td><td><small>${l.u}</small></td><td><button onclick="db.links.splice(${i},1); save(); renderAdminAll(); renderHomeLinks();">X</button></td></tr>
+            `).join('');
+
+            // Render Tabella PDF
             document.getElementById('tbody_docs_admin').innerHTML = db.docs.map((d,i) => `<tr><td>${d.n}</td><td>${d.e}</td><td><button onclick="db.docs.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
+            
+            // Render Tabella Checklist
             let ch = ""; Object.keys(db.checklist).forEach(t => {
-                db.checklist[t].forEach((item, idx) => { ch += `<tr><td>${t}</td><td>${item.fase}</td><td>${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${idx},1); save(); renderAdminAll();">X</button></td></tr>`; });
+                db.checklist[t].forEach((item, idx) => { ch += `<tr><td>${t}</td><td>${item.fase}</td><td>${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${idx},1); if(db.checklist['${t}'].length==0) delete db.checklist['${t}']; save(); renderAdminAll();">X</button></td></tr>`; });
             });
             document.getElementById('tbody_cfg_check').innerHTML = ch;
-            renderBadgeStartBtns();
         }
 
-        function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:15px 30px;" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
-        function updateClock() { const now = new Date(); document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT'); document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase(); }
+        function updateClock() { 
+            const now = new Date(); 
+            document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT'); 
+            document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase(); 
+        }
     </script>
 </body>
 </html>
