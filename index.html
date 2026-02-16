@@ -3,382 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.19 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.20</title>
     <style>
-        :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
+        :root { --blue: #003366; --red: #e30613; --bg: #f4f7f6; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* HEADER */
-        .header { text-align: center; padding: 20px; background: var(--white); border-bottom: 6px solid var(--red); }
-        .logo-main { width: 90%; max-width: 800px; height: auto; }
-        .version-label { color: var(--blue); font-weight: 800; font-size: 1.5rem; text-transform: uppercase; }
-
-        /* NAV */
-        .nav-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 15px; background: #e9ecef; position: sticky; top:0; z-index: 999; }
-        .nav-btn { padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; transition: 0.2s; }
-        .nav-btn:hover { background: var(--red); }
-        .nav-admin { background: #212529; }
-
-        .container { display: none; padding: 20px; max-width: 1400px; margin: auto; animation: fadeIn 0.3s; }
-        .active-page { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; border-top: 4px solid var(--blue); }
-        
-        /* DRAG & DROP PDF */
-        .dropzone { border: 3px dashed #bbb; padding: 40px; text-align: center; background: #fafafa; border-radius: 10px; cursor: pointer; transition: 0.3s; margin-bottom: 15px; }
-        .dropzone.dragover { border-color: var(--red); background: #fff1f1; }
-
-        /* VISUAL FLOW EDITOR */
-        #flow_canvas { 
-            width: 100%; 
-            height: 500px; 
-            background: #e5e5f7; 
-            background-image: radial-gradient(#444cf7 0.5px, #e5e5f7 0.5px); 
-            background-size: 20px 20px; 
-            position: relative; 
-            overflow: hidden; 
-            border: 2px solid #ccc;
-            border-radius: 8px;
-        }
-        .flow-node { 
-            position: absolute; 
-            width: 160px; 
-            padding: 10px; 
-            background: white; 
-            border: 2px solid var(--blue); 
-            border-radius: 8px; 
-            cursor: move; 
-            font-size: 0.8rem;
-            box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            user-select: none;
-        }
-        .node-start { border-color: green; background: #e8f5e9; border-width: 3px; }
-        .node-end { border-color: var(--red); background: #ffebee; }
-        .node-id-label { font-weight: bold; display: block; border-bottom: 1px solid #ddd; margin-bottom: 5px; color: var(--blue); }
-
-        /* LOGIN */
+        /* LOGIN PAGE */
         #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .login-box { background: white; padding: 40px; border-radius: 15px; width: 320px; text-align: center; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .login-card { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        
+        /* HEADER & NAV */
+        header { background: var(--white); padding: 20px; text-align: center; border-bottom: 5px solid var(--red); }
+        nav { background: #eee; padding: 10px; display: flex; justify-content: center; gap: 10px; position: sticky; top: 0; z-index: 999; flex-wrap: wrap; }
+        .nav-btn { padding: 10px 20px; border: none; background: var(--blue); color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .nav-btn:hover { background: var(--red); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
-        th { background: #f8f9fa; }
-        .unresolved { background: #fff9c4; }
+        .container { display: none; padding: 30px; max-width: 1200px; margin: auto; }
+        .active { display: block; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+
+        /* DRAG & DROP */
+        .drop-zone { border: 3px dashed #ccc; padding: 30px; text-align: center; border-radius: 10px; cursor: pointer; margin-bottom: 10px; background: #fafafa; }
+        .drop-zone.hover { border-color: var(--blue); background: #eef; }
+
+        /* FLOW EDITOR */
+        #canvas_container { position: relative; width: 100%; height: 500px; background: #f0f0f0; border: 1px solid #ccc; overflow: hidden; border-radius: 8px; }
+        .flow-node { 
+            position: absolute; width: 150px; padding: 10px; background: white; 
+            border: 2px solid var(--blue); border-radius: 5px; cursor: move; font-size: 12px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2); z-index: 10;
+        }
+        .node-start { border-color: green; background: #e8f5e9; }
+        .node-end { border-color: red; background: #ffebee; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f8f8f8; }
     </style>
 </head>
 <body>
 
     <div id="page_login">
-        <div class="login-box">
+        <div class="login-card">
             <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" width="150">
-            <h3 style="margin-top:20px;">PORTALE NSIF</h3>
-            <input type="text" id="log_u" placeholder="Username (es: admin)">
+            <input type="text" id="log_u" placeholder="User">
             <input type="password" id="log_p" placeholder="Password">
-            <button class="nav-btn" style="width:100%; background:var(--red); margin-top:10px;" onclick="login()">ACCEDI</button>
+            <button class="nav-btn" style="width:100%; margin-top:10px" onclick="checkLogin()">ACCEDI</button>
         </div>
     </div>
 
     <div id="main_ui" style="display:none;">
-        <div class="header">
-            <img src="logo_Consorzio.jpg" class="logo-main" alt="NSIF CASTIONE">
-            <div class="version-label">NSFI CASTIONE – V 1.19 BETA</div>
+        <header>
+            <img src="logo_Consorzio.jpg" style="max-width:300px">
+            <h2 id="main_clock">00:00:00</h2>
+        </header>
+
+        <nav>
+            <button class="nav-btn" onclick="openPage('home')">HOME</button>
+            <button class="nav-btn" onclick="openPage('badge')">BADGE</button>
+            <button class="nav-btn" onclick="openPage('giornale')">GIORNALE</button>
+            <button class="nav-btn" onclick="openPage('docs')">DOCUMENTI</button>
+            <button id="admin_tab" class="nav-btn" style="background:#333; display:none;" onclick="openPage('admin')">ADMIN</button>
+            <button class="nav-btn" style="background:var(--red)" onclick="location.reload()">LOGOUT</button>
+        </nav>
+
+        <div id="home" class="container active">
+            <div class="card" style="text-align:center">
+                <h1 id="date_display"></h1>
+                <div id="link_container"></div>
+            </div>
         </div>
 
-        <div class="nav-bar">
-            <button class="nav-btn" onclick="showSection('section_home')">HOME</button>
-            <button class="nav-btn" onclick="showSection('section_badge')">BADGE / ACCESSI</button>
-            <button class="nav-btn" onclick="showSection('section_checklist')">CHECKLIST</button>
-            <button class="nav-btn" onclick="showSection('section_giornale')">GIORNALE</button>
-            <button class="nav-btn" onclick="showSection('section_docs')">DOCUMENTI</button>
-            <button id="nav_admin" class="nav-btn nav-admin" style="display:none;" onclick="showSection('section_admin')">AMMINISTRATORE</button>
-            <button class="nav-btn" style="background:#666;" onclick="location.reload()">LOGOUT</button>
-        </div>
-
-        <div id="section_home" class="container active-page">
-            <div class="card" style="text-align:center;">
-                <h1 id="clock_big" style="font-size:3.5rem; margin:0; color:var(--blue);">00:00:00</h1>
-                <p id="date_long" style="font-size:1.2rem; font-weight:bold;"></p>
+        <div id="badge" class="container">
+            <div class="card">
+                <h3>Processi Badge Guidati</h3>
+                <div id="badge_selector"></div>
                 <hr>
-                <div id="home_links" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;"></div>
+                <div id="badge_run_area" style="text-align:center; min-height: 200px;"></div>
             </div>
         </div>
 
-        <div id="section_badge" class="container">
+        <div id="docs" class="container">
             <div class="card">
-                <h3>Processi Guidati Badge / Accessi</h3>
-                <div id="badge_start_btns" style="margin-bottom:20px; display:flex; gap:10px;"></div>
-                <div id="op_flow_area"></div>
-            </div>
-        </div>
-
-        <div id="section_giornale" class="container">
-            <div class="card">
-                <h3>Diario di Bordo Operativo</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 150px; gap:10px; margin-bottom:15px;">
-                    <input type="text" id="gb_luogo" placeholder="Luogo/Postazione">
-                    <input type="text" id="gb_desc" placeholder="Evento / Nota">
-                    <select id="gb_risolto"><option value="SI">Risolto</option><option value="NO">NON Risolto</option></select>
-                    <button class="nav-btn" style="background:green;" onclick="addGiornale()">REGISTRA</button>
-                </div>
-                <table>
-                    <thead><tr><th>Ora</th><th>Agente</th><th>Luogo</th><th>Descrizione</th><th>Stato</th></tr></thead>
-                    <tbody id="tbody_giornale"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="section_docs" class="container">
-            <div class="card">
-                <h3>Documentazione e Regolamenti</h3>
+                <h3>Documenti e Circolari</h3>
                 <div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div>
             </div>
         </div>
 
-        <div id="section_admin" class="container">
-            
+        <div id="admin" class="container">
             <div class="card">
                 <h3>Visual Flow Editor (Badge)</h3>
-                <div style="margin-bottom:15px;">
-                    <input type="text" id="new_cat_name" placeholder="Categoria (es: FFS)">
-                    <button class="nav-btn" onclick="addCategory()">Crea</button>
-                    <select id="select_cat_edit" onchange="loadVisualFlow(this.value)"></select>
+                <div style="margin-bottom:10px;">
+                    <input type="text" id="new_flow_name" placeholder="Nome Categoria (es: OFT)">
+                    <button onclick="createFlow()">Crea Flusso</button>
+                    <select id="edit_flow_select" onchange="loadFlowToCanvas(this.value)"></select>
                 </div>
-                <div style="display:flex; gap:15px;">
-                    <div style="width:300px; background:#f8f9fa; padding:15px; border-radius:8px;">
-                        <h5>Nuovo Nodo</h5>
-                        <input type="text" id="v_node_id" placeholder="ID (es: inizio)" style="width:100%; margin-bottom:5px;">
-                        <textarea id="v_node_txt" placeholder="Domanda/Testo" style="width:100%; height:60px;"></textarea>
-                        <div id="v_options_list">
-                            <div style="display:flex; gap:2px; margin-top:5px;">
-                                <input type="text" class="v-opt-val" placeholder="Sì" style="width:50%">
-                                <input type="text" class="v-opt-tgt" placeholder="ID target" style="width:50%">
-                            </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="width:250px; background:#eee; padding:10px; border-radius:5px;">
+                        <input type="text" id="n_id" placeholder="ID (es: inizio)" style="width:100%"><br>
+                        <textarea id="n_txt" placeholder="Testo domanda" style="width:100%"></textarea>
+                        <div id="opt_list">
+                            <div style="display:flex; gap:2px"><input type="text" class="o-v" placeholder="Sì"><input type="text" class="o-t" placeholder="ID target"></div>
                         </div>
-                        <button onclick="addVOption()">+ Opzione</button>
-                        <button class="nav-btn" style="background:green; width:100%; margin-top:10px;" onclick="saveVNode()">SALVA E POSIZIONA</button>
-                        <p style="font-size:0.7rem; color:red; margin-top:10px;">ID 'inizio' per il via. Target 'fine' per chiudere.</p>
+                        <button onclick="addOptRow()">+ Opzione</button>
+                        <button onclick="saveNode()" style="width:100%; background:green; color:white; margin-top:10px;">SALVA NODO</button>
                     </div>
-                    <div id="flow_canvas"></div>
+                    <div id="canvas_container"></div>
                 </div>
             </div>
 
             <div class="card">
-                <h3>Gestione Documenti PDF</h3>
-                <div id="drop_zone" class="dropzone">
-                    Trascina qui il file PDF o clicca per caricarlo
-                    <input type="file" id="file_input" accept="application/pdf" style="display:none">
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 150px; gap:10px;">
-                    <input type="text" id="d_name" placeholder="Titolo">
-                    <input type="date" id="d_start">
-                    <input type="date" id="d_end">
-                    <button class="nav-btn" style="background:green;" onclick="uploadDoc()">PUBBLICA</button>
-                </div>
-                <table style="margin-top:15px;">
-                    <tbody id="tbody_docs_admin"></tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <h3>Gestione Account</h3>
-                <div style="display:flex; gap:5px; margin-bottom:15px;">
-                    <input type="text" id="adm_n" placeholder="Nome">
-                    <input type="text" id="adm_e" placeholder="Username">
-                    <input type="text" id="adm_p" placeholder="Password">
-                    <select id="adm_l"><option value="user">User</option><option value="admin">Admin</option></select>
-                    <button class="nav-btn" onclick="addAccount()">AGGIUNGI</button>
-                </div>
-                <table id="table_users">
-                    <thead><tr><th>Nome</th><th>User</th><th>Ruolo</th><th>Azione</th></tr></thead>
-                    <tbody id="tbody_users"></tbody>
-                </table>
+                <h3>Caricamento Documenti PDF</h3>
+                <div id="drop_zone" class="drop-zone">Trascina il PDF qui o clicca per caricare</div>
+                <input type="file" id="file_input" style="display:none" accept="application/pdf">
+                <input type="text" id="doc_title" placeholder="Titolo">
+                <button onclick="saveDoc()">PUBBLICA DOCUMENTO</button>
             </div>
         </div>
-
-        <div id="section_checklist" class="container"><div class="card"><h3>Checklist Turni</h3><p>Modulo in fase di aggiornamento.</p></div></div>
     </div>
 
     <script>
-        // DATABASE & STATE
-        let db = JSON.parse(localStorage.getItem('nsif_v19_db')) || {
-            users: [{n: "Amministratore", e: "admin", p: "1234", l: "admin"}],
-            links: [{n: "BAUSICHT", u: "https://app.bausicht.com"}],
-            docs: [],
-            giornale: [],
-            badge_flows: {}
-        };
-
+        // DATI DA index_attuale.txt + Estensioni
+        const MASTER_ADMIN = "admin";
+        let accounts = JSON.parse(localStorage.getItem('nsif_db_v18')) || [
+            {e: "admin", p: "1234", l: "admin", s: "ATTIVO"}
+        ];
+        let badgeFlows = JSON.parse(localStorage.getItem('nsif_flows')) || {};
+        let documents = JSON.parse(localStorage.getItem('nsif_docs')) || [];
+        
         let currentUser = null;
         let tempPDF = null;
-        let activeCat = null;
+        let currentEditingFlow = null;
 
-        function save() { localStorage.setItem('nsif_v19_db', JSON.stringify(db)); }
-
-        // --- LOGIN (CORRETTO) ---
-        function login() {
+        function checkLogin() {
             const u = document.getElementById('log_u').value;
             const p = document.getElementById('log_p').value;
-            // Cerchiamo l'utente che corrisponde a Username (e) e Password (p)
-            const user = db.users.find(x => x.e === u && x.p === p);
-            
+            const user = accounts.find(a => a.e === u && a.p === p && a.s === "ATTIVO");
             if(user) {
                 currentUser = user;
                 document.getElementById('page_login').style.display = 'none';
                 document.getElementById('main_ui').style.display = 'block';
-                if(user.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
+                if(user.l === 'admin') document.getElementById('admin_tab').style.display = 'inline-block';
                 initApp();
-            } else {
-                alert("Credenziali non valide. Riprova.");
-            }
+            } else alert("Accesso fallito o account bloccato");
         }
 
         function initApp() {
-            updateClock(); setInterval(updateClock, 1000);
-            renderGiornale(); renderHomeLinks(); renderBadgeStartBtns();
-            setupDragAndDrop();
-            populateCatSelect();
+            setInterval(() => {
+                document.getElementById('main_clock').innerText = new Date().toLocaleTimeString('it-IT');
+            }, 1000);
+            document.getElementById('date_display').innerText = new Date().toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+            
+            setupDragDrop();
+            renderBadgeSelectors();
+            updateFlowSelect();
         }
 
-        function showSection(id) {
-            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
-            document.getElementById(id).classList.add('active-page');
-            if(id === 'section_admin') { renderAdminDocs(); renderAdminUsers(); }
-            if(id === 'section_docs') renderDocsGrid();
+        function openPage(id) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'docs') renderDocs();
         }
 
-        // --- DRAG & DROP PDF (FIXED) ---
-        function setupDragAndDrop() {
-            const dz = document.getElementById('drop_zone');
-            const fi = document.getElementById('file_input');
-            if(!dz) return;
-            dz.onclick = () => fi.click();
-            dz.ondragover = (e) => { e.preventDefault(); dz.classList.add('dragover'); };
-            dz.ondragleave = () => dz.classList.remove('dragover');
-            dz.ondrop = (e) => {
-                e.preventDefault();
-                dz.classList.remove('dragover');
-                handleFile(e.dataTransfer.files[0]);
-            };
-            fi.onchange = (e) => handleFile(e.target.files[0]);
-        }
-
-        function handleFile(file) {
-            if(!file || file.type !== "application/pdf") return alert("Solo file PDF!");
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                tempPDF = e.target.result;
-                document.getElementById('drop_zone').innerHTML = "<b>File Caricato:</b> " + file.name;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function uploadDoc() {
-            const n = document.getElementById('d_name').value;
-            if(!n || !tempPDF) return alert("Inserisci titolo e file!");
-            db.docs.push({ id: Date.now(), n, s: document.getElementById('d_start').value, e: document.getElementById('d_end').value, data: tempPDF });
-            save(); renderAdminDocs(); alert("Documento pubblicato!");
-            tempPDF = null; document.getElementById('drop_zone').innerText = "Trascina qui il file PDF o clicca";
-        }
-
-        function renderDocsGrid() {
-            const oggi = new Date().toISOString().split('T')[0];
-            const vis = db.docs.filter(d => (d.s === "" || oggi >= d.s) && (d.e === "" || oggi <= d.e));
-            document.getElementById('docs_grid').innerHTML = vis.map(d => `
-                <div class="card" style="text-align:center;">
-                    <div style="font-size:30px; color:red;">PDF</div>
-                    <strong>${d.n}</strong><br>
-                    <button class="nav-btn" style="margin-top:10px" onclick="openPdf('${d.id}')">APRI</button>
-                </div>
-            `).join('');
-        }
-        function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
-
-        // --- VISUAL FLOW ---
-        function addCategory() {
-            const n = document.getElementById('new_cat_name').value.trim().toUpperCase();
+        // --- GESTIONE BADGE ---
+        function createFlow() {
+            const n = document.getElementById('new_flow_name').value.toUpperCase();
             if(!n) return;
-            if(!db.badge_flows[n]) db.badge_flows[n] = {};
-            save(); populateCatSelect();
+            badgeFlows[n] = {};
+            localStorage.setItem('nsif_flows', JSON.stringify(badgeFlows));
+            updateFlowSelect();
         }
-        function populateCatSelect() {
-            const s = document.getElementById('select_cat_edit');
-            s.innerHTML = '<option value="">Modifica Flusso...</option>' + Object.keys(db.badge_flows).map(k => `<option value="${k}">${k}</option>`).join('');
+
+        function updateFlowSelect() {
+            const sel = document.getElementById('edit_flow_select');
+            sel.innerHTML = '<option>Seleziona Flusso...</option>' + Object.keys(badgeFlows).map(k => `<option value="${k}">${k}</option>`).join('');
         }
-        function addVOption() {
-            const div = document.createElement('div'); div.style.display="flex"; div.style.gap="2px"; div.style.marginTop="5px";
-            div.innerHTML = `<input type="text" class="v-opt-val" placeholder="Sì" style="width:50%"><input type="text" class="v-opt-tgt" placeholder="ID target" style="width:50%">`;
-            document.getElementById('v_options_list').appendChild(div);
+
+        function addOptRow() {
+            const d = document.createElement('div');
+            d.style.display = "flex"; d.style.gap="2px";
+            d.innerHTML = `<input type="text" class="o-v" placeholder="Sì"><input type="text" class="o-t" placeholder="ID target">`;
+            document.getElementById('opt_list').appendChild(d);
         }
-        function saveVNode() {
-            if(!activeCat) return alert("Scegli una categoria!");
-            const id = document.getElementById('v_node_id').value.trim();
-            const txt = document.getElementById('v_node_txt').value;
-            const ov = document.querySelectorAll('.v-opt-val'); const ot = document.querySelectorAll('.v-opt-tgt');
-            let opts = []; ov.forEach((v, i) => { if(v.value) opts.push({v: v.value, t: ot[i].value}); });
-            if(!db.badge_flows[activeCat][id]) db.badge_flows[activeCat][id] = { txt, opts, x: 50, y: 50 };
-            else { db.badge_flows[activeCat][id].txt = txt; db.badge_flows[activeCat][id].opts = opts; }
-            save(); loadVisualFlow(activeCat);
+
+        function saveNode() {
+            if(!currentEditingFlow) return alert("Seleziona un flusso!");
+            const id = document.getElementById('n_id').value.trim();
+            const txt = document.getElementById('n_txt').value;
+            const vs = document.querySelectorAll('.o-v');
+            const ts = document.querySelectorAll('.o-t');
+            let opts = [];
+            vs.forEach((v, i) => { if(v.value) opts.push({v: v.value, t: ts[i].value}); });
+
+            if(!badgeFlows[currentEditingFlow][id]) {
+                badgeFlows[currentEditingFlow][id] = { txt, opts, x: 50, y: 50 };
+            } else {
+                badgeFlows[currentEditingFlow][id].txt = txt;
+                badgeFlows[currentEditingFlow][id].opts = opts;
+            }
+            localStorage.setItem('nsif_flows', JSON.stringify(badgeFlows));
+            loadFlowToCanvas(currentEditingFlow);
         }
-        function loadVisualFlow(cat) {
-            activeCat = cat; const canvas = document.getElementById('flow_canvas'); canvas.innerHTML = ""; if(!cat) return;
-            const nodes = db.badge_flows[cat];
+
+        function loadFlowToCanvas(cat) {
+            currentEditingFlow = cat;
+            const container = document.getElementById('canvas_container');
+            container.innerHTML = "";
+            const nodes = badgeFlows[cat];
             Object.keys(nodes).forEach(id => {
-                const n = nodes[id]; const d = document.createElement('div');
-                d.className = `flow-node ${id==='inizio'?'node-start':''} ${n.opts.some(o=>o.t==='fine')?'node-end':''}`;
-                d.style.left = n.x + "px"; d.style.top = n.y + "px";
-                d.innerHTML = `<span class="node-id-label">${id}</span>${n.txt}`;
-                d.onmousedown = (e) => {
-                    let sX = e.clientX - d.getBoundingClientRect().left; let sY = e.clientY - d.getBoundingClientRect().top;
-                    document.onmousemove = (e) => {
-                        let nX = e.clientX - sX - canvas.getBoundingClientRect().left; let nY = e.clientY - sY - canvas.getBoundingClientRect().top;
-                        d.style.left = nX + "px"; d.style.top = nY + "px"; n.x = nX; n.y = nY;
+                const node = nodes[id];
+                const div = document.createElement('div');
+                div.className = `flow-node ${id==='inizio'?'node-start':''} ${node.opts.some(o=>o.t==='fine')?'node-end':''}`;
+                div.style.left = node.x + "px"; div.style.top = node.y + "px";
+                div.innerHTML = `<strong>${id}</strong><br>${node.txt.substring(0,20)}...`;
+                
+                div.onmousedown = (e) => {
+                    let sX = e.clientX - div.offsetLeft;
+                    let sY = e.clientY - div.offsetTop;
+                    document.onmousemove = (ev) => {
+                        let nX = ev.clientX - sX; let nY = ev.clientY - sY;
+                        div.style.left = nX + "px"; div.style.top = nY + "px";
+                        node.x = nX; node.y = nY;
                     };
-                    document.onmouseup = () => { document.onmousemove = null; save(); };
+                    document.onmouseup = () => { document.onmousemove = null; localStorage.setItem('nsif_flows', JSON.stringify(badgeFlows)); };
                 };
-                canvas.appendChild(d);
+                container.appendChild(div);
             });
         }
 
-        function renderBadgeStartBtns() {
-            document.getElementById('badge_start_btns').innerHTML = Object.keys(db.badge_flows).map(c => `<button class="nav-btn" style="background:orange" onclick="runBadge('${c}', 'inizio')">${c}</button>`).join('');
-        }
-        function runBadge(cat, id) {
-            const area = document.getElementById('op_flow_area');
-            if(id === 'fine') { area.innerHTML = "<div class='card'><h3>✓ FINE PROCESSO</h3></div>"; return; }
-            const node = db.badge_flows[cat][id];
-            area.innerHTML = `<div class="card" style="max-width:500px; margin:auto; text-align:center;"><h4>${node.txt}</h4><div style="display:flex; justify-content:center; gap:10px;">${node.opts.map(o => `<button class="nav-btn" onclick="runBadge('${cat}','${o.t}')">${o.v}</button>`).join('')}</div></div>`;
+        function renderBadgeSelectors() {
+            document.getElementById('badge_selector').innerHTML = Object.keys(badgeFlows).map(k => `
+                <button class="nav-btn" style="background:orange; margin:5px" onclick="runBadge('${k}', 'inizio')">${k}</button>
+            `).join('');
         }
 
-        // --- GIORNALE ---
-        function addGiornale() {
-            db.giornale.push({ t: new Date().toLocaleTimeString(), a: currentUser.n, l: document.getElementById('gb_luogo').value, d: document.getElementById('gb_desc').value, s: document.getElementById('gb_risolto').value });
-            save(); renderGiornale();
-        }
-        function renderGiornale() {
-            document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr class="${g.s==='NO'?'unresolved':''}"><td>${g.t}</td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td><td>${g.s}</td></tr>`).reverse().join('');
+        function runBadge(cat, nodeID) {
+            const area = document.getElementById('badge_run_area');
+            if(nodeID === 'fine') {
+                area.innerHTML = "<h2>PROCESSO COMPLETATO</h2><button class='nav-btn' onclick='location.reload()'>OK</button>";
+                return;
+            }
+            const node = badgeFlows[cat][nodeID];
+            if(!node) return alert("Errore nel flusso: nodo non trovato");
+
+            area.innerHTML = `
+                <div class="card" style="display:inline-block; width:100%; max-width:500px">
+                    <p style="font-size:1.2rem">${node.txt}</p>
+                    <div style="display:flex; justify-content:center; gap:10px">
+                        ${node.opts.map(o => `<button class="nav-btn" onclick="runBadge('${cat}', '${o.t}')">${o.v}</button>`).join('')}
+                    </div>
+                </div>
+            `;
         }
 
-        // --- ADMIN HELPERS ---
-        function addAccount() {
-            db.users.push({ n: document.getElementById('adm_n').value, e: document.getElementById('adm_e').value, p: document.getElementById('adm_p').value, l: document.getElementById('adm_l').value });
-            save(); renderAdminUsers();
+        // --- GESTIONE DOCUMENTI PDF ---
+        function setupDragDrop() {
+            const dz = document.getElementById('drop_zone');
+            const fi = document.getElementById('file_input');
+            dz.onclick = () => fi.click();
+            dz.ondragover = (e) => { e.preventDefault(); dz.classList.add('hover'); };
+            dz.ondragleave = () => dz.classList.remove('hover');
+            dz.ondrop = (e) => {
+                e.preventDefault(); dz.classList.remove('hover');
+                processFile(e.dataTransfer.files[0]);
+            };
+            fi.onchange = (e) => processFile(e.target.files[0]);
         }
-        function renderAdminUsers() {
-            document.getElementById('tbody_users').innerHTML = db.users.map((u, i) => `<tr><td>${u.n}</td><td>${u.e}</td><td>${u.l}</td><td><button onclick="db.users.splice(${i},1); save(); renderAdminUsers()">X</button></td></tr>`).join('');
+
+        function processFile(file) {
+            if(file && file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = (e) => { tempPDF = e.target.result; document.getElementById('drop_zone').innerText = "PDF Caricato: " + file.name; };
+                reader.readAsDataURL(file);
+            }
         }
-        function renderAdminDocs() {
-            document.getElementById('tbody_docs_admin').innerHTML = db.docs.map((d, i) => `<tr><td>${d.n}</td><td>${d.e}</td><td><button onclick="db.docs.splice(${i},1); save(); renderAdminDocs()">Elimina</button></td></tr>`).join('');
+
+        function saveDoc() {
+            const title = document.getElementById('doc_title').value;
+            if(!title || !tempPDF) return alert("Manca Titolo o File!");
+            documents.push({id: Date.now(), title, data: tempPDF});
+            localStorage.setItem('nsif_docs', JSON.stringify(documents));
+            alert("Documento Salvato");
+            tempPDF = null; document.getElementById('drop_zone').innerText = "Trascina il PDF qui o clicca";
         }
-        function renderHomeLinks() {
-            document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue);" onclick="window.open('${l.u}')">${l.n}</button>`).join('');
+
+        function renderDocs() {
+            document.getElementById('docs_grid').innerHTML = documents.map(d => `
+                <div class="card" style="text-align:center">
+                    <div style="font-size:40px; color:red">📄</div>
+                    <strong>${d.title}</strong><br><br>
+                    <button class="nav-btn" onclick="viewDoc('${d.id}')">APRI PDF</button>
+                </div>
+            `).join('');
         }
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
-            document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+
+        function viewDoc(id) {
+            const d = documents.find(x => x.id == id);
+            const win = window.open();
+            win.document.write(`<iframe src="${d.data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
         }
     </script>
 </body>
