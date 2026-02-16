@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.4 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.5 BETA</title>
     <style>
-        :root { --blue: #003366; --red: #e30613; --bg: #f4f7f6; --white: #ffffff; --grey: #666; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        :root { --blue: #003366; --red: #e30613; --bg: #f4f7f6; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
         /* LOGIN PAGE */
         #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-card { background: white; padding: 40px; border-radius: 15px; width: 380px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .login-card img { max-width: 200px; margin-bottom: 20px; }
         .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        /* HEADER */
-        .header { text-align: center; padding: 20px; background: var(--white); border-bottom: 5px solid var(--red); }
-        .logo-consorzio { height: 100px; display: block; margin: 0 auto 10px auto; }
-        .logo-securitas { height: 45px; display: block; margin: 0 auto; }
-        .version-label { color: var(--blue); font-weight: bold; margin-top: 10px; font-size: 1.1rem; }
+        /* HEADER - LOGO CENTRATO */
+        .header { text-align: center; padding: 30px; background: var(--white); border-bottom: 5px solid var(--red); }
+        .logo-main { max-width: 300px; display: block; margin: 0 auto 10px auto; }
+        .logo-sec { max-width: 150px; display: block; margin: 0 auto; }
+        .version-label { color: var(--blue); font-weight: bold; margin-top: 15px; font-size: 1.2rem; }
 
         /* DASHBOARD */
         .dashboard-container { background: white; margin: 20px; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -27,61 +26,58 @@
         .world-clocks span { font-weight: bold; color: var(--red); }
 
         /* SEZIONE LINK ESTERNI */
-        .links-section { background: #e9ecef; margin: 20px; padding: 20px; border-radius: 15px; text-align: center; }
-        .link-btn { padding: 15px 30px; margin: 10px; border: none; border-radius: 8px; cursor: pointer; background: #0056b3; color: white; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; }
-        .link-btn:hover { background: #003d80; transform: translateY(-2px); }
+        .links-area { background: #eee; margin: 20px; padding: 20px; border-radius: 15px; text-align: center; }
+        .link-btn { padding: 15px 25px; margin: 5px; border: none; border-radius: 8px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; text-decoration: none; display: inline-block; }
 
         /* NAVIGATION */
-        .nav-bar { display: flex; justify-content: center; gap: 10px; padding: 15px; background: #f0f0f0; border-bottom: 1px solid #ddd; }
+        .nav-bar { display: flex; justify-content: center; gap: 10px; padding: 15px; background: #ddd; }
         .nav-btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; }
-        .btn-admin-nav { background: #333; }
 
         /* SECTIONS */
-        .container { display: none; padding: 30px; max-width: 1200px; margin: auto; }
+        .container { display: none; padding: 20px; max-width: 1100px; margin: auto; }
         .active-page { display: block; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        /* CHECKLIST STYLE */
+        .fase-box { background: #fff; border-left: 5px solid var(--red); padding: 15px; margin-bottom: 20px; border-radius: 0 10px 10px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .fase-title { font-weight: bold; color: var(--blue); border-bottom: 1px solid #eee; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .check-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #fafafa; }
+        .ts-display { margin-left: auto; color: var(--red); font-weight: bold; font-family: monospace; }
 
-        /* ADMIN TABLE & FORM */
-        .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; }
-        .admin-form input, .admin-form select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        /* ADMIN TABLE */
+        table { width: 100%; border-collapse: collapse; background: white; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #eee; }
-        .status-active { color: green; font-weight: bold; }
-        .status-disabled { color: red; font-weight: bold; }
-        .action-btn { padding: 5px 10px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; font-size: 0.8rem; }
+        th { background: #f4f4f4; }
     </style>
 </head>
 <body>
 
     <div id="page_login">
         <div class="login-card">
-            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas">
-            <h3>NSIF CASTIONE GESTIONALE</h3>
-            <input type="text" id="login_user" placeholder="E-mail" onkeypress="handleEnter(event, 'login_pass')">
-            <input type="password" id="login_pass" placeholder="Password" onkeypress="handleEnter(event, 'btn_login_confirm')">
-            <button id="btn_login_confirm" class="nav-btn" style="width: 100%; background: var(--red);" onclick="doLogin()">CONFERMA</button>
-            <p><a href="#" style="font-size: 0.8rem; color: #666; text-decoration: none;">Password dimenticata?</a></p>
+            <img src="https://via.placeholder.com/200x80?text=CONSORZIO" style="margin-bottom:10px;">
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" style="width:120px; margin-bottom:20px;">
+            <input type="text" id="log_u" placeholder="E-mail" onkeypress="handleEnter(event, 'log_p')">
+            <input type="password" id="log_p" placeholder="Password" onkeypress="handleEnter(event, 'btn_l')">
+            <button id="btn_l" class="nav-btn" style="width: 100%; background: var(--red);" onclick="login()">CONFERMA</button>
         </div>
     </div>
 
     <div id="main_ui" style="display:none;">
         <div class="header">
-            <img src="https://via.placeholder.com/400x120?text=LOGO+CONSORZIO" class="logo-consorzio" alt="Logo Consorzio">
-            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas" alt="Logo Securitas">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.4 BETA</div>
+            <img src="https://via.placeholder.com/400x120?text=LOGO+CONSORZIO" class="logo-main" alt="Logo Consorzio">
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-sec" alt="Securitas">
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.5 BETA</div>
         </div>
 
         <div class="nav-bar">
-            <button class="nav-btn" onclick="showSection('section_home')">🏠 DASHBOARD</button>
-            <button class="nav-btn" onclick="showSection('section_checklist')">📋 CHECKLIST TURNI</button>
-            <button id="nav_admin" class="nav-btn btn-admin-nav" style="display:none;" onclick="showSection('section_admin')">⚙️ AMMINISTRATORE</button>
-            <button class="nav-btn" style="background:#555;" onclick="logout()">LOGOUT</button>
+            <button class="nav-btn" onclick="showSection('section_home')">HOME</button>
+            <button class="nav-btn" onclick="showSection('section_checklist')">CHECKLIST TURNI</button>
+            <button id="nav_admin" class="nav-btn" style="background:#333; display:none;" onclick="showSection('section_admin')">AMMINISTRATORE</button>
+            <button class="nav-btn" style="background:#666;" onclick="location.reload()">LOGOUT</button>
         </div>
 
         <div id="section_home" class="container active-page">
             <div class="dashboard-container">
-                <div id="date_display" style="font-size: 1.5rem; color: #444;">Caricamento data...</div>
+                <div id="date_display" style="font-size: 1.4rem; color: #444;"></div>
                 <div id="main_clock" class="clock-big">00:00:00</div>
                 <div class="world-clocks">
                     <div>Zurigo: <span id="tz_zur">00:00</span></div>
@@ -90,120 +86,124 @@
                 </div>
             </div>
 
-            <div class="links-section">
-                <h3 style="margin-top:0; color:var(--blue);">COLLEGAMENTI ESTERNI</h3>
-                <div id="links_area">
-                    <a href="https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard" target="_blank" class="link-btn">GESTIONE ACCESSI</a>
-                    <a href="https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9" target="_blank" class="link-btn">VTI External</a>
-                </div>
+            <div class="links-area">
+                <h3 style="margin-top:0;">COLLEGAMENTI RAPIDI</h3>
+                <a href="https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard" target="_blank" class="link-btn">GESTIONE ACCESSI</a>
+                <a href="https://ssgwp.sharepoint.com/teams/TONCH_Collab_2_16/Freigegebene%20Dokumente/Forms/AllItems.aspx?id=%2Fteams%2FTONCH%5FCollab%5F2%5F16%2FFreigegebene%20Dokumente%2FTON%20%26%20TAS%2FFFS%5FCantiere%20nuove%20officine%20Castione%2FNSIF%20Castione%20%2D%20Team&viewid=2f490dae%2Dafdc%2D4f24%2D837e%2D21504514e1e9" target="_blank" class="link-btn">VTI External</a>
             </div>
         </div>
 
         <div id="section_checklist" class="container">
-            <div class="card">
-                <h2>Checklist Operativa Turni</h2>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <button class="nav-btn" onclick="renderChecklist('T1')">T1 (Mattina)</button>
-                    <button class="nav-btn" onclick="renderChecklist('T2')">T2 (Pomeriggio)</button>
-                    <button class="nav-btn" onclick="renderChecklist('T3')">T3 (Notte/Supporto)</button>
-                </div>
-                <div id="checklist_display"></div>
+            <div style="text-align:center; margin-bottom:20px;">
+                <button class="nav-btn" onclick="loadChecklist('T1')">TURNO T1</button>
+                <button class="nav-btn" onclick="loadChecklist('T2')">TURNO T2</button>
+                <button class="nav-btn" onclick="loadChecklist('T3')">TURNO T3</button>
             </div>
+            <div id="checklist_content"></div>
         </div>
 
         <div id="section_admin" class="container">
-            <div class="card">
-                <h2 style="border-bottom: 2px solid var(--red); padding-bottom: 10px;">GESTIONE ACCOUNT</h2>
-                
-                <div class="admin-form">
-                    <input type="email" id="adm_email" placeholder="E-mail">
-                    <input type="text" id="adm_pass" placeholder="Password">
-                    <select id="adm_lvl">
+            <div style="background:white; padding:20px; border-radius:10px;">
+                <h3>Gestione Account</h3>
+                <div style="margin-bottom:20px; display:flex; gap:10px;">
+                    <input type="text" id="new_e" placeholder="Email">
+                    <input type="text" id="new_p" placeholder="Password">
+                    <select id="new_l">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                         <option value="superuser">Superuser</option>
                         <option value="gast">Gast</option>
                     </select>
-                    <input type="number" id="adm_days" placeholder="Durata (giorni)" value="365">
-                    <button class="nav-btn" style="background:green;" onclick="createNewAccount()">AGGIUNGI ACCOUNT</button>
+                    <button class="nav-btn" style="background:green;" onclick="addAccount()">AGGIUNGI</button>
                 </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>E-mail</th>
-                            <th>Password</th>
-                            <th>Livello</th>
-                            <th>Stato</th>
-                            <th>Scadenza (gg)</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin_users_table">
-                        </tbody>
+                <table id="user_table">
+                    <thead><tr><th>Email</th><th>Livello</th><th>Stato</th><th>Azioni</th></tr></thead>
+                    <tbody id="user_tbody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // DATA STORE
-        const ADMIN_DEFAULT = "marco.lamorgia@securitas.ch";
-        let currentUser = null;
-
-        let accounts = JSON.parse(localStorage.getItem('nsif_accounts')) || [
-            {email: ADMIN_DEFAULT, pass: "1234", lvl: "admin", status: "ATTIVO", expiry: 999}
+        const ADMIN_E = "marco.lamorgia@securitas.ch";
+        let accounts = JSON.parse(localStorage.getItem('nsif_users')) || [
+            {e: ADMIN_E, p: "1234", l: "admin", s: "ATTIVO", d: 365}
         ];
 
-        // INIZIALIZZAZIONE
-        window.onload = () => {
-            const last = localStorage.getItem('last_user');
-            if(last) document.getElementById('login_user').value = last;
-            updateTime();
-            setInterval(updateTime, 1000);
+        const checklistData = {
+            T1: {
+                "Inizio Turno": [
+                    {i: "Aprire cancello principale Campo Base Nord", o: "Codice 6988"},
+                    {i: "Aprire ufficio Campo Base Nord", o: "Codice 1907"},
+                    {i: "Accendere telefono di servizio (Pin 6681)", o: "Sblocco 1907 - Tenerlo fino arrivo T3"},
+                    {i: "Recarsi al CAST07 ed effettuare apertura", o: "Codice 1907"},
+                    {i: "Verifica riscaldamento CAST07", o: "Acceso temp. 2 in inverno"}
+                ],
+                "Durante il Turno": [
+                    {i: "Verificare VTI External - Sharing documenti", o: "Controllo badge stampati"},
+                    {i: "Prova collegamento Radio", o: "Canale 15"}
+                ],
+                "Fine Turno": [
+                    {i: "Pulizia ufficio e straccio a terra", o: "CAST07"},
+                    {i: "Passaggio consegna al CAST09", o: "Chiudere il CAST07"}
+                ]
+            },
+            T2: {
+                "Inizio Turno": [
+                    {i: "Aprire cancello Entrata/Uscita CAST09", o: "Codice 6988"},
+                    {i: "Aprire ufficio CAST09", o: "Codice 1907"},
+                    {i: "Verificare riscaldamento CAST09", o: "Leva a 3/4 in inverno"}
+                ],
+                "Durante il Turno": [
+                    {i: "Controllo fotocellule barriera", o: "Pulizia se ghiaccio/neve"},
+                    {i: "Verifica carica monopattino", o: "Luce Verde = Carico"}
+                ],
+                "Fine Turno": [
+                    {i: "Pulizia postazione (straccio superfici)", o: "CAST09"},
+                    {i: "Passare lo straccio a terra", o: "Entro le ore 22:00"}
+                ]
+            },
+            T3: {
+                "Inizio Turno": [
+                    {i: "Ritiro telefono di servizio al CAST07", o: ""},
+                    {i: "Prendere monopattino dal CAST09", o: "Per spostamenti interni"}
+                ],
+                "Durante il Turno": [
+                    {i: "Controlli generici cantiere interno/esterno", o: ""},
+                    {i: "Verifica che il CAST08 sia presidiato", o: "Se aperto"}
+                ],
+                "Fine Turno": [
+                    {i: "Chiusura rubinetti Campo Base Sud", o: "Verifica perdite"},
+                    {i: "Redazione rapporto giornaliero", o: "Segnalazione anomalie a La Morgia"}
+                ]
+            }
         };
 
-        function handleEnter(e, nextId) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const next = document.getElementById(nextId);
-                if(next.tagName === 'BUTTON') next.click();
-                else next.focus();
-            }
-        }
+        function handleEnter(e, nextId) { if(e.key==='Enter') document.getElementById(nextId).focus(); }
 
-        function doLogin() {
-            const u = document.getElementById('login_user').value;
-            const p = document.getElementById('login_pass').value;
-
-            const found = accounts.find(a => a.email === u && a.pass === p && a.status === "ATTIVO");
-
-            if(found) {
-                currentUser = found;
+        function login() {
+            const u = document.getElementById('log_u').value;
+            const p = document.getElementById('log_p').value;
+            const user = accounts.find(a => a.e === u && a.p === p && a.s === "ATTIVO");
+            
+            if(user) {
                 localStorage.setItem('last_user', u);
                 document.getElementById('page_login').style.display = 'none';
                 document.getElementById('main_ui').style.display = 'block';
-                
-                if(found.lvl === 'admin') {
+                if(user.l === 'admin') {
                     document.getElementById('nav_admin').style.display = 'block';
-                    renderAccountsTable();
+                    renderAdmin();
                 }
-            } else {
-                alert("Accesso negato: credenziali errate o account disattivato.");
-            }
+            } else { alert("Credenziali errate!"); }
         }
 
         function updateTime() {
             const now = new Date();
-            const clock = document.getElementById('main_clock');
-            if(clock) clock.innerText = now.toLocaleTimeString('it-IT');
-            
-            const dateDisp = document.getElementById('date_display');
-            if(dateDisp) dateDisp.innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-            
-            const z = document.getElementById('tz_zur'); if(z) z.innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/Zurich', hour:'2-digit', minute:'2-digit'});
-            const l = document.getElementById('tz_lon'); if(l) l.innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/London', hour:'2-digit', minute:'2-digit'});
-            const n = document.getElementById('tz_nyc'); if(n) n.innerText = now.toLocaleTimeString('it-IT', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit'});
+            document.getElementById('main_clock').innerText = now.toLocaleTimeString('it-IT');
+            document.getElementById('date_display').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+            document.getElementById('tz_zur').innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/Zurich', hour:'2-digit', minute:'2-digit'});
+            document.getElementById('tz_lon').innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/London', hour:'2-digit', minute:'2-digit'});
+            document.getElementById('tz_nyc').innerText = now.toLocaleTimeString('it-IT', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit'});
         }
 
         function showSection(id) {
@@ -211,81 +211,59 @@
             document.getElementById(id).classList.add('active-page');
         }
 
-        // --- GESTIONE ACCOUNT ---
-        function createNewAccount() {
-            const email = document.getElementById('adm_email').value;
-            const pass = document.getElementById('adm_pass').value;
-            const lvl = document.getElementById('adm_lvl').value;
-            const days = document.getElementById('adm_days').value;
-
-            if(!email || !pass) return alert("Inserire email e password");
-
-            accounts.push({email, pass, lvl, status: "ATTIVO", expiry: parseInt(days)});
-            saveAndRefresh();
-            
-            // Clear inputs
-            document.getElementById('adm_email').value = "";
-            document.getElementById('adm_pass').value = "";
+        function loadChecklist(turno) {
+            const data = checklistData[turno];
+            let html = `<h2>MODULO OPERATIVO ${turno}</h2>`;
+            for(let fase in data) {
+                html += `<div class="fase-box">
+                    <div class="fase-title"><span>${fase.toUpperCase()}</span> <span>Attività: ${data[fase].length}</span></div>`;
+                data[fase].forEach(task => {
+                    html += `<div class="check-item">
+                        <input type="checkbox" style="transform:scale(1.3)" onchange="this.parentElement.querySelector('.ts-display').innerText = this.checked ? new Date().toLocaleTimeString() : ''">
+                        <div style="margin-left:15px"><strong>${task.i}</strong><br><small>${task.o}</small></div>
+                        <span class="ts-display"></span>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            document.getElementById('checklist_content').innerHTML = html;
         }
 
-        function renderAccountsTable() {
-            const body = document.getElementById('admin_users_table');
-            body.innerHTML = "";
-            accounts.forEach((acc, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${acc.email}</td>
-                    <td><input type="text" value="${acc.pass}" onchange="updateAcc(${index}, 'pass', this.value)" style="width:80px"></td>
+        function renderAdmin() {
+            const tbody = document.getElementById('user_tbody');
+            tbody.innerHTML = accounts.map((a, i) => `
+                <tr>
+                    <td>${a.e}</td>
+                    <td>${a.l}</td>
+                    <td style="color:${a.s==='ATTIVO'?'green':'red'}"><strong>${a.s}</strong></td>
                     <td>
-                        <select onchange="updateAcc(${index}, 'lvl', this.value)">
-                            <option value="user" ${acc.lvl==='user'?'selected':''}>user</option>
-                            <option value="admin" ${acc.lvl==='admin'?'selected':''}>admin</option>
-                            <option value="superuser" ${acc.lvl==='superuser'?'selected':''}>superuser</option>
-                            <option value="gast" ${acc.lvl==='gast'?'selected':''}>gast</option>
-                        </select>
+                        <button onclick="toggleAcc(${i})">Sblocca/Blocca</button>
+                        ${a.e !== ADMIN_E ? `<button onclick="delAcc(${i})">Elimina</button>` : ''}
                     </td>
-                    <td class="${acc.status === 'ATTIVO' ? 'status-active' : 'status-disabled'}">${acc.status}</td>
-                    <td><input type="number" value="${acc.expiry}" onchange="updateAcc(${index}, 'expiry', this.value)" style="width:50px"></td>
-                    <td>
-                        <button class="action-btn" onclick="toggleAcc(${index})">${acc.status === 'ATTIVO' ? 'Blocca' : 'Sblocca'}</button>
-                        ${acc.email !== ADMIN_DEFAULT ? `<button class="action-btn" style="color:red" onclick="deleteAcc(${index})">Elimina</button>` : ''}
-                    </td>
-                `;
-                body.appendChild(tr);
-            });
+                </tr>
+            `).join('');
         }
 
-        function updateAcc(index, field, value) {
-            accounts[index][field] = value;
-            saveAndRefresh();
-        }
-
-        function toggleAcc(index) {
-            accounts[index].status = accounts[index].status === 'ATTIVO' ? 'DISATTIVATO' : 'ATTIVO';
-            saveAndRefresh();
-        }
-
-        function deleteAcc(index) {
-            if(confirm("Eliminare definitivamente?")) {
-                accounts.splice(index, 1);
-                saveAndRefresh();
+        function addAccount() {
+            const e = document.getElementById('new_e').value;
+            const p = document.getElementById('new_p').value;
+            const l = document.getElementById('new_l').value;
+            if(e && p) {
+                accounts.push({e, p, l, s: "ATTIVO", d: 365});
+                save();
             }
         }
 
-        function saveAndRefresh() {
-            localStorage.setItem('nsif_accounts', JSON.stringify(accounts));
-            renderAccountsTable();
-        }
+        function toggleAcc(i) { accounts[i].s = accounts[i].s === "ATTIVO" ? "DISATTIVATO" : "ATTIVO"; save(); }
+        function delAcc(i) { if(confirm("Eliminare?")) { accounts.splice(i, 1); save(); } }
+        function save() { localStorage.setItem('nsif_users', JSON.stringify(accounts)); renderAdmin(); }
 
-        function logout() { location.reload(); }
-        
-        // Checklist logic (semplificata per brevità ma integrata)
-        function renderChecklist(turno) {
-            const area = document.getElementById('checklist_display');
-            area.innerHTML = `<p>Caricamento dati Turno ${turno} completato. Visualizzazione fasi in corso...</p>`;
-            // Qui verrebbe inserita la logica di visualizzazione flag/orari già sviluppata
-        }
-
+        window.onload = () => {
+            const last = localStorage.getItem('last_user');
+            if(last) document.getElementById('log_u').value = last;
+            updateTime();
+            setInterval(updateTime, 1000);
+        };
     </script>
 </body>
 </html>
