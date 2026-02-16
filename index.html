@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.18 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.18.1 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -33,9 +33,12 @@
 
         #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; }
+        .check-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #fff; margin-bottom: 5px; border-radius: 5px; }
         
-        /* Checklist styles */
-        .check-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1fr solid #eee; background: #fff; margin-bottom: 5px; border-radius: 5px; }
+        /* Nuovi stili Login */
+        .login-footer { margin-top: 15px; font-size: 0.75rem; color: #888; display: flex; flex-direction: column; gap: 8px; }
+        .forgot-link { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 600; }
+        .forgot-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -46,13 +49,18 @@
             <input type="text" id="log_u" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
             <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
             <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
+            
+            <div class="login-footer">
+                <span class="forgot-link" onclick="alert('Contattare l\'Amministratore di sistema per il reset della password.')">Password dimenticata?</span>
+                <span>Versione 1.18.1 BETA</span>
+            </div>
         </div>
     </div>
 
     <div id="main_ui" style="display:none;">
         <div class="header">
             <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO NSIF">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.18</div>
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.18.1</div>
         </div>
 
         <div class="nav-bar">
@@ -139,10 +147,10 @@
             <div class="card" style="border-left: 10px solid #007bff;">
                 <h3>Configurazione Checklist Turni</h3>
                 <div style="display:flex; gap:10px; flex-wrap: wrap; margin-bottom: 15px;">
-                    <input type="text" id="cfg_turn_name" placeholder="Nome Turno (es: Mattina)">
+                    <input type="text" id="cfg_turn_name" placeholder="Nome Turno">
                     <select id="cfg_fase"><option value="Inizio">Inizio</option><option value="Durante">Durante</option><option value="Fine">Fine</option></select>
-                    <input type="text" id="cfg_title" placeholder="Attività da svolgere" style="flex-grow:1">
-                    <button class="nav-btn" onclick="addCheckItem()">AGGIUNGI ATTIVITÀ</button>
+                    <input type="text" id="cfg_title" placeholder="Attività" style="flex-grow:1">
+                    <button class="nav-btn" onclick="addCheckItem()">AGGIUNGI</button>
                 </div>
                 <table>
                     <thead><tr><th>Turno</th><th>Fase</th><th>Attività</th><th>Elimina</th></tr></thead>
@@ -161,21 +169,6 @@
                 </div>
                 <button class="nav-btn" style="background:green; width:100%; margin-top:10px;" onclick="uploadDocument()">PUBBLICA</button>
                 <table style="margin-top:10px;"><tbody id="tbody_docs_admin"></tbody></table>
-            </div>
-
-            <div class="card">
-                <h3>Flussi Badge</h3>
-                <input type="text" id="new_badge_cat" placeholder="Nuova Categoria">
-                <button onclick="addBadgeCategory()">CREA</button>
-                <div id="badge_edit_zone" style="display:none; margin-top:15px;">
-                    <h4 id="editing_cat_name"></h4>
-                    <input type="text" id="node_id" placeholder="ID (es: inizio)">
-                    <textarea id="node_text" placeholder="Testo domanda" style="width:100%"></textarea>
-                    <div id="node_options_area"></div>
-                    <button onclick="addOptionRow()">+ Risposta</button>
-                    <button class="nav-btn" style="background:green" onclick="saveNode()">SALVA NODO</button>
-                    <div id="admin_nodes_list" style="margin-top:10px;"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -197,12 +190,21 @@
 
         function save() { localStorage.setItem('nsif_v18_db', JSON.stringify(db)); }
 
+        // --- GESTIONE LOGIN MEMORY ---
+        window.onload = function() {
+            const lastUser = localStorage.getItem('nsif_last_user');
+            if(lastUser) {
+                document.getElementById('log_u').value = lastUser;
+            }
+        };
+
         function login() {
             const u = document.getElementById('log_u').value;
             const p = document.getElementById('log_p').value;
             const user = db.users.find(x => x.e === u && x.p === p);
             if(user) {
                 currentUser = user;
+                localStorage.setItem('nsif_last_user', u); // Salva l'ultimo utente
                 document.getElementById('page_login').style.display = 'none';
                 document.getElementById('main_ui').style.display = 'block';
                 if(user.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
@@ -261,7 +263,7 @@
             `).reverse().join('');
         }
 
-        // --- CHECKLIST CONFIG (RIPRISTINATA) ---
+        // --- CHECKLIST ---
         function addCheckItem() {
             const t = document.getElementById('cfg_turn_name').value;
             if(!t) return alert("Inserisci il nome del turno");
@@ -282,7 +284,7 @@
             document.getElementById('run_checklist_area').innerHTML = h;
         }
 
-        // --- PDF SISTEMATO ---
+        // --- PDF ---
         function setupDragDrop() {
             const zone = document.getElementById('drop_zone');
             const input = document.getElementById('file_input');
@@ -308,42 +310,7 @@
             renderAdminAll();
         }
 
-        // --- FLUSSI BADGE ---
-        function addBadgeCategory() {
-            const cat = document.getElementById('new_badge_cat').value.trim().toUpperCase();
-            if(!cat) return;
-            if(!db.badge_flows[cat]) db.badge_flows[cat] = {};
-            currentCatEdit = cat;
-            document.getElementById('badge_edit_zone').style.display = 'block';
-            document.getElementById('editing_cat_name').innerText = "Editing: " + cat;
-            save(); renderNodeList();
-        }
-
-        function addOptionRow() {
-            const d = document.createElement('div');
-            d.style.display="flex"; d.style.gap="5px"; d.style.marginBottom="5px";
-            d.innerHTML = `<input type="text" class="opt-val" placeholder="Risposta"> <input type="text" class="opt-target" placeholder="Vai a ID">`;
-            document.getElementById('node_options_area').appendChild(d);
-        }
-
-        function saveNode() {
-            const nid = document.getElementById('node_id').value.trim();
-            const txt = document.getElementById('node_text').value.trim();
-            const ovs = document.querySelectorAll('.opt-val');
-            const ots = document.querySelectorAll('.opt-target');
-            let opts = [];
-            ovs.forEach((v, i) => { if(v.value) opts.push({ val: v.value, target: ots[i].value }); });
-            db.badge_flows[currentCatEdit][nid] = { text: txt, options: opts };
-            save(); renderNodeList();
-        }
-
-        function renderNodeList() {
-            const list = document.getElementById('admin_nodes_list');
-            const nodes = db.badge_flows[currentCatEdit];
-            list.innerHTML = Object.keys(nodes).map(id => `<div style="padding:5px; border-bottom:1px solid #ccc;"><b>${id}</b> | <button onclick="deleteNode('${id}')">X</button></div>`).join('');
-        }
-        function deleteNode(id) { delete db.badge_flows[currentCatEdit][id]; save(); renderNodeList(); }
-
+        // --- BADGE ---
         function renderBadgeStartBtns() {
             document.getElementById('badge_start_btns').innerHTML = Object.keys(db.badge_flows).map(cat => `<button class="nav-btn" style="background:orange" onclick="runFlow('${cat}', 'inizio')">${cat}</button>`).join('');
         }
