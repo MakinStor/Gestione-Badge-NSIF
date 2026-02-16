@@ -3,280 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V4.8.1 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.1 BETA</title>
     <style>
-        :root { --securitas-blue: #003366; --securitas-red: #e30613; --bg: #f0f2f5; --glass: rgba(255, 255, 255, 0.9); }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
+        :root { --blue: #003366; --red: #e30613; --bg: #f4f7f6; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
         
-        /* Header & Logo */
-        .main-header { text-align: center; padding: 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .logo-large { width: 180px; margin-bottom: 10px; }
-        .logo-securitas { width: 120px; display: block; margin: 0 auto; }
-        .version-title { font-size: 1.2rem; font-weight: bold; color: var(--securitas-blue); margin-top: 10px; }
+        /* Login Style */
+        #page_login { 
+            position: fixed; top:0; left:0; width: 100%; height: 100%; 
+            background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .login-card { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        
+        /* Header & Graphics */
+        .header { text-align: center; padding: 20px; background: var(--white); border-bottom: 5px solid var(--red); }
+        .logo-consorzio { height: 100px; margin-bottom: 10px; }
+        .logo-securitas { height: 40px; }
+        .version-label { color: var(--blue); font-weight: bold; margin-top: 10px; }
 
-        /* Dashboard & Clocks */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 20px; background: #fff; margin: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .widget { text-align: center; padding: 10px; border-right: 1px solid #eee; }
-        .widget:last-child { border-right: none; }
-        #main-clock { font-size: 2.5rem; font-weight: bold; color: var(--securitas-red); display: block; }
-        .world-clocks { display: flex; justify-content: space-around; font-size: 0.8rem; margin-top: 10px; color: #666; }
+        /* Dashboard */
+        .dashboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; background: white; margin: 20px; border-radius: 15px; }
+        .clock-big { font-size: 3rem; font-weight: bold; color: var(--blue); display: block; }
+        .world-clocks { display: flex; gap: 15px; font-size: 0.9rem; color: #555; }
+        .meteo-widget { background: #e0f2f1; padding: 15px; border-radius: 10px; border-left: 5px solid #009688; }
 
         /* Navigation */
-        .container { width: 95%; max-width: 1000px; margin: 0 auto; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .btn-main { height: 100px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
-        .btn-blue { background: var(--securitas-blue); }
-        .btn-red { background: var(--securitas-red); }
-        .btn-dark { background: #333; }
-        .btn-main:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .main-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 20px; }
+        .nav-btn { height: 80px; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .btn-checklist { background: var(--blue); }
+        .btn-admin { background: #333; }
+        .btn-badge { background: var(--red); }
 
-        /* Pages */
-        .page { display: none; background: white; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Sections */
+        .container { display: none; padding: 20px; max-width: 1100px; margin: auto; }
+        .active-page { display: block; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-        /* Tables & Forms */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        th { background: #f8f9fa; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; }
+        /* Admin & Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .status-active { color: green; font-weight: bold; }
+        .status-blocked { color: red; font-weight: bold; }
+
+        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        .external-links-area { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 30px; border: 2px dashed #003366; }
-        .link-buttons-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-        .btn-link { background: white; border: 2px solid var(--securitas-blue); color: var(--securitas-blue); padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        /* External Links */
+        .links-section { margin-top: 30px; padding: 20px; background: #eee; border-radius: 10px; }
+        .link-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .url-btn { background: white; border: 2px solid var(--blue); color: var(--blue); padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        .checklist-item { display: flex; align-items: flex-start; padding: 15px; border-bottom: 1px solid #eee; gap: 15px; }
-        .time-badge { margin-left: auto; color: var(--success); font-weight: bold; background: #e8f5e9; padding: 5px 10px; border-radius: 4px; }
+        /* Checklist UI */
+        .fase-header { background: #f0f0f0; padding: 10px; margin-top: 20px; border-left: 5px solid var(--red); display: flex; justify-content: space-between; }
+        .check-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .timestamp { margin-left: auto; font-family: monospace; color: #666; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-<div class="main-header">
-    <img src="logo_nsif_grande.jpg" class="logo-large" alt="NSIF LOGO" onerror="this.src='https://via.placeholder.com/180x80?text=NSIF+LOGO'">
-    <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas" alt="Securitas">
-    <div class="version-title">NSIF CASTIONE – GESTIONALE V4.8.1 BETA</div>
-</div>
+    <div id="page_login">
+        <div class="login-card">
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" width="150" style="margin-bottom: 20px;">
+            <h3>Accesso NSIF</h3>
+            <input type="text" id="login_user" placeholder="E-mail" onkeypress="handleEnter(event, 'login_pass')">
+            <input type="password" id="login_pass" placeholder="Password" onkeypress="handleEnter(event, 'btn_login_confirm')">
+            <button id="btn_login_confirm" class="nav-btn btn-badge" style="width: 100%; height: 50px;" onclick="doLogin()">CONFERMA</button>
+            <p><a href="#" style="font-size: 0.8rem; color: #666;">Password dimenticata?</a></p>
+        </div>
+    </div>
 
-<div class="container">
-    <div id="page_home" class="active">
+    <div id="main_interface" style="display:none;">
+        <div class="header">
+            <img src="logo_consorzio.jpg" class="logo-consorzio" alt="LOGO CONSORZIO" onerror="this.src='https://via.placeholder.com/200x100?text=Logo+Consorzio'">
+            <br>
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas">
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.1 BETA</div>
+        </div>
+
         <div class="dashboard">
-            <div class="widget">
-                <span id="current-date" style="font-weight: bold; font-size: 1.2rem;"></span>
-                <span id="main-clock">00:00:00</span>
+            <div style="text-align: center;">
+                <div id="date_today" style="font-weight: bold; font-size: 1.2rem;">Lunedì, 16 Febbraio 2026</div>
+                <div id="main_clock" class="clock-big">08:30:00</div>
             </div>
-            <div class="widget">
+            <div class="world-clocks">
+                <div>Zurigo: <span id="tz_zur">08:30</span></div>
+                <div>Londra: <span id="tz_lon">07:30</span></div>
+                <div>N. York: <span id="tz_nyc">02:30</span></div>
+            </div>
+            <div class="meteo-widget">
                 <strong>METEO CASTIONE</strong><br>
-                <span>☀️ 14°C - Sereno</span>
+                <span>☀️ Sereno, 8°C</span><br>
+                <small>Vento: 5 km/h N</small>
             </div>
-            <div class="widget">
-                <strong>FUSI ORARI</strong>
-                <div class="world-clocks">
-                    <div>LON: <span id="clock-lon"></span></div>
-                    <div>NYC: <span id="clock-nyc"></span></div>
-                    <div>TYO: <span id="clock-tyo"></span></div>
+        </div>
+
+        <div class="main-nav">
+            <button class="nav-btn btn-checklist" onclick="showSection('section_checklist')">📋 CHECKLIST TURNI</button>
+            <button class="nav-btn btn-badge" onclick="showSection('section_badge')">🛂 GESTIONE BADGE</button>
+            <button id="nav_admin" class="nav-btn btn-admin" style="display:none;" onclick="showSection('section_admin')">⚙️ PANNELLO AMMINISTRATORE</button>
+            <button class="nav-btn" style="background:#666;" onclick="logout()">LOGOUT</button>
+        </div>
+
+        <div class="links-section">
+            <strong>🔗 COLLEGAMENTI ESTERNI</strong>
+            <div id="link_container" class="link-grid" style="margin-top:10px;"></div>
+        </div>
+
+        <div id="section_checklist" class="container">
+            <div class="card">
+                <h2>Seleziona Turno</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T1')">T1 (06:00-15:00)</button>
+                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T2')">T2 (14:45-22:00)</button>
+                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T3')">T3 (Notturno/Speciale)</button>
                 </div>
+                <div id="checklist_render_area"></div>
             </div>
         </div>
 
-        <div class="menu-grid">
-            <button class="btn-main btn-red" onclick="app.showPage('page_checklist')">📋 CHECKLIST TURNI</button>
-            <button class="btn-main btn-blue" onclick="app.showPage('page_badge')">🛂 GESTIONE BADGE</button>
-            <button id="admin_btn" class="btn-main btn-dark" style="display:none;" onclick="app.showPage('page_admin')">⚙️ PANNELLO AMMINISTRATORE</button>
-        </div>
-
-        <div class="external-links-area">
-            <strong>🔗 COLLEGAMENTI ESTERNI Rapidi</strong>
-            <div id="main_link_container" class="link-buttons-container"></div>
-        </div>
-    </div>
-
-    <div id="page_login" class="page">
-        <h2>Accesso al Sistema</h2>
-        <input type="text" id="login_email" placeholder="E-mail">
-        <input type="password" id="login_pass" placeholder="Password">
-        <button class="btn-main btn-blue" onclick="auth.login()">ACCEDI</button>
-    </div>
-
-    <div id="page_admin" class="page">
-        <button class="btn-link" onclick="app.showPage('page_home')">← TORNA ALLA HOME</button>
-        <h2>⚙️ Amministrazione</h2>
-        
-        <div class="admin-section">
-            <h3>👥 GESTIONE ACCOUNT</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <input type="email" id="adm_email" placeholder="E-mail">
-                <input type="text" id="adm_pass" placeholder="Password">
-                <select id="adm_level">
-                    <option value="admin">Admin</option>
-                    <option value="superuser">Superuser</option>
-                    <option value="user">User</option>
-                    <option value="guest">Guest</option>
-                </select>
-                <input type="number" id="adm_days" placeholder="Durata (giorni)">
-                <button class="btn-main btn-blue" style="height: 40px;" onclick="admin.addUser()">AGGIUNGI ACCOUNT</button>
+        <div id="section_admin" class="container">
+            <div class="card">
+                <h2>⚙️ Gestione Account</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                    <input type="text" id="adm_email" placeholder="E-mail">
+                    <input type="text" id="adm_pass" placeholder="Password">
+                    <select id="adm_lvl">
+                        <option value="user">User</option>
+                        <option value="superuser">Superuser</option>
+                        <option value="admin">Admin</option>
+                        <option value="guest">Guest</option>
+                    </select>
+                    <input type="number" id="adm_days" placeholder="Durata (gg)">
+                </div>
+                <button class="nav-btn btn-checklist" style="height: 40px; margin-top: 10px;" onclick="addAccount()">AGGIUNGI ACCOUNT</button>
+                
+                <table id="table_accounts">
+                    <thead><tr><th>Email</th><th>Livello</th><th>Stato</th><th>Scadenza</th><th>Azioni</th></tr></thead>
+                    <tbody></tbody>
+                </table>
             </div>
-            <table id="user_table">
-                <thead><tr><th>E-mail</th><th>Livello</th><th>Scadenza</th><th>Stato</th><th>Azioni</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
 
-        <div class="admin-section" style="margin-top:40px;">
-            <h3>🔗 GESTIONE LINK ESTERNI</h3>
-            <input type="text" id="link_name" placeholder="Nome del collegamento">
-            <input type="text" id="link_url" placeholder="URL (es: https://...)">
-            <button class="btn-main btn-blue" style="height: 40px;" onclick="admin.addLink()">AGGIUNGI LINK</button>
-        </div>
+            <div class="card">
+                <h2>🔗 Configurazione Link Esterni</h2>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="cfg_link_name" placeholder="Nome Collegamento">
+                    <input type="text" id="cfg_link_url" placeholder="URL (https://...)">
+                </div>
+                <button class="nav-btn btn-checklist" style="height: 40px;" onclick="saveExternalLink()">SALVA LINK</button>
+            </div>
 
-        <div class="admin-section" style="margin-top:40px;">
-            <h3>📝 CONFIGURAZIONE CHECKLIST</h3>
-            <select id="task_turno"><option value="T1">Turno T1</option><option value="T2">Turno T2</option><option value="T3">Turno T3</option></select>
-            <select id="task_fase"><option value="prima">Prima</option><option value="inizio">Inizio</option><option value="durante">Durante</option><option value="fine">Fine</option></select>
-            <input type="text" id="task_title" placeholder="Titolo attività">
-            <input type="text" id="task_codes" placeholder="Codici apertura">
-            <textarea id="task_note" placeholder="Note aggiuntive"></textarea>
-            <button class="btn-main btn-blue" style="height: 40px;" onclick="admin.addTask()">AGGIUNGI ATTIVITÀ</button>
+            <div class="card">
+                <h2>📝 Configurazione Checklist Attività</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <select id="cfg_chk_turno"><option value="T1">T1</option><option value="T2">T2</option><option value="T3">T3</option></select>
+                    <select id="cfg_chk_fase"><option value="prima">Prima</option><option value="inizio">Inizio</option><option value="durante">Durante</option><option value="fine">Fine</option></select>
+                </div>
+                <input type="text" id="cfg_chk_titolo" placeholder="Titolo attività">
+                <input type="text" id="cfg_chk_codici" placeholder="Codici apertura">
+                <textarea id="cfg_chk_note" placeholder="Note operative"></textarea>
+                <button class="nav-btn btn-checklist" style="height: 40px;" onclick="saveChecklistTask()">AGGIUNGI ATTIVITÀ</button>
+            </div>
         </div>
     </div>
 
-    <div id="page_checklist" class="page">
-        <button class="btn-link" onclick="app.showPage('page_home')">← TORNA ALLA HOME</button>
-        <h2>📋 Seleziona Turno</h2>
-        <div class="menu-grid">
-            <button class="btn-main btn-blue" onclick="checklist.render('T1')">TURNO T1</button>
-            <button class="btn-main btn-blue" onclick="checklist.render('T2')">TURNO T2</button>
-            <button class="btn-main btn-blue" onclick="checklist.render('T3')">TURNO T3</button>
-        </div>
-        <div id="checklist_content"></div>
-    </div>
-</div>
+    <script>
+        // DATA STRUCTURES
+        let accounts = JSON.parse(localStorage.getItem('nsif_accounts')) || [
+            {email: 'admin', pass: '1234', lvl: 'admin', status: 'ATTIVO', expiry: 999}
+        ];
+        let externalLinks = JSON.parse(localStorage.getItem('nsif_links')) || [
+            {name: "VTI External", url: "https://ssgwp.sharepoint.com/..."}
+        ];
+        let checklistData = JSON.parse(localStorage.getItem('nsif_checklists')) || {
+            T1: { prima: [], inizio: [{t: "Aprire cancello Campo Base Nord", n: "Codice 6988", c: "6988"}], durante: [], fine: [] },
+            T2: { prima: [], inizio: [], durante: [], fine: [] },
+            T3: { prima: [], inizio: [], durante: [], fine: [] }
+        };
 
-<script>
-    // DATA STORAGE
-    let users = JSON.parse(localStorage.getItem('nsif_users')) || [
-        {u: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", d: 365, s: "ATTIVO"}
-    ];
-    let links = JSON.parse(localStorage.getItem('nsif_links')) || [];
-    let tasks = JSON.parse(localStorage.getItem('nsif_tasks')) || {
-        T1: { prima: [], inizio: [{t:"Apertura cancello Nord", n:"Codice 6988", c:"6988"}], durante: [], fine: [] },
-        T2: { prima: [], inizio: [], durante: [], fine: [] },
-        T3: { prima: [], inizio: [], durante: [], fine: [] }
-    };
+        // LOGIN LOGIC
+        window.onload = () => {
+            const savedUser = localStorage.getItem('last_user');
+            if(savedUser) document.getElementById('login_user').value = savedUser;
+            updateTime();
+            setInterval(updateTime, 1000);
+            renderLinks();
+        };
 
-    const app = {
-        showPage: (id) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page_home').classList.remove('active');
-            document.getElementById(id).classList.add('active');
-        },
-        updateClocks: () => {
-            const now = new Date();
-            document.getElementById('current-date').innerText = now.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('main-clock').innerText = now.toLocaleTimeString('it-IT');
-            document.getElementById('clock-lon').innerText = new Date().toLocaleTimeString('it-IT', {timeZone:'Europe/London', hour:'2-digit', minute:'2-digit'});
-            document.getElementById('clock-nyc').innerText = new Date().toLocaleTimeString('it-IT', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit'});
-            document.getElementById('clock-tyo').innerText = new Date().toLocaleTimeString('it-IT', {timeZone:'Asia/Tokyo', hour:'2-digit', minute:'2-digit'});
-        }
-    };
-
-    const auth = {
-        currentUser: null,
-        login: () => {
-            const u = document.getElementById('login_email').value;
-            const p = document.getElementById('login_pass').value;
-            const user = users.find(x => x.u === u && x.p === p && x.s === "ATTIVO");
-            if(user) {
-                auth.currentUser = user;
-                if(user.l === "admin") document.getElementById('admin_btn').style.display = 'flex';
-                app.showPage('page_home');
-                admin.renderLinks();
-            } else { alert("Accesso negato."); }
-        }
-    };
-
-    const admin = {
-        addUser: () => {
-            const u = document.getElementById('adm_email').value;
-            const p = document.getElementById('adm_pass').value;
-            const l = document.getElementById('adm_level').value;
-            const d = document.getElementById('adm_days').value;
-            if(u && p) {
-                users.push({u, p, l, d, s: "ATTIVO"});
-                admin.save();
-                admin.renderUsers();
+        function handleEnter(e, nextId) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const nextElem = document.getElementById(nextId);
+                if(nextElem.tagName === 'BUTTON') nextElem.click();
+                else nextElem.focus();
             }
-        },
-        save: () => {
-            localStorage.setItem('nsif_users', JSON.stringify(users));
-            localStorage.setItem('nsif_links', JSON.stringify(links));
-            localStorage.setItem('nsif_tasks', JSON.stringify(tasks));
-        },
-        renderUsers: () => {
-            const tbody = document.querySelector('#user_table tbody');
-            tbody.innerHTML = users.map((x, i) => `
-                <tr>
-                    <td>${x.u}</td>
-                    <td>${x.l}</td>
-                    <td>${x.d} gg</td>
-                    <td><strong style="color:${x.s==='ATTIVO'?'green':'red'}">${x.s}</strong></td>
-                    <td>
-                        <button onclick="admin.toggleUser(${i})">B/S</button>
-                        <button onclick="admin.delUser(${i})">ELIMINA</button>
-                    </td>
-                </tr>
-            `).join('');
-        },
-        toggleUser: (i) => { users[i].s = users[i].s === "ATTIVO" ? "DISATTIVATO" : "ATTIVO"; admin.save(); admin.renderUsers(); },
-        delUser: (i) => { users.splice(i,1); admin.save(); admin.renderUsers(); },
-        addLink: () => {
-            const name = document.getElementById('link_name').value;
-            const url = document.getElementById('link_url').value;
-            if(name && url) { links.push({name, url}); admin.save(); admin.renderLinks(); }
-        },
-        renderLinks: () => {
-            const cont = document.getElementById('main_link_container');
-            cont.innerHTML = links.map(l => `<button class="btn-link" onclick="window.open('${l.url}', '_blank')">${l.name}</button>`).join('');
-        },
-        addTask: () => {
-            const t = document.getElementById('task_turno').value;
-            const f = document.getElementById('task_fase').value;
-            const title = document.getElementById('task_title').value;
-            const codes = document.getElementById('task_codes').value;
-            const note = document.getElementById('task_note').value;
-            if(title) { tasks[t][f].push({t: title, n: note, c: codes}); admin.save(); }
         }
-    };
 
-    const checklist = {
-        render: (turno) => {
-            const cont = document.getElementById('checklist_content');
-            let html = `<h3>CHECKLIST ${turno}</h3>`;
+        function doLogin() {
+            const u = document.getElementById('login_user').value;
+            const p = document.getElementById('login_pass').value;
+            const found = accounts.find(a => a.email === u && a.pass === p && a.status === 'ATTIVO');
+            
+            if(found) {
+                localStorage.setItem('last_user', u);
+                document.getElementById('page_login').style.display = 'none';
+                document.getElementById('main_interface').style.display = 'block';
+                if(found.lvl === 'admin') document.getElementById('nav_admin').style.display = 'flex';
+                renderAccounts();
+            } else {
+                alert("Accesso fallito. Controllare credenziali o stato account.");
+            }
+        }
+
+        function logout() { location.reload(); }
+
+        // NAVIGATION
+        function showSection(id) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
+            document.getElementById(id).classList.add('active-page');
+        }
+
+        // TIME & DASHBOARD
+        function updateTime() {
+            const now = new Date();
+            const itDate = now.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('date_today').innerText = itDate;
+            document.getElementById('main_clock').innerText = now.toLocaleTimeString('it-IT');
+            
+            document.getElementById('tz_zur').innerText = now.toLocaleTimeString('it-IT', {timeZone: 'Europe/Zurich', hour: '2-digit', minute:'2-digit'});
+            document.getElementById('tz_lon').innerText = now.toLocaleTimeString('it-IT', {timeZone: 'Europe/London', hour: '2-digit', minute:'2-digit'});
+            document.getElementById('tz_nyc').innerText = now.toLocaleTimeString('it-IT', {timeZone: 'America/New_York', hour: '2-digit', minute:'2-digit'});
+        }
+
+        // ADMIN FUNCTIONS
+        function renderAccounts() {
+            const tbody = document.querySelector('#table_accounts tbody');
+            tbody.innerHTML = '';
+            accounts.forEach((acc, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${acc.email}</td>
+                        <td>${acc.lvl}</td>
+                        <td class="${acc.status === 'ATTIVO' ? 'status-active' : 'status-blocked'}">${acc.status}</td>
+                        <td>${acc.expiry} gg</td>
+                        <td>
+                            <button onclick="toggleAccount(${index})">Blocca/Sblocca</button>
+                            <button onclick="deleteAccount(${index})">X</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addAccount() {
+            const email = document.getElementById('adm_email').value;
+            const pass = document.getElementById('adm_pass').value;
+            const lvl = document.getElementById('adm_lvl').value;
+            const days = document.getElementById('adm_days').value;
+            if(!email || !pass) return;
+            accounts.push({email, pass, lvl, status: 'ATTIVO', expiry: days || 30});
+            saveAll(); renderAccounts();
+        }
+
+        function toggleAccount(i) {
+            accounts[i].status = accounts[i].status === 'ATTIVO' ? 'DISATTIVATO' : 'ATTIVO';
+            saveAll(); renderAccounts();
+        }
+
+        function deleteAccount(i) {
+            if(confirm("Eliminare account?")) { accounts.splice(i,1); saveAll(); renderAccounts(); }
+        }
+
+        // EXTERNAL LINKS
+        function saveExternalLink() {
+            const name = document.getElementById('cfg_link_name').value;
+            const url = document.getElementById('cfg_link_url').value;
+            if(name && url) {
+                externalLinks.push({name, url});
+                saveAll(); renderLinks();
+            }
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('link_container');
+            container.innerHTML = '';
+            externalLinks.forEach(l => {
+                container.innerHTML += `<button class="url-btn" onclick="window.open('${l.url}', '_blank')">${l.name}</button>`;
+            });
+        }
+
+        // CHECKLIST RENDERING
+        function renderChecklist(turno) {
+            const area = document.getElementById('checklist_render_area');
+            const data = checklistData[turno];
+            let html = `<h3>Checklist Corrente: ${turno}</h3>`;
+            
             ['prima', 'inizio', 'durante', 'fine'].forEach(fase => {
-                const faseTasks = tasks[turno][fase];
-                html += `<div style="margin-top:20px; border-bottom: 2px solid var(--securitas-blue);">
-                            <strong>FASE: ${fase.toUpperCase()}</strong> (Mancanti: ${faseTasks.length})
-                         </div>`;
-                faseTasks.forEach((item, i) => {
+                const tasks = data[fase] || [];
+                const mancanti = tasks.length; // Per semplicità qui conto il totale, si può affinare
+                html += `
+                    <div class="fase-header">
+                        <strong>FASE: ${fase.toUpperCase()}</strong>
+                        <span>Attività: ${mancanti}</span>
+                    </div>
+                `;
+                tasks.forEach(task => {
                     html += `
-                        <div class="checklist-item">
-                            <input type="checkbox" style="width:25px; height:25px;" onchange="this.nextElementSibling.style.display = this.checked ? 'block' : 'none';">
-                            <div class="time-badge" style="display:none;">${new Date().toLocaleTimeString()}</div>
-                            <div>
-                                <strong>${item.t}</strong> <span style="color:red"> [${item.c}]</span><br>
-                                <small>${item.n}</small>
+                        <div class="check-item">
+                            <input type="checkbox" onchange="markTime(this)">
+                            <div style="margin-left:10px;">
+                                <strong>${task.t}</strong> <br>
+                                <small>${task.n} - Codice: ${task.c}</small>
                             </div>
+                            <span class="timestamp"></span>
                         </div>
                     `;
                 });
             });
-            cont.innerHTML = html;
+            area.innerHTML = html;
         }
-    };
 
-    setInterval(app.updateClocks, 1000);
-    // Avvia con login
-    window.onload = () => { app.showPage('page_login'); admin.renderUsers(); };
-</script>
+        function markTime(cb) {
+            const span = cb.parentElement.querySelector('.timestamp');
+            span.innerText = cb.checked ? new Date().toLocaleTimeString() : '';
+        }
 
+        function saveChecklistTask() {
+            const turno = document.getElementById('cfg_chk_turno').value;
+            const fase = document.getElementById('cfg_chk_fase').value;
+            const task = {
+                t: document.getElementById('cfg_chk_titolo').value,
+                n: document.getElementById('cfg_chk_note').value,
+                c: document.getElementById('cfg_chk_codici').value
+            };
+            checklistData[turno][fase].push(task);
+            saveAll();
+            alert("Attività salvata per " + turno);
+        }
+
+        function saveAll() {
+            localStorage.setItem('nsif_accounts', JSON.stringify(accounts));
+            localStorage.setItem('nsif_links', JSON.stringify(externalLinks));
+            localStorage.setItem('nsif_checklists', JSON.stringify(checklistData));
+        }
+    </script>
 </body>
 </html>
