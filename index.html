@@ -3,133 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.1 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.3 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f4f7f6; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* LOGIN PAGE */
+        /* LOGIN PAGE - FISSA */
         #page_login { 
             position: fixed; top:0; left:0; width: 100%; height: 100%; 
             background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000;
         }
-        .login-card { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        .btn-confirm { background: var(--red); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .login-card { background: white; padding: 40px; border-radius: 15px; width: 380px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .login-card img { max-width: 200px; margin-bottom: 20px; }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        /* DASHBOARD */
+        /* DASHBOARD & HEADER */
         .header { text-align: center; padding: 20px; background: var(--white); border-bottom: 5px solid var(--red); }
-        .logo-consorzio { height: 100px; margin-bottom: 10px; }
-        .logo-securitas { height: 40px; }
-        .version-label { color: var(--blue); font-weight: bold; margin-top: 5px; }
+        .logo-consorzio { height: 100px; display: block; margin: 0 auto 10px auto; }
+        .logo-securitas { height: 45px; display: block; margin: 0 auto; }
+        .version-label { color: var(--blue); font-weight: bold; margin-top: 10px; font-size: 1.1rem; }
 
-        .dashboard-main { display: flex; flex-direction: column; align-items: center; padding: 40px; background: white; margin: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .clock-big { font-size: 4rem; font-weight: bold; color: var(--blue); margin: 10px 0; }
-        .world-clocks { display: flex; gap: 30px; margin-top: 20px; color: #666; }
-        
+        .dashboard-container { background: white; margin: 20px; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .clock-big { font-size: 3.5rem; font-weight: bold; color: var(--blue); margin: 10px 0; }
+        .world-clocks { display: flex; justify-content: center; gap: 40px; color: #555; font-size: 1rem; margin-top: 15px; }
+        .world-clocks span { font-weight: bold; color: var(--red); }
+
+        /* NAVIGATION */
+        .nav-bar { display: flex; justify-content: center; gap: 10px; padding: 15px; background: #f0f0f0; }
+        .nav-btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; transition: 0.2s; }
+        .nav-btn:hover { background: #004a94; }
+        .btn-admin { background: #222; }
+
         /* SECTIONS */
-        .container { display: none; padding: 20px; max-width: 1200px; margin: auto; }
+        .container { display: none; padding: 30px; max-width: 1200px; margin: auto; }
         .active-page { display: block; }
-        .nav-menu { display: flex; justify-content: center; gap: 10px; padding: 20px; background: #eee; }
-        .nav-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; }
-        
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+
         /* CHECKLIST */
-        .fase-box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid var(--red); }
-        .check-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .time-stamp { margin-left: auto; color: var(--red); font-weight: bold; font-family: monospace; }
-        .count-badge { background: var(--blue); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
+        .fase-header { background: #eee; padding: 12px; margin-top: 20px; border-left: 6px solid var(--red); display: flex; justify-content: space-between; font-weight: bold; }
+        .check-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .timestamp { margin-left: auto; color: var(--red); font-weight: bold; font-family: monospace; font-size: 1.1rem; }
+        
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f8f8f8; }
     </style>
 </head>
 <body>
 
     <div id="page_login">
         <div class="login-card">
-            <img src="https://via.placeholder.com/150x50?text=SECURITAS" style="margin-bottom:20px;">
-            <h3>GESTIONALE NSIF</h3>
-            <input type="text" id="user_field" placeholder="User / E-mail" onkeypress="handleEnter(event, 'pass_field')">
-            <input type="password" id="pass_field" placeholder="Password" onkeypress="handleEnter(event, 'login_submit')">
-            <button id="login_submit" class="btn-confirm" onclick="checkLogin()">CONFERMA</button>
-            <p><a href="#" style="font-size: 0.8rem; color: #666;">Password dimenticata</a></p>
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" alt="Securitas Logo">
+            <h3>NSIF CASTIONE GESTIONALE</h3>
+            <input type="text" id="login_user" placeholder="E-mail" onkeypress="handleEnter(event, 'login_pass')">
+            <input type="password" id="login_pass" placeholder="Password" onkeypress="handleEnter(event, 'btn_login_confirm')">
+            <button id="btn_login_confirm" class="nav-btn" style="width: 100%; background: var(--red);" onclick="doLogin()">CONFERMA</button>
+            <p><a href="#" style="font-size: 0.8rem; color: #666; text-decoration: none;">Password dimenticata?</a></p>
         </div>
     </div>
 
     <div id="main_ui" style="display:none;">
         <div class="header">
-            <img src="logo_consorzio_grande.png" class="logo-consorzio" alt="LOGO CONSORZIO" onerror="this.src='https://via.placeholder.com/300x100?text=LOGO+CONSORZIO'">
-            <br>
-            <img src="logo_securitas.png" class="logo-securitas" alt="SECURITAS" onerror="this.src='https://via.placeholder.com/150x40?text=SECURITAS'">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.1 BETA</div>
+            <img src="https://via.placeholder.com/400x120?text=LOGO+CONSORZIO" class="logo-consorzio" alt="Logo Consorzio">
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas" alt="Logo Securitas">
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.3 BETA</div>
         </div>
 
-        <nav class="nav-menu">
-            <button class="nav-btn" onclick="showPage('page_home')">HOME</button>
-            <button class="nav-btn" onclick="showPage('page_checklist')">CHECKLIST TURNI</button>
-            <button class="nav-btn" onclick="showPage('page_links')">LINK ESTERNI</button>
-            <button id="btn_admin" class="nav-btn" style="background:#333; display:none;" onclick="showPage('page_admin')">AMMINISTRATORE</button>
-            <button class="nav-btn" style="background:#666;" onclick="logout()">LOGOUT</button>
-        </nav>
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="showSection('section_home')">🏠 DASHBOARD</button>
+            <button class="nav-btn" onclick="showSection('section_checklist')">📋 CHECKLIST TURNI</button>
+            <button id="nav_admin" class="nav-btn btn-admin" style="display:none;" onclick="showSection('section_admin')">⚙️ AMMINISTRATORE</button>
+            <button class="nav-btn" style="background:#555;" onclick="logout()">LOGOUT</button>
+        </div>
 
-        <div id="page_home" class="container active-page">
-            <div class="dashboard-main">
-                <div id="current_date" style="font-size: 1.5rem; color: #333;">Lunedì, 16 Febbraio 2026</div>
+        <div id="section_home" class="container active-page">
+            <div class="dashboard-container">
+                <div id="date_display" style="font-size: 1.5rem; color: #444;">Lunedì, 16 Febbraio 2026</div>
                 <div id="main_clock" class="clock-big">00:00:00</div>
                 <div class="world-clocks">
-                    <div>Zurigo: <span id="clock_zur">00:00</span></div>
-                    <div>Londra: <span id="clock_lon">00:00</span></div>
-                    <div>New York: <span id="clock_ny">00:00</span></div>
+                    <div>Zurigo: <span id="tz_zur">00:00</span></div>
+                    <div>Londra: <span id="tz_lon">00:00</span></div>
+                    <div>N. York: <span id="tz_nyc">00:00</span></div>
                 </div>
-                <div style="margin-top:30px; padding:15px; background:#e0f7fa; border-radius:10px; width:100%; text-align:center;">
-                    <strong>METEO CASTIONE:</strong> ☀️ Sereno, 8°C | Vento: 5 km/h Nord
+                <div style="margin-top:25px; font-style: italic; color: #666;">
+                    🌤️ Castione: Sereno, 8°C | Vento: 5km/h Nord
                 </div>
             </div>
             
-            <div id="external_buttons_home" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; justify-content: center;">
+            <div id="external_links_home" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 </div>
         </div>
 
-        <div id="page_checklist" class="container">
-            <h2>Checklist Operativa</h2>
-            <div style="margin-bottom:20px;">
-                <button class="nav-btn" onclick="loadChecklist('T1')">TURNO T1</button>
-                <button class="nav-btn" onclick="loadChecklist('T2')">TURNO T2</button>
-                <button class="nav-btn" onclick="loadChecklist('T3')">TURNO T3</button>
+        <div id="section_checklist" class="container">
+            <div class="card">
+                <h2>Seleziona Turno Operativo</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                    <button class="nav-btn" onclick="renderChecklist('T1')">TURNO T1</button>
+                    <button class="nav-btn" onclick="renderChecklist('T2')">TURNO T2</button>
+                    <button class="nav-btn" onclick="renderChecklist('T3')">TURNO T3</button>
+                </div>
+                <div id="checklist_display"></div>
             </div>
-            <div id="checklist_content"></div>
         </div>
 
-        <div id="page_admin" class="container">
-            <h2>Pannello Amministratore</h2>
-            <div class="fase-box">
-                <h3>Gestione Account</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
-                    <input type="text" id="new_user" placeholder="Email">
-                    <input type="password" id="new_pass" placeholder="Password">
-                    <select id="new_lvl">
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                        <option value="superuser">Superuser</option>
-                        <option value="guest">Guest</option>
-                    </select>
-                    <button class="btn-confirm" onclick="addUser()">AGGIUNGI</button>
-                </div>
-                <table width="100%" border="1" cellpadding="10" style="border-collapse:collapse;">
-                    <thead><tr><th>User</th><th>Livello</th><th>Stato</th><th>Azioni</th></tr></thead>
-                    <tbody id="user_list_body"></tbody>
+        <div id="section_admin" class="container">
+            <div class="card">
+                <h2>⚙️ Gestione Account e Sistemi</h2>
+                <table id="account_table">
+                    <thead>
+                        <tr><th>User</th><th>Livello</th><th>Stato</th><th>Scadenza</th><th>Azioni</th></tr>
+                    </thead>
+                    <tbody id="account_body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // DATI INIZIALI E IMPORT DAI DOCUMENTI
-        const adminUser = "marco.lamorgia@securitas.ch";
-        const adminPass = "1234";
-        
+        // DATI FISSI
+        const ADMIN_USER = "marco.lamorgia@securitas.ch";
+        const ADMIN_PASS = "1234";
+
         let users = [
-            {email: adminUser, pass: adminPass, lvl: 'admin', status: 'ATTIVO', expiry: 999}
+            {email: ADMIN_USER, pass: ADMIN_PASS, lvl: 'admin', status: 'ATTIVO', expiry: 999}
         ];
 
-        const turniData = {
+        // DATI TURNI DA DOCUMENTI
+        const checklistData = {
             T1: {
                 inizio: [
                     {t: "Aprire cancello Campo Base Nord", c: "6988", n: ""},
@@ -139,122 +140,120 @@
                     {t: "Verifica VTI External", c: "", n: "Sharing documenti"}
                 ],
                 durante: [{t: "Verifica tornelli e luci", c: "", n: ""}],
-                fine: [{t: "Passaggio di consegna CAST09", c: "", n: ""}]
+                fine: [{t: "Passaggio consegna CAST09", c: "", n: "Max 15 min"}]
             },
             T2: {
                 inizio: [
-                    {t: "Aprire cancello entrata/uscita CAST09", c: "6988", n: ""},
-                    {t: "Aprire ufficio CAST09", c: "1907", n: ""},
-                    {t: "Gestione rubinetti Campo Base Sud", c: "", n: "Chiave in Keybox CAST09"}
+                    {t: "Apertura cancelli CAST09", c: "6988", n: ""},
+                    {t: "Apertura ufficio CAST09", c: "1907", n: ""},
+                    {t: "Verifica riscaldamento", c: "Leva 3/4", n: ""}
                 ],
-                durante: [{t: "Presidio barriera invernale", c: "", n: "Pulizia fotocellule"}],
-                fine: [{t: "Pulizia postazione", c: "", n: ""}]
+                durante: [{t: "Controllo fotocellule barriera", c: "", n: "Solo se freddo intenso"}],
+                fine: [{t: "Pulizia pavimenti CAST09", c: "", n: "Entro le 22:00"}]
             },
             T3: {
                 inizio: [
-                    {t: "Ritiro telefono servizio CAST07", c: "", n: ""},
-                    {t: "Giro cantiere con monopattino", c: "", n: "Prendere monopattino al CAST09"}
+                    {t: "Ritiro telefono CAST07", c: "", n: ""},
+                    {t: "Giro perimetro monopattino", c: "", n: "Monopattino al CAST09"}
                 ],
-                durante: [{t: "Controllo CAST08", c: "", n: "Verifica presidio e varchi"}],
-                fine: [{t: "Chiusura perimetro", c: "", n: ""}]
+                durante: [{t: "Verifica assenza operai", c: "", n: ""}],
+                fine: [{t: "Chiusura rubinetti Campo Base Sud", c: "", n: ""}]
             }
         };
 
         // INIZIALIZZAZIONE
         window.onload = () => {
-            const lastUser = localStorage.getItem('last_user');
-            if(lastUser) document.getElementById('user_field').value = lastUser;
-            updateClock();
-            setInterval(updateClock, 1000);
+            const last = localStorage.getItem('last_user');
+            if(last) document.getElementById('login_user').value = last;
+            
+            // Aggiornamento tempo STABILE (solo testo)
+            updateTime();
+            setInterval(updateTime, 1000);
         };
 
         function handleEnter(e, nextId) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const nextElem = document.getElementById(nextId);
-                if(nextElem.tagName === 'BUTTON') nextElem.click();
-                else nextElem.focus();
+                const next = document.getElementById(nextId);
+                if(next.tagName === 'BUTTON') next.click();
+                else next.focus();
             }
         }
 
-        function checkLogin() {
-            const u = document.getElementById('user_field').value;
-            const p = document.getElementById('pass_field').value;
-            
-            if(u === adminUser && p === adminPass) {
+        function doLogin() {
+            const u = document.getElementById('login_user').value;
+            const p = document.getElementById('login_pass').value;
+
+            if(u === ADMIN_USER && p === ADMIN_PASS) {
                 localStorage.setItem('last_user', u);
                 document.getElementById('page_login').style.display = 'none';
                 document.getElementById('main_ui').style.display = 'block';
-                document.getElementById('btn_admin').style.display = 'block';
-                renderUserList();
+                document.getElementById('nav_admin').style.display = 'block';
+                renderAccounts();
             } else {
-                alert("Credenziali errate!");
+                alert("Credenziali Errate.");
             }
         }
 
-        function showPage(id) {
-            document.querySelectorAll('.container').forEach(p => p.classList.remove('active-page'));
+        function updateTime() {
+            const now = new Date();
+            // Aggiorno solo l'innertext per evitare vibrazioni della pagina
+            document.getElementById('main_clock').innerText = now.toLocaleTimeString('it-IT');
+            document.getElementById('date_display').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+            
+            document.getElementById('tz_zur').innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/Zurich', hour:'2-digit', minute:'2-digit'});
+            document.getElementById('tz_lon').innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/London', hour:'2-digit', minute:'2-digit'});
+            document.getElementById('tz_nyc').innerText = now.toLocaleTimeString('it-IT', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit'});
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
         }
 
-        function loadChecklist(turno) {
-            const data = turniData[turno];
-            let html = `<h3>Turno Selezionato: ${turno}</h3>`;
+        function renderChecklist(turno) {
+            const area = document.getElementById('checklist_display');
+            const data = checklistData[turno];
+            let html = `<h3>MODULO ${turno}</h3>`;
             
-            for (let fase in data) {
+            for(let fase in data) {
                 const tasks = data[fase];
                 html += `
-                    <div class="fase-box">
-                        <div style="display:flex; justify-content:space-between;">
-                            <strong>FASE: ${fase.toUpperCase()}</strong>
-                            <span class="count-badge">${tasks.length} da completare</span>
-                        </div>
-                        ${tasks.map(task => `
-                            <div class="check-item">
-                                <input type="checkbox" onchange="markComplete(this)">
-                                <div style="margin-left:10px;">
-                                    <strong>${task.t}</strong><br>
-                                    <small>${task.n} ${task.c ? ' - Codice: '+task.c : ''}</small>
-                                </div>
-                                <span class="time-stamp"></span>
-                            </div>
-                        `).join('')}
+                    <div class="fase-header">
+                        <span>FASE: ${fase.toUpperCase()}</span>
+                        <span style="font-size:0.8rem; background:var(--blue); color:white; padding:2px 8px; border-radius:10px;">Attività: ${tasks.length}</span>
                     </div>
                 `;
+                tasks.forEach(task => {
+                    html += `
+                        <div class="check-item">
+                            <input type="checkbox" style="transform: scale(1.5);" onchange="this.parentElement.querySelector('.timestamp').innerText = this.checked ? new Date().toLocaleTimeString() : ''">
+                            <div style="margin-left:15px;">
+                                <strong>${task.t}</strong> ${task.c ? '<span style="color:var(--red)"> [Cod: '+task.c+']</span>' : ''} <br>
+                                <small style="color:#777;">${task.n}</small>
+                            </div>
+                            <span class="timestamp"></span>
+                        </div>
+                    `;
+                });
             }
-            document.getElementById('checklist_content').innerHTML = html;
+            area.innerHTML = html;
         }
 
-        function markComplete(cb) {
-            const stamp = cb.parentElement.querySelector('.time-stamp');
-            stamp.innerText = cb.checked ? new Date().toLocaleTimeString() : '';
-            // Qui si può aggiornare il badge del conteggio
-        }
-
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('main_clock').innerText = now.toLocaleTimeString();
-            document.getElementById('current_date').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-            
-            document.getElementById('clock_zur').innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/Zurich', hour:'2-digit', minute:'2-digit'});
-            document.getElementById('clock_lon').innerText = now.toLocaleTimeString('it-IT', {timeZone:'Europe/London', hour:'2-digit', minute:'2-digit'});
-            document.getElementById('clock_ny').innerText = now.toLocaleTimeString('it-IT', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit'});
-        }
-
-        function logout() { location.reload(); }
-        
-        // Funzioni Amministratore semplificate per demo
-        function renderUserList() {
-            const body = document.getElementById('user_list_body');
+        function renderAccounts() {
+            const body = document.getElementById('account_body');
             body.innerHTML = users.map(u => `
                 <tr>
                     <td>${u.email}</td>
                     <td>${u.lvl}</td>
-                    <td>${u.status}</td>
-                    <td><button onclick="alert('Modifica in corso...')">Gestisci</button></td>
+                    <td style="color:green; font-weight:bold;">${u.status}</td>
+                    <td>${u.expiry} gg</td>
+                    <td><button disabled>Modifica</button></td>
                 </tr>
             `).join('');
         }
+
+        function logout() { location.reload(); }
     </script>
 </body>
 </html>
