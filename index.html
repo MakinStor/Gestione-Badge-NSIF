@@ -373,3 +373,85 @@
             const cat = document.getElementById('new_badge_cat').value.trim().toUpperCase();
             if(!cat) return;
             if(!db.badge_flows[cat]) db.badge_flows[cat] = {};
+            currentCatEdit = cat;
+            document.getElementById('badge_edit_zone').style.display = 'block';
+            document.getElementById('editing_cat_name').innerText = "Editing: " + cat;
+            save(); renderAdminAll(); renderNodeList();
+        }
+
+        function addOptionRow() {
+            const d = document.createElement('div');
+            d.style.display="flex"; d.style.gap="5px"; d.style.marginBottom="5px";
+            d.innerHTML = `<input type="text" class="opt-val" placeholder="Risposta"> <input type="text" class="opt-target" placeholder="Vai a ID">`;
+            document.getElementById('node_options_area').appendChild(d);
+        }
+
+        function saveNode() {
+            const nid = document.getElementById('node_id').value.trim();
+            const txt = document.getElementById('node_text').value.trim();
+            const ovs = document.querySelectorAll('.opt-val');
+            const ots = document.querySelectorAll('.opt-target');
+            let opts = [];
+            ovs.forEach((v, i) => { if(v.value) opts.push({ val: v.value, target: ots[i].value }); });
+            db.badge_flows[currentCatEdit][nid] = { text: txt, options: opts };
+            save(); renderNodeList();
+        }
+
+        function renderNodeList() {
+            const list = document.getElementById('admin_nodes_list');
+            const nodes = db.badge_flows[currentCatEdit];
+            list.innerHTML = Object.keys(nodes).map(id => `<div style="padding:5px; border-bottom:1px solid #ccc; font-size:0.8rem;"><b>${id}</b> | <button onclick="deleteNode('${id}')">X</button></div>`).join('');
+        }
+        function deleteNode(id) { delete db.badge_flows[currentCatEdit][id]; save(); renderNodeList(); }
+
+        function renderBadgeStartBtns() {
+            document.getElementById('badge_start_btns').innerHTML = Object.keys(db.badge_flows).map(cat => `
+                <button class="nav-btn" style="background:orange" onclick="runFlow('${cat}', 'inizio')">${cat}</button>
+            `).join('');
+        }
+
+        function runFlow(cat, nodeId) {
+            const area = document.getElementById('flow_render_area');
+            if(nodeId === 'fine') {
+                area.innerHTML = `<div class="flow-box"><h2>FINE PROCESSO</h2><button class="nav-btn" onclick="document.getElementById('flow_render_area').innerHTML=''">RICOMINCIA</button></div>`;
+                return;
+            }
+            const node = db.badge_flows[cat][nodeId];
+            if(!node) return alert("Errore: Nodo '" + nodeId + "' non trovato");
+            area.innerHTML = `
+                <div class="flow-box">
+                    <p style="font-size:1.3rem;">${node.text}</p>
+                    <div>${node.options.map(o => `<button class="option-btn" onclick="runFlow('${cat}', '${o.target}')">${o.val}</button>`).join('')}</div>
+                </div>`;
+        }
+
+        function addGiornale() {
+            db.giornale.push({ t: new Date().toLocaleString(), a: currentUser.n+" "+currentUser.c, l: document.getElementById('gb_luogo').value, d: document.getElementById('gb_desc').value, r: document.getElementById('gb_risolto').value });
+            save(); renderGiornale();
+        }
+        function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr class="${g.r === 'NO' ? 'unresolved' : ''}"><td>${g.t}</td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td><td>${g.r}</td></tr>`).reverse().join(''); }
+        function renderDocsGrid() {
+            const oggi = new Date().toISOString().split('T')[0];
+            const vis = db.docs.filter(d => (d.s === "" || oggi >= d.s) && (d.e === "" || oggi <= d.e));
+            document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join('');
+        }
+        function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
+
+        function renderRunTurnBtns() { document.getElementById('run_turn_btns').innerHTML = Object.keys(db.checklist).map(t => `<button class="nav-btn" onclick="openRunCheck('${t}')">${t}</button>`).join(''); }
+        function openRunCheck(t) {
+            let h = `<h3>Turno: ${t}</h3>`;
+            db.checklist[t].forEach((item, i) => { h += `<div class="check-item"><span><b>${item.fase}</b>: ${item.titolo}</span><div><span class="time-badge" id="ts_${t}_${i}">--:--</span><input type="checkbox" onchange="document.getElementById('ts_${t}_${i}').innerText = this.checked ? new Date().toLocaleTimeString() : '--:--'"></div></div>`; });
+            document.getElementById('run_checklist_area').innerHTML = h;
+        }
+
+        function renderAdminAll() {
+            document.getElementById('tbody_users').innerHTML = db.users.map((u,i) => `<tr><td>${u.n} ${u.c}</td><td>${u.e}</td><td>${u.l}</td><td><button onclick="db.users.splice(${i},1); save(); renderAdminAll();">Elimina</button></td></tr>`).join('');
+            document.getElementById('tbody_docs_admin').innerHTML = db.docs.map((d,i) => `<tr><td>${d.n}</td><td>${d.e}</td><td><button onclick="db.docs.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
+            renderBadgeStartBtns();
+        }
+
+        function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:15px 30px;" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
+        function updateClock() { const now = new Date(); document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT'); document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase(); }
+    </script>
+</body>
+</html>
