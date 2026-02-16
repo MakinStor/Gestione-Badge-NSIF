@@ -3,315 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.11 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.12 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
         
-        /* LOGIN PAGE */
-        #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .login-card { background: white; padding: 40px; border-radius: 12px; width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .login-card img { width: 180px; margin-bottom: 25px; }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-        
-        /* HEADER */
+        /* HEADER INGRANDITO */
         .header { text-align: center; padding: 40px 20px; background: var(--white); border-bottom: 6px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .logo-main { width: 90%; max-width: 900px; height: auto; transition: transform 0.3s; }
-        .logo-securitas-sub { width: 120px; display: block; margin: 15px auto; }
-        .version-label { color: var(--blue); font-weight: 800; font-size: 1.8rem; letter-spacing: 1px; text-transform: uppercase; }
+        .logo-main { width: 95%; max-width: 1000px; height: auto; }
+        .version-label { color: var(--blue); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; margin-top:10px; }
 
-        /* NAVIGATION */
-        .nav-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 20px; background: #e9ecef; position: sticky; top:0; z-index: 999; border-bottom: 1px solid #ddd; }
-        .nav-btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; transition: all 0.2s; font-size: 0.9rem; }
-        .nav-btn:hover { background: var(--red); transform: translateY(-2px); }
+        /* NAV */
+        .nav-bar { display: flex; justify-content: center; gap: 12px; padding: 20px; background: #e9ecef; position: sticky; top:0; z-index: 999; }
+        .nav-btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; background: var(--blue); color: white; font-weight: bold; transition: 0.2s; }
+        .nav-btn:hover { background: var(--red); }
         .nav-admin { background: #212529; }
 
         /* CONTAINERS */
-        .container { display: none; padding: 30px; max-width: 1300px; margin: auto; animation: slideUp 0.4s ease-out; }
+        .container { display: none; padding: 30px; max-width: 1400px; margin: auto; animation: fadeIn 0.4s; }
         .active-page { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CARDS & TABLES */
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 4px solid var(--blue); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th, td { border: 1px solid #eee; padding: 14px; text-align: left; }
-        th { background: #f8f9fa; color: var(--blue); text-transform: uppercase; font-size: 0.85rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 0.9rem; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: var(--blue); }
+
+        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 15px; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
         
-        /* UTILS */
-        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; }
-        .btn-success { background: #28a745; }
-        .btn-danger { background: var(--red); }
-        
-        /* MODAL */
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:2000; }
-        .modal-content { background:white; padding:35px; border-radius:15px; width:550px; position:relative; }
+        /* CHECKLIST STYLE */
+        .check-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; transition: background 0.2s; }
+        .check-item:hover { background: #f9f9f9; }
+        .time-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-weight: bold; }
+        .note-input { width: 250px; font-size: 0.8rem; border: 1px solid #ddd; padding: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="page_login">
-        <div class="login-card">
-            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg">
-            <input type="text" id="log_u" placeholder="User (Email)" onkeydown="if(event.key==='Enter') document.getElementById('log_p').focus()">
-            <input type="password" id="log_p" placeholder="Password" onkeydown="if(event.key==='Enter') login()">
-            <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--red);" onclick="login()">ACCEDI</button>
-            <p style="font-size:0.75rem; color:#999; margin-top:20px;">NSFI CASTIONE GESTIONALE - V 1.11 BETA</p>
-        </div>
-    </div>
-
-    <div id="main_ui" style="display:none;">
-        <div class="header">
-            <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO CONSORZIO" onerror="this.src='https://via.placeholder.com/900x200?text=LOGO+CONSORZIO+NSIF'">
-            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas-sub">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.11 BETA</div>
+    <div id="main_ui"> <div class="header">
+            <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO NSIF" onerror="this.src='https://via.placeholder.com/1000x250?text=LOGO+CONSORZIO+NSIF+GRANDE'">
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.12 BETA</div>
         </div>
 
         <div class="nav-bar">
-            <button class="nav-btn" onclick="showSection('section_home')">DASHBOARD</button>
+            <button class="nav-btn" onclick="showSection('section_home')">HOME</button>
             <button class="nav-btn" onclick="showSection('section_checklist')">CHECKLIST TURNI</button>
-            <button class="nav-btn" onclick="showSection('section_badge')">GESTIONE ACCESSI</button>
-            <button id="nav_admin" class="nav-btn nav-admin" style="display:none;" onclick="showSection('section_admin')">PANNELLO AMMINISTRATORE</button>
-            <button class="nav-btn" style="background:var(--grey);" onclick="location.reload()">LOGOUT</button>
+            <button class="nav-btn nav-admin" onclick="showSection('section_admin')">PANNELLO AMMINISTRATORE</button>
         </div>
 
         <div id="section_home" class="container active-page">
             <div class="card" style="text-align:center;">
-                <h1 id="clock_big" style="font-size:4.5rem; color:var(--blue); margin:0;">00:00:00</h1>
-                <h3 id="date_long" style="font-weight:300; color:var(--grey);"></h3>
+                <h1 id="clock_big" style="font-size:4rem; color:var(--blue); margin:0;">00:00:00</h1>
+                <p id="date_long" style="font-size:1.5rem; color:var(--grey);"></p>
             </div>
-            <h2 style="text-align:center; color:var(--blue);">COLLEGAMENTI ESTERNI</h2>
-            <div id="home_links" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap; padding:20px;"></div>
+            <div id="home_links" style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;"></div>
         </div>
 
         <div id="section_checklist" class="container">
             <div class="card">
-                <h3>Seleziona Turno</h3>
-                <div id="check_turn_btns" class="flex-row"></div>
+                <h3>Seleziona il Turno Operativo</h3>
+                <div id="run_turn_btns" class="flex-row"></div>
             </div>
-            <div id="check_content"></div>
+            <div id="run_checklist_area"></div>
         </div>
 
         <div id="section_admin" class="container">
+            
+            <div class="card">
+                <h3>Configurazione Turni e Checklist</h3>
+                <p>Inserisci una nuova attività e assegnala a un turno (puoi anche scrivere il nome di un nuovo turno).</p>
+                <div class="flex-row">
+                    <div>
+                        <label>Turno (Es: Mattina, Notte, T4)</label><br>
+                        <input type="text" id="cfg_turn_name" list="existing_turns" placeholder="Nome Turno">
+                        <datalist id="existing_turns"></datalist>
+                    </div>
+                    <div>
+                        <label>Fase</label><br>
+                        <select id="cfg_fase">
+                            <option value="Prima">Prima</option>
+                            <option value="Inizio">Inizio</option>
+                            <option value="Durante">Durante</option>
+                            <option value="Fine">Fine</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Titolo Attività</label><br>
+                        <input type="text" id="cfg_title" placeholder="Es: Controllo perimetro">
+                    </div>
+                    <div>
+                        <label>Note Predefinite</label><br>
+                        <input type="text" id="cfg_def_notes" placeholder="Note o codici">
+                    </div>
+                    <button class="nav-btn" style="background:green;" onclick="addCheckItem()">AGGIUNGI ATTIVITÀ</button>
+                </div>
+
+                <h4>Tabella Riepilogo Attività Configurate</h4>
+                <table id="table_config_checklist">
+                    <thead>
+                        <tr><th>Turno</th><th>Fase</th><th>Titolo</th><th>Note Base</th><th>Azione</th></tr>
+                    </thead>
+                    <tbody id="tbody_config_checklist"></tbody>
+                </table>
+            </div>
+
             <div class="card">
                 <h3>Gestione Account</h3>
                 <div class="flex-row">
                     <input type="text" id="adm_n" placeholder="Nome">
                     <input type="text" id="adm_c" placeholder="Cognome">
-                    <input type="text" id="adm_e" placeholder="User (Email)">
+                    <input type="text" id="adm_e" placeholder="Email/User">
                     <input type="password" id="adm_p" placeholder="Password">
-                    <select id="adm_l">
-                        <option value="user">User</option>
-                        <option value="superuser">Superuser</option>
-                        <option value="admin">Admin</option>
-                        <option value="guest">Guest</option>
-                    </select>
-                    <button class="nav-btn btn-success" onclick="addAccount()">CREA ACCOUNT</button>
+                    <button class="nav-btn" onclick="addAccount()">CREA</button>
                 </div>
                 <table id="table_users">
-                    <thead><tr><th>Nominativo</th><th>User</th><th>Livello</th><th>Stato</th><th>Azioni</th></tr></thead>
+                    <thead><tr><th>Nominativo</th><th>User</th><th>Azione</th></tr></thead>
                     <tbody id="tbody_users"></tbody>
                 </table>
-            </div>
-
-            <div class="card">
-                <h3>Configurazione Link Esterni</h3>
-                <div class="flex-row">
-                    <input type="text" id="lnk_n" placeholder="Testo Pulsante">
-                    <input type="text" id="lnk_u" placeholder="URL (https://...)">
-                    <button class="nav-btn btn-success" onclick="addLink()">AGGIUNGI</button>
-                </div>
-                <table>
-                    <thead><tr><th>Nome</th><th>Indirizzo</th><th>Azione</th></tr></thead>
-                    <tbody id="tbody_links"></tbody>
-                </table>
-            </div>
-
-            <div class="card">
-                <h3>Configurazione Checklist e Nodi</h3>
-                <div class="flex-row">
-                    <select id="cfg_turn"><option value="T1">Turno 1</option><option value="T2">Turno 2</option><option value="T3">Turno 3</option></select>
-                    <select id="cfg_fase"><option value="prima">Prima</option><option value="inizio">Inizio</option><option value="durante">Durante</option><option value="fine">Fine</option></select>
-                    <input type="text" id="cfg_titolo" placeholder="Titolo Attività">
-                    <input type="text" id="cfg_note" placeholder="Note/Codici">
-                    <button class="nav-btn btn-success" onclick="addCheckItem()">AGGIUNGI NODO</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal_edit" class="modal">
-        <div class="modal-content">
-            <h3>Modifica Parametri Utente</h3>
-            <input type="hidden" id="edit_id">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="text" id="ed_n" placeholder="Nome">
-                <input type="text" id="ed_c" placeholder="Cognome">
-                <input type="text" id="ed_p" placeholder="Nuova Password">
-                <select id="ed_l">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                    <option value="superuser">Superuser</option>
-                    <option value="guest">Guest</option>
-                </select>
-            </div>
-            <div class="flex-row" style="margin-top:20px; justify-content:flex-end;">
-                <button class="nav-btn btn-success" onclick="saveUserEdit()">SALVA MODIFICHE</button>
-                <button class="nav-btn" style="background:#666;" onclick="closeModal()">CHIUDI</button>
             </div>
         </div>
     </div>
 
     <script>
-        // DATA CORE
-        const ADMIN_MASTER = "marco.lamorgia@securitas.ch";
-        let db = JSON.parse(localStorage.getItem('nsif_v11_db')) || {
-            users: [{n: "Marco", c: "La Morgia", e: ADMIN_MASTER, p: "1234", l: "admin", s: "ATTIVO"}],
-            links: [{n: "GESTIONE ACCESSI", u: "https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard"}],
-            checks: { "T1": [], "T2": [], "T3": [] }
+        // DATA STRUCTURE
+        let db = JSON.parse(localStorage.getItem('nsif_v12_db')) || {
+            users: [{n: "Marco", c: "La Morgia", e: "marco.lamorgia@securitas.ch", p: "1234"}],
+            links: [],
+            // Struttura checklist: { "NomeTurno": [ {fase, titolo, note}, ... ] }
+            checklist_config: {
+                "T1": [
+                    {fase: "Prima", titolo: "Verifica Automezzo", note: "Controllare livelli"},
+                    {fase: "Inizio", titolo: "Apertura Cancello", note: "Codice 1234"}
+                ],
+                "T2": []
+            }
         };
 
-        // LOGIN
-        window.onload = () => { document.getElementById('log_u').value = localStorage.getItem('last_u') || ''; };
+        function save() { localStorage.setItem('nsif_v12_db', JSON.stringify(db)); }
 
-        function login() {
-            const u = document.getElementById('log_u').value;
-            const p = document.getElementById('log_p').value;
-            const user = db.users.find(x => x.e === u && x.p === p && x.s === "ATTIVO");
-
-            if(user) {
-                localStorage.setItem('last_u', u);
-                document.getElementById('page_login').style.display = 'none';
-                document.getElementById('main_ui').style.display = 'block';
-                if(user.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
-                startApp();
-            } else { alert("Credenziali errate o account disattivato."); }
+        // NAVIGATION
+        function showSection(id) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
+            document.getElementById(id).classList.add('active-page');
+            if(id === 'section_admin') renderAdmin();
+            if(id === 'section_checklist') renderRunChecklistButtons();
         }
 
-        function startApp() {
-            updateClock();
-            setInterval(updateClock, 1000);
-            renderHomeLinks();
-            renderCheckBtns();
+        // --- AMMINISTRAZIONE ---
+        function renderAdmin() {
+            // Render Tabella Configurazione Checklist
+            const tbodyCheck = document.getElementById('tbody_config_checklist');
+            const turnList = document.getElementById('existing_turns');
+            tbodyCheck.innerHTML = "";
+            turnList.innerHTML = "";
+
+            Object.keys(db.checklist_config).forEach(turnName => {
+                turnList.innerHTML += `<option value="${turnName}">`;
+                db.checklist_config[turnName].forEach((item, index) => {
+                    tbodyCheck.innerHTML += `
+                        <tr>
+                            <td><b>${turnName}</b></td>
+                            <td>${item.fase}</td>
+                            <td>${item.titolo}</td>
+                            <td>${item.note}</td>
+                            <td><button onclick="deleteCheckItem('${turnName}', ${index})" style="background:red; color:white; border:none; cursor:pointer;">Elimina</button></td>
+                        </tr>
+                    `;
+                });
+            });
+
+            // Render Utenti
+            document.getElementById('tbody_users').innerHTML = db.users.map((u, i) => `
+                <tr><td>${u.n} ${u.c}</td><td>${u.e}</td><td><button onclick="db.users.splice(${i},1); save(); renderAdmin();">X</button></td></tr>
+            `).join('');
         }
 
+        function addCheckItem() {
+            const turn = document.getElementById('cfg_turn_name').value.trim();
+            const fase = document.getElementById('cfg_fase').value;
+            const titolo = document.getElementById('cfg_title').value;
+            const note = document.getElementById('cfg_def_notes').value;
+
+            if(!turn || !titolo) return alert("Inserire Turno e Titolo!");
+
+            if(!db.checklist_config[turn]) db.checklist_config[turn] = [];
+            db.checklist_config[turn].push({ fase, titolo, note });
+            
+            save();
+            renderAdmin();
+            alert("Attività aggiunta con successo!");
+        }
+
+        function deleteCheckItem(turn, index) {
+            db.checklist_config[turn].splice(index, 1);
+            if(db.checklist_config[turn].length === 0) delete db.checklist_config[turn];
+            save();
+            renderAdmin();
+        }
+
+        // --- OPERATIVO CHECKLIST ---
+        function renderRunChecklistButtons() {
+            const container = document.getElementById('run_turn_btns');
+            container.innerHTML = Object.keys(db.checklist_config).map(t => `
+                <button class="nav-btn" onclick="openChecklistForTurn('${t}')">${t}</button>
+            `).join('');
+        }
+
+        function openChecklistForTurn(turnName) {
+            const items = db.checklist_config[turnName];
+            const area = document.getElementById('run_checklist_area');
+            const fasi = ["Prima", "Inizio", "Durante", "Fine"];
+            
+            let html = `<div class="card"><h2>OPERATIVO: ${turnName}</h2>`;
+            
+            fasi.forEach(f => {
+                const filtered = items.filter(i => i.fase === f);
+                if(filtered.length > 0) {
+                    html += `<h3 style="background:#eee; padding:10px; border-left:5px solid var(--red);">${f.toUpperCase()}</h3>`;
+                    filtered.forEach((item, idx) => {
+                        html += `
+                            <div class="check-item">
+                                <div style="flex:1;">
+                                    <strong>${item.titolo}</strong><br>
+                                    <small style="color:blue;">${item.note}</small>
+                                </div>
+                                <div style="display:flex; gap:15px; align-items:center;">
+                                    <input type="text" class="note-input" placeholder="Aggiungi nota dell'agente...">
+                                    <span class="time-badge" id="time_${turnName}_${f}_${idx}">--:--</span>
+                                    <input type="checkbox" style="transform:scale(1.8);" onchange="markChecked(this, 'time_${turnName}_${f}_${idx}')">
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            html += `</div>`;
+            area.innerHTML = html;
+        }
+
+        function markChecked(el, timeId) {
+            const timeSpan = document.getElementById(timeId);
+            if(el.checked) {
+                timeSpan.innerText = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+                el.parentElement.parentElement.style.background = "#f0fff0";
+            } else {
+                timeSpan.innerText = "--:--";
+                el.parentElement.parentElement.style.background = "transparent";
+            }
+        }
+
+        // TIME & CLOCK
         function updateClock() {
             const now = new Date();
             document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
             document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
         }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        function showSection(id) {
-            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
-            document.getElementById(id).classList.add('active-page');
-            if(id === 'section_admin') renderAdmin();
-        }
-
-        // --- GESTIONE ACCOUNT ---
-        function renderAdmin() {
-            const tbody = document.getElementById('tbody_users');
-            tbody.innerHTML = db.users.map((u, i) => `
-                <tr>
-                    <td>${u.n} ${u.c}</td>
-                    <td>${u.e}</td>
-                    <td>${u.l.toUpperCase()}</td>
-                    <td style="color:${u.s === 'ATTIVO' ? 'green' : 'red'}"><b>${u.s}</b></td>
-                    <td>
-                        <button onclick="openEdit(${i})">Modifica</button>
-                        <button onclick="toggleUser(${i})">Sblocca/Blocca</button>
-                        ${u.e !== ADMIN_MASTER ? `<button class="btn-danger" style="color:white; border:none; padding:4px 8px; border-radius:4px;" onclick="deleteUser(${i})">X</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-
-            document.getElementById('tbody_links').innerHTML = db.links.map((l, i) => `
-                <tr><td>${l.n}</td><td>${l.u}</td><td><button class="btn-danger" style="color:white; border:none;" onclick="deleteLink(${i})">Elimina</button></td></tr>
-            `).join('');
-        }
-
-        function addAccount() {
-            const n = document.getElementById('adm_n').value, c = document.getElementById('adm_c').value;
-            const e = document.getElementById('adm_e').value, p = document.getElementById('adm_p').value;
-            const l = document.getElementById('adm_l').value;
-            if(e && p) { db.users.push({n, c, e, p, l, s: "ATTIVO"}); save(); renderAdmin(); }
-        }
-
-        function openEdit(i) {
-            const u = db.users[i];
-            document.getElementById('edit_id').value = i;
-            document.getElementById('ed_n').value = u.n;
-            document.getElementById('ed_c').value = u.c;
-            document.getElementById('ed_p').value = u.p;
-            document.getElementById('ed_l').value = u.l;
-            document.getElementById('modal_edit').style.display = 'flex';
-        }
-
-        function saveUserEdit() {
-            const i = document.getElementById('edit_id').value;
-            db.users[i].n = document.getElementById('ed_n').value;
-            db.users[i].c = document.getElementById('ed_c').value;
-            db.users[i].p = document.getElementById('ed_p').value;
-            db.users[i].l = document.getElementById('ed_l').value;
-            save(); closeModal(); renderAdmin();
-        }
-
-        function toggleUser(i) { db.users[i].s = (db.users[i].s === "ATTIVO" ? "DISATTIVATO" : "ATTIVO"); save(); renderAdmin(); }
-        function deleteUser(i) { if(confirm("Eliminare definitivamente?")) { db.users.splice(i,1); save(); renderAdmin(); } }
-        function closeModal() { document.getElementById('modal_edit').style.display = 'none'; }
-
-        // --- GESTIONE LINKS ---
-        function addLink() {
-            const n = document.getElementById('lnk_n').value, u = document.getElementById('lnk_u').value;
-            if(n && u) { db.links.push({n, u}); save(); renderAdmin(); renderHomeLinks(); }
-        }
-        function deleteLink(i) { db.links.splice(i, 1); save(); renderAdmin(); renderHomeLinks(); }
-        function renderHomeLinks() {
-            document.getElementById('home_links').innerHTML = db.links.map(l => `
-                <button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:20px 40px; font-size:1.2rem;" onclick="window.open('${l.u}')">${l.n}</button>
-            `).join('');
-        }
-
-        // --- GESTIONE CHECKLIST ---
-        function addCheckItem() {
-            const t = document.getElementById('cfg_turn').value;
-            const item = {
-                fase: document.getElementById('cfg_fase').value,
-                titolo: document.getElementById('cfg_titolo').value,
-                note: document.getElementById('cfg_note').value
-            };
-            db.checks[t].push(item);
-            save(); alert("Nodo aggiunto al " + t);
-        }
-
-        function renderCheckBtns() {
-            document.getElementById('check_turn_btns').innerHTML = Object.keys(db.checks).map(t => `
-                <button class="nav-btn" onclick="loadChecklist('${t}')">${t}</button>
-            `).join('');
-        }
-
-        function loadChecklist(t) {
-            const items = db.checks[t];
-            let html = `<div class="card"><h2>CHECKLIST ${t}</h2>`;
-            const fasi = ['prima', 'inizio', 'durante', 'fine'];
-            
-            fasi.forEach(f => {
-                const filtered = items.filter(x => x.fase === f);
-                html += `<h3 style="color:var(--red); border-bottom:1px solid #ddd; margin-top:20px;">Fase: ${f.toUpperCase()} (${filtered.length} attività)</h3>`;
-                filtered.forEach(x => {
-                    html += `
-                        <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-                            <div><b>${x.titolo}</b><br><small>${x.note}</small></div>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <input type="checkbox" style="transform:scale(1.5)" onchange="this.nextSibling.innerText = this.checked ? new Date().toLocaleTimeString() : ''">
-                                <span style="font-family:monospace; width:80px;"></span>
-                            </div>
-                        </div>`;
-                });
-            });
-            html += `</div>`;
-            document.getElementById('check_content').innerHTML = html;
-        }
-
-        function save() { localStorage.setItem('nsif_v11_db', JSON.stringify(db)); }
+        // Start
+        renderRunChecklistButtons();
     </script>
 </body>
 </html>
