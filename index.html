@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.1 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.2 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f4f7f6; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
@@ -39,23 +39,17 @@
         .active-page { display: block; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-        /* Admin & Table */
+        /* Table & Forms */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .status-active { color: green; font-weight: bold; }
-        .status-blocked { color: red; font-weight: bold; }
-
         input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        /* External Links */
-        .links-section { margin-top: 30px; padding: 20px; background: #eee; border-radius: 10px; }
-        .link-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .url-btn { background: white; border: 2px solid var(--blue); color: var(--blue); padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
         /* Checklist UI */
-        .fase-header { background: #f0f0f0; padding: 10px; margin-top: 20px; border-left: 5px solid var(--red); display: flex; justify-content: space-between; }
-        .check-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .timestamp { margin-left: auto; font-family: monospace; color: #666; font-size: 0.85rem; }
+        .fase-header { background: #f0f0f0; padding: 10px; margin-top: 20px; border-left: 5px solid var(--red); display: flex; justify-content: space-between; align-items: center; }
+        .check-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; transition: background 0.2s; }
+        .check-item:hover { background: #f9f9f9; }
+        .timestamp { margin-left: auto; font-family: monospace; color: var(--red); font-weight: bold; }
+        .badge-count { background: var(--blue); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -76,7 +70,7 @@
             <img src="logo_consorzio.jpg" class="logo-consorzio" alt="LOGO CONSORZIO" onerror="this.src='https://via.placeholder.com/200x100?text=Logo+Consorzio'">
             <br>
             <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.1 BETA</div>
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.2 BETA</div>
         </div>
 
         <div class="dashboard">
@@ -103,18 +97,13 @@
             <button class="nav-btn" style="background:#666;" onclick="logout()">LOGOUT</button>
         </div>
 
-        <div class="links-section">
-            <strong>🔗 COLLEGAMENTI ESTERNI</strong>
-            <div id="link_container" class="link-grid" style="margin-top:10px;"></div>
-        </div>
-
         <div id="section_checklist" class="container">
             <div class="card">
                 <h2>Seleziona Turno</h2>
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T1')">T1 (06:00-15:00)</button>
-                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T2')">T2 (14:45-22:00)</button>
-                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T3')">T3 (Notturno/Speciale)</button>
+                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T1')">TURNO T1 (06:00-15:00)</button>
+                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T2')">TURNO T2 (14:45-22:00)</button>
+                    <button class="nav-btn btn-checklist" onclick="renderChecklist('T3')">TURNO T3 (Notturno/Speciale)</button>
                 </div>
                 <div id="checklist_render_area"></div>
             </div>
@@ -123,227 +112,92 @@
         <div id="section_admin" class="container">
             <div class="card">
                 <h2>⚙️ Gestione Account</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
-                    <input type="text" id="adm_email" placeholder="E-mail">
-                    <input type="text" id="adm_pass" placeholder="Password">
-                    <select id="adm_lvl">
-                        <option value="user">User</option>
-                        <option value="superuser">Superuser</option>
-                        <option value="admin">Admin</option>
-                        <option value="guest">Guest</option>
-                    </select>
-                    <input type="number" id="adm_days" placeholder="Durata (gg)">
-                </div>
-                <button class="nav-btn btn-checklist" style="height: 40px; margin-top: 10px;" onclick="addAccount()">AGGIUNGI ACCOUNT</button>
-                
                 <table id="table_accounts">
                     <thead><tr><th>Email</th><th>Livello</th><th>Stato</th><th>Scadenza</th><th>Azioni</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
-
-            <div class="card">
-                <h2>🔗 Configurazione Link Esterni</h2>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="cfg_link_name" placeholder="Nome Collegamento">
-                    <input type="text" id="cfg_link_url" placeholder="URL (https://...)">
-                </div>
-                <button class="nav-btn btn-checklist" style="height: 40px;" onclick="saveExternalLink()">SALVA LINK</button>
-            </div>
-
-            <div class="card">
-                <h2>📝 Configurazione Checklist Attività</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <select id="cfg_chk_turno"><option value="T1">T1</option><option value="T2">T2</option><option value="T3">T3</option></select>
-                    <select id="cfg_chk_fase"><option value="prima">Prima</option><option value="inizio">Inizio</option><option value="durante">Durante</option><option value="fine">Fine</option></select>
-                </div>
-                <input type="text" id="cfg_chk_titolo" placeholder="Titolo attività">
-                <input type="text" id="cfg_chk_codici" placeholder="Codici apertura">
-                <textarea id="cfg_chk_note" placeholder="Note operative"></textarea>
-                <button class="nav-btn btn-checklist" style="height: 40px;" onclick="saveChecklistTask()">AGGIUNGI ATTIVITÀ</button>
-            </div>
         </div>
     </div>
 
     <script>
-        // DATA STRUCTURES
-        let accounts = JSON.parse(localStorage.getItem('nsif_accounts')) || [
-            {email: 'admin', pass: '1234', lvl: 'admin', status: 'ATTIVO', expiry: 999}
-        ];
-        let externalLinks = JSON.parse(localStorage.getItem('nsif_links')) || [
-            {name: "VTI External", url: "https://ssgwp.sharepoint.com/..."}
-        ];
-        let checklistData = JSON.parse(localStorage.getItem('nsif_checklists')) || {
-            T1: { prima: [], inizio: [{t: "Aprire cancello Campo Base Nord", n: "Codice 6988", c: "6988"}], durante: [], fine: [] },
-            T2: { prima: [], inizio: [], durante: [], fine: [] },
-            T3: { prima: [], inizio: [], durante: [], fine: [] }
+        // DATA FROM WORD DOCUMENTS
+        const checklistData = {
+            T1: {
+                inizio: [
+                    {t: "Aprire cancello Campo Base Nord", c: "6988", n: ""},
+                    {t: "Parcheggiare auto Coordinamento", c: "", n: "Posto tutto a destra"},
+                    {t: "Aprire ufficio Campo Base Nord", c: "1907", n: ""},
+                    {t: "Alzare tapparelle", c: "", n: ""},
+                    {t: "Verificare riscaldamento", c: "", n: "Pos. 4 inverno / spento estate"},
+                    {t: "Accendere telefono servizio", c: "PIN 6681 / Sblocco 1907", n: "Tenerlo fino arrivo T3"},
+                    {t: "Accendere radio e prova collegamento", c: "Canale 15", n: ""},
+                    {t: "Aprire cancello pedonale", c: "6988", n: ""},
+                    {t: "Recarsi al CAST07 e apertura", c: "1907", n: ""},
+                    {t: "Verifica tornelli e luci", c: "", n: ""},
+                    {t: "Verifica carica monopattino", c: "", n: "Verde = Carico"},
+                    {t: "Sbloccare PC e verifica E-mail", c: "", n: "Password in mappetta gialla"},
+                    {t: "Aprire VTI External", c: "", n: "Sharing documenti"}
+                ],
+                durante: [
+                    {t: "Verifica attraversamento operai", c: "", n: "06:45-07:00 / 11:55-12:05 / 16:30-17:00"},
+                    {t: "Presidio CAST08 (su richiesta)", c: "", n: "Registrare Nome, Azienda, Targa, Ora"},
+                    {t: "Compilare Giornale di bordo", c: "", n: ""},
+                    {t: "Pulizia postazione", c: "", n: ""},
+                    {t: "Verifica DPI operai", c: "", n: "Casco e Gilet obbligatori"}
+                ],
+                fine: [
+                    {t: "Pulizia ufficio e straccio a terra", c: "", n: "CAST07"},
+                    {t: "Passaggio di consegna", c: "", n: "CAST09 - Max 15 minuti"}
+                ]
+            },
+            T2: {
+                inizio: [
+                    {t: "Aprire cancelli entrata/uscita CAST09", c: "6988", n: ""},
+                    {t: "Aprire ufficio CAST09", c: "1907", n: ""},
+                    {t: "Alzare tapparelle e serrande tornello", c: "", n: ""},
+                    {t: "Verifica riscaldamento", c: "", n: "Leva 3/4 inverno"},
+                    {t: "Verifica tornelli, barriera e luci", c: "", n: "Pulire fotocellule se necessario"},
+                    {t: "Campo Base Sud apertura", c: "", n: "Chiave in Keybox interno baracca"},
+                    {t: "Sbloccare PC (Mappetta Rossa)", c: "", n: ""}
+                ],
+                durante: [
+                    {t: "Presidio CAST09", c: "", n: "Registrazione mezzi e verifica DPI"},
+                    {t: "Giornale di bordo e sospesi", c: "", n: ""},
+                    {t: "Verifica allacciamenti elettrici", c: "", n: "No prolunghe esterne al quadro"}
+                ],
+                fine: [
+                    {t: "Pulizia postazione", c: "", n: "Straccio superfici"},
+                    {t: "Passaggio di consegna", c: "", n: "CAST09"},
+                    {t: "Passare straccio a terra", c: "", n: "Entro le 22:00"}
+                ]
+            },
+            T3: {
+                inizio: [
+                    {t: "Parcheggiare al centro (Coordinamento)", c: "", n: ""},
+                    {t: "Prova radio colleghi", c: "Canale 15", n: ""},
+                    {t: "Ritiro telefono servizio al CAST07", c: "", n: ""},
+                    {t: "Giro perimetro per divergenze", c: "", n: "Prendere monopattino dal CAST09"}
+                ],
+                durante: [
+                    {t: "Supporto colleghi postazioni", c: "", n: ""},
+                    {t: "Controllo regolarmente CAST08", c: "", n: "Verificare che non sia aperto senza presidio"},
+                    {t: "Giro pausa pranzo (12:00-13:00)", c: "", n: "Nessun operaio deve mangiare in cantiere"},
+                    {t: "Verifica accessibilità ambulanza", c: "", n: "Assicurarsi che non ci siano ostruzioni"}
+                ],
+                fine: [
+                    {t: "Verifica assenza operai (Bausicht)", c: "", n: ""},
+                    {t: "Chiusura cancelli CAST09", c: "6988", n: ""},
+                    {t: "Chiusura Campo Base Sud", c: "", n: "Aprire leggermente rubinetti (inverno)"},
+                    {t: "Chiusura perimetro completo", c: "", n: ""},
+                    {t: "Verifica chiusura uffici CSC", c: "6990", n: "Luci spente e finestre chiuse"},
+                    {t: "Controllo bagni Securitas", c: "", n: "Chiudere a chiave"}
+                ]
+            }
         };
 
-        // LOGIN LOGIC
+        let accounts = [{email: 'marco.lamorgia', pass: '1234', lvl: 'admin', status: 'ATTIVO', expiry: 999}];
+
+        // SYSTEM LOGIC
         window.onload = () => {
-            const savedUser = localStorage.getItem('last_user');
-            if(savedUser) document.getElementById('login_user').value = savedUser;
-            updateTime();
-            setInterval(updateTime, 1000);
-            renderLinks();
-        };
-
-        function handleEnter(e, nextId) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const nextElem = document.getElementById(nextId);
-                if(nextElem.tagName === 'BUTTON') nextElem.click();
-                else nextElem.focus();
-            }
-        }
-
-        function doLogin() {
-            const u = document.getElementById('login_user').value;
-            const p = document.getElementById('login_pass').value;
-            const found = accounts.find(a => a.email === u && a.pass === p && a.status === 'ATTIVO');
-            
-            if(found) {
-                localStorage.setItem('last_user', u);
-                document.getElementById('page_login').style.display = 'none';
-                document.getElementById('main_interface').style.display = 'block';
-                if(found.lvl === 'admin') document.getElementById('nav_admin').style.display = 'flex';
-                renderAccounts();
-            } else {
-                alert("Accesso fallito. Controllare credenziali o stato account.");
-            }
-        }
-
-        function logout() { location.reload(); }
-
-        // NAVIGATION
-        function showSection(id) {
-            document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
-            document.getElementById(id).classList.add('active-page');
-        }
-
-        // TIME & DASHBOARD
-        function updateTime() {
-            const now = new Date();
-            const itDate = now.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('date_today').innerText = itDate;
-            document.getElementById('main_clock').innerText = now.toLocaleTimeString('it-IT');
-            
-            document.getElementById('tz_zur').innerText = now.toLocaleTimeString('it-IT', {timeZone: 'Europe/Zurich', hour: '2-digit', minute:'2-digit'});
-            document.getElementById('tz_lon').innerText = now.toLocaleTimeString('it-IT', {timeZone: 'Europe/London', hour: '2-digit', minute:'2-digit'});
-            document.getElementById('tz_nyc').innerText = now.toLocaleTimeString('it-IT', {timeZone: 'America/New_York', hour: '2-digit', minute:'2-digit'});
-        }
-
-        // ADMIN FUNCTIONS
-        function renderAccounts() {
-            const tbody = document.querySelector('#table_accounts tbody');
-            tbody.innerHTML = '';
-            accounts.forEach((acc, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${acc.email}</td>
-                        <td>${acc.lvl}</td>
-                        <td class="${acc.status === 'ATTIVO' ? 'status-active' : 'status-blocked'}">${acc.status}</td>
-                        <td>${acc.expiry} gg</td>
-                        <td>
-                            <button onclick="toggleAccount(${index})">Blocca/Sblocca</button>
-                            <button onclick="deleteAccount(${index})">X</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function addAccount() {
-            const email = document.getElementById('adm_email').value;
-            const pass = document.getElementById('adm_pass').value;
-            const lvl = document.getElementById('adm_lvl').value;
-            const days = document.getElementById('adm_days').value;
-            if(!email || !pass) return;
-            accounts.push({email, pass, lvl, status: 'ATTIVO', expiry: days || 30});
-            saveAll(); renderAccounts();
-        }
-
-        function toggleAccount(i) {
-            accounts[i].status = accounts[i].status === 'ATTIVO' ? 'DISATTIVATO' : 'ATTIVO';
-            saveAll(); renderAccounts();
-        }
-
-        function deleteAccount(i) {
-            if(confirm("Eliminare account?")) { accounts.splice(i,1); saveAll(); renderAccounts(); }
-        }
-
-        // EXTERNAL LINKS
-        function saveExternalLink() {
-            const name = document.getElementById('cfg_link_name').value;
-            const url = document.getElementById('cfg_link_url').value;
-            if(name && url) {
-                externalLinks.push({name, url});
-                saveAll(); renderLinks();
-            }
-        }
-
-        function renderLinks() {
-            const container = document.getElementById('link_container');
-            container.innerHTML = '';
-            externalLinks.forEach(l => {
-                container.innerHTML += `<button class="url-btn" onclick="window.open('${l.url}', '_blank')">${l.name}</button>`;
-            });
-        }
-
-        // CHECKLIST RENDERING
-        function renderChecklist(turno) {
-            const area = document.getElementById('checklist_render_area');
-            const data = checklistData[turno];
-            let html = `<h3>Checklist Corrente: ${turno}</h3>`;
-            
-            ['prima', 'inizio', 'durante', 'fine'].forEach(fase => {
-                const tasks = data[fase] || [];
-                const mancanti = tasks.length; // Per semplicità qui conto il totale, si può affinare
-                html += `
-                    <div class="fase-header">
-                        <strong>FASE: ${fase.toUpperCase()}</strong>
-                        <span>Attività: ${mancanti}</span>
-                    </div>
-                `;
-                tasks.forEach(task => {
-                    html += `
-                        <div class="check-item">
-                            <input type="checkbox" onchange="markTime(this)">
-                            <div style="margin-left:10px;">
-                                <strong>${task.t}</strong> <br>
-                                <small>${task.n} - Codice: ${task.c}</small>
-                            </div>
-                            <span class="timestamp"></span>
-                        </div>
-                    `;
-                });
-            });
-            area.innerHTML = html;
-        }
-
-        function markTime(cb) {
-            const span = cb.parentElement.querySelector('.timestamp');
-            span.innerText = cb.checked ? new Date().toLocaleTimeString() : '';
-        }
-
-        function saveChecklistTask() {
-            const turno = document.getElementById('cfg_chk_turno').value;
-            const fase = document.getElementById('cfg_chk_fase').value;
-            const task = {
-                t: document.getElementById('cfg_chk_titolo').value,
-                n: document.getElementById('cfg_chk_note').value,
-                c: document.getElementById('cfg_chk_codici').value
-            };
-            checklistData[turno][fase].push(task);
-            saveAll();
-            alert("Attività salvata per " + turno);
-        }
-
-        function saveAll() {
-            localStorage.setItem('nsif_accounts', JSON.stringify(accounts));
-            localStorage.setItem('nsif_links', JSON.stringify(externalLinks));
-            localStorage.setItem('nsif_checklists', JSON.stringify(checklistData));
-        }
-    </script>
-</body>
-</html>
+            const savedUser
