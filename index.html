@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.18.1.4 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.18.1.5 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; --warn: #ffcc00; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -26,11 +26,27 @@
         th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
         th { background: #f8f9fa; color: var(--blue); font-size: 0.8rem; text-transform: uppercase; }
 
+        /* Dashboard Home */
+        .date-xl { font-size: 2.8rem; color: var(--grey); font-weight: 300; margin-bottom: 20px; text-transform: uppercase; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; margin-top: 30px; }
+        
+        .clocks-container { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
+        .clock-analog-box { text-align: center; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 140px; }
+        .analog-clock { width: 120px; height: 120px; border: 5px solid var(--blue); border-radius: 50%; position: relative; margin: 10px auto; background: white; }
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom; border-radius: 5px; background: #333; transform: translateX(-50%); }
+        .hour-hand { width: 6px; height: 25%; z-index: 3; }
+        .min-hand { width: 4px; height: 40%; z-index: 2; }
+        .sec-hand { width: 2px; height: 45%; background: var(--red); z-index: 1; }
+        .clock-center { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background: var(--blue); border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; }
+        .clock-label { font-size: 0.9rem; font-weight: bold; color: var(--blue); margin-bottom: 5px; }
+
+        .weather-box { background: linear-gradient(135deg, #003366 0%, #0055aa 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        /* Fornitori */
         .row-in-cantiere { background-color: #fff9c4 !important; font-weight: bold; }
         .freq-btn { background: #e3f2fd; border: 1px solid #90caf9; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: var(--blue); }
         .freq-btn:hover { background: #bbdefb; }
         .freq-btn-predef { background: #f1f8e9; border-color: #aed581; color: #33691e; }
-
         .time-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-weight: bold; }
         
         #alert_modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20000; align-items:center; justify-content:center; }
@@ -62,7 +78,7 @@
             <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
             <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
             <div class="login-footer" style="margin-top:10px; font-size:0.8rem;">
-                <span>Versione 1.18.1.4 BETA</span>
+                <span>Versione 1.18.1.5 BETA</span>
             </div>
         </div>
     </div>
@@ -86,15 +102,58 @@
 
         <div id="section_home" class="container active-page">
             <div class="card" style="text-align:center;">
-                <h1 id="clock_big" style="font-size:4rem; color:var(--blue); margin:0;">00:00:00</h1>
-                <p id="date_long" style="font-size:1.5rem; color:var(--grey);"></p>
-                <div id="home_links" style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin-top:25px;"></div>
+                <h1 id="clock_big" style="font-size:6rem; color:var(--blue); margin:0; font-weight: 800;">00:00:00</h1>
+                <p id="date_long" class="date-xl">CARICAMENTO DATA...</p>
+                
+                <div class="dashboard-grid">
+                    <div class="card" style="border:none; box-shadow:none; background:transparent; margin:0;">
+                        <div class="clocks-container">
+                            <div class="clock-analog-box">
+                                <div class="clock-label">LONDRA (UTC)</div>
+                                <div class="analog-clock" id="clock-london">
+                                    <div class="clock-center"></div>
+                                    <div class="hand hour-hand"></div>
+                                    <div class="hand min-hand"></div>
+                                    <div class="hand sec-hand"></div>
+                                </div>
+                            </div>
+                            <div class="clock-analog-box">
+                                <div class="clock-label">NEW YORK (EST)</div>
+                                <div class="analog-clock" id="clock-ny">
+                                    <div class="clock-center"></div>
+                                    <div class="hand hour-hand"></div>
+                                    <div class="hand min-hand"></div>
+                                    <div class="hand sec-hand"></div>
+                                </div>
+                            </div>
+                            <div class="clock-analog-box">
+                                <div class="clock-label">TOKYO (JST)</div>
+                                <div class="analog-clock" id="clock-tokyo">
+                                    <div class="clock-center"></div>
+                                    <div class="hand hour-hand"></div>
+                                    <div class="hand min-hand"></div>
+                                    <div class="hand sec-hand"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="weather-box">
+                        <h4 style="margin:0 0 15px 0; font-size: 1.2rem; letter-spacing: 1px;">METEO CASTIONE</h4>
+                        <a class="weatherwidget-io" href="https://forecast7.com/it/4611900/arbedo-castione/" data-label_1="CASTIONE" data-label_2="SVIZZERA" data-font="Segoe UI" data-icons="Climacons Animated" data-theme="pure" data-basecolor="rgba(255, 255, 255, 0)" data-accent="rgba(255, 255, 255, 0)" >CASTIONE METEO</a>
+                        <script>
+                        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+                        </script>
+                    </div>
+                </div>
+
+                <div id="home_links" style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin-top:40px;"></div>
             </div>
         </div>
 
         <div id="section_fornitori" class="container">
             <div class="card">
-                <h3>Nuovo Ingresso Fornitore</h3>
+                <h3>Gestione Ingressi Fornitori</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px; gap:15px;">
                     <input type="text" id="f_azienda" placeholder="Azienda">
                     <input type="text" id="f_autista" placeholder="Nome Cognome Autista">
@@ -102,12 +161,12 @@
                     <input type="number" id="f_timeout" value="15" title="Minuti permanenza">
                 </div>
                 <div id="freq_area" style="display:flex; gap:8px; flex-wrap:wrap; margin: 15px 0;"></div>
-                <div class="dpi-check">
-                    <label><input type="checkbox" id="f_casco"> Casco</label>
-                    <label><input type="checkbox" id="f_gilet"> Gilet</label>
-                    <input type="text" id="f_nota_dpi" placeholder="Note DPI" style="flex-grow:1; padding:5px;">
+                <div class="dpi-check" style="display:flex; gap:20px; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                    <label style="font-weight: bold;"><input type="checkbox" id="f_casco"> Casco</label>
+                    <label style="font-weight: bold;"><input type="checkbox" id="f_gilet"> Gilet</label>
+                    <input type="text" id="f_nota_dpi" placeholder="Note DPI aggiuntive" style="flex-grow:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
                 </div>
-                <button class="nav-btn" style="background:green; width:100%; margin-top:10px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
+                <button class="nav-btn" style="background:green; width:100%; margin-top:15px; padding: 15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
                 <table style="margin-top:20px;">
                     <thead><tr><th>Azienda</th><th>Dati</th><th>DPI</th><th>Entrata</th><th>Uscita</th><th>Azione</th></tr></thead>
                     <tbody id="tbody_fornitori"></tbody>
@@ -179,14 +238,14 @@
     </div>
 
     <script>
-        // DB INITIALIZATION
+        // DATABASE
         let db = JSON.parse(localStorage.getItem('nsif_v18_db')) || {
             users: [{id: 1, n: "Marco", c: "La Morgia", e: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", s: true, d: 365}],
             links: [{n: "GESTIONE ACCESSI", u: "https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard"}],
             checklist: {}, giornale: [], docs: [], fornitori: [], predefiniti: []
         };
 
-        // FIX PER UTENTE ESISTENTE (FORZA ATTIVO)
+        // FORCE LOGIN ADMIN
         const masterUser = db.users.find(x => x.e === "marco.lamorgia@securitas.ch");
         if(masterUser) { masterUser.s = true; masterUser.l = "admin"; }
         
@@ -227,6 +286,37 @@
             document.getElementById(id).classList.add('active-page');
             if(id === 'section_admin') renderAdminAll();
             if(id === 'section_docs') renderDocsGrid();
+        }
+
+        // --- DASHBOARD CLOCKS ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
+            document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+            
+            // Analogici
+            updateAnalogClock('clock-london', 0); // UTC
+            updateAnalogClock('clock-ny', -5);    // New York
+            updateAnalogClock('clock-tokyo', 9);   // Tokyo
+        }
+
+        function updateAnalogClock(id, offset) {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const date = new Date(utc + (3600000 * offset));
+            
+            const seconds = date.getSeconds();
+            const minutes = date.getMinutes();
+            const hours = date.getHours();
+
+            const sDeg = (seconds / 60) * 360;
+            const mDeg = (minutes / 60) * 360 + (seconds / 60) * 6;
+            const hDeg = (hours / 12) * 360 + (minutes / 60) * 30;
+
+            const clockEl = document.getElementById(id);
+            clockEl.querySelector('.sec-hand').style.transform = `translateX(-50%) rotate(${sDeg}deg)`;
+            clockEl.querySelector('.min-hand').style.transform = `translateX(-50%) rotate(${mDeg}deg)`;
+            clockEl.querySelector('.hour-hand').style.transform = `translateX(-50%) rotate(${hDeg}deg)`;
         }
 
         // ACCOUNT MANAGEMENT
@@ -270,7 +360,7 @@
             u.s = !u.s; save(); renderAdminAll();
         }
 
-        // FORNITORI LOGIC
+        // FORNITORI
         function addFornitore() {
             const entry = {
                 id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
@@ -337,6 +427,7 @@
             });
         }
 
+        // ADMIN RENDER
         function renderAdminAll() {
             document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `
                 <tr class="${!u.s ? 'status-off' : ''}">
@@ -370,7 +461,6 @@
         function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr><td>${g.t}</td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td><td>${g.r}</td></tr>`).reverse().join(''); }
         function renderDocsGrid() { const oggi = new Date().toISOString().split('T')[0]; const vis = (db.docs || []).filter(d => (d.s==="" || oggi>=d.s) && (d.e==="" || oggi<=d.e)); document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join(''); }
         function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
-        function updateClock() { const now = new Date(); document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT'); document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase(); }
     </script>
 </body>
 </html>
