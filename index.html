@@ -187,6 +187,16 @@
             background-color: #fff9c4 !important; 
             font-weight: bold; 
         }
+
+        /* Workflow Admin UI */
+        .wf-node-admin {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 5px solid var(--blue);
+        }
         
         #alert_modal { 
             display:none; 
@@ -270,6 +280,7 @@
             <button class="nav-btn" onclick="showSection('section_home')">HOME</button>
             <button class="nav-btn" onclick="showSection('section_fornitori')">FORNITORI</button>
             <button class="nav-btn" onclick="showSection('section_checklist')">CHECKLIST</button>
+            <button class="nav-btn" onclick="showSection('section_badge')">BADGE / WORKFLOW</button>
             <button class="nav-btn" onclick="showSection('section_giornale')">GIORNALE</button>
             <button class="nav-btn" onclick="showSection('section_docs')">DOCUMENTI</button>
             <button id="nav_admin" class="nav-btn nav-admin" style="display:none;" onclick="showSection('section_admin')">ADMIN</button>
@@ -304,6 +315,17 @@
             </div>
         </div>
 
+        <div id="section_badge" class="container">
+            <div class="card">
+                <h3>Procedure Operative (Workflow)</h3>
+                <div id="badge_start_btns" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;"></div>
+                <hr>
+                <div id="flow_render_area">
+                    <p style="color:var(--grey); text-align:center;">Seleziona un'organizzazione per avviare la procedura guidata.</p>
+                </div>
+            </div>
+        </div>
+
         <div id="section_fornitori" class="container">
             <div class="card">
                 <h3>Ingresso Fornitori</h3>
@@ -314,16 +336,8 @@
                     <input type="number" id="f_timeout" value="15">
                 </div>
                 <button class="nav-btn" style="background:green; width:100%; padding:15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Azienda</th>
-                            <th>Dati</th>
-                            <th>Entrata</th>
-                            <th>Uscita</th>
-                            <th>Azione</th>
-                        </tr>
-                    </thead>
+                <table id="table_fornitori">
+                    <thead><tr><th>Azienda</th><th>Dati</th><th>Entrata</th><th>Uscita</th><th>Azione</th></tr></thead>
                     <tbody id="tbody_fornitori"></tbody>
                 </table>
             </div>
@@ -337,24 +351,10 @@
                     <input type="text" id="gb_desc" placeholder="Descrizione">
                     <button class="nav-btn" style="background:green;" onclick="addGiornale()">REGISTRA</button>
                 </div>
-                <table id="table_giornale">
-                    <thead>
-                        <tr>
-                            <th>Ora</th>
-                            <th>Agente</th>
-                            <th>Luogo</th>
-                            <th>Dettagli</th>
-                        </tr>
-                    </thead>
+                <table>
+                    <thead><tr><th>Ora</th><th>Agente</th><th>Luogo</th><th>Dettagli</th></tr></thead>
                     <tbody id="tbody_giornale"></tbody>
                 </table>
-            </div>
-        </div>
-
-        <div id="section_checklist" class="container">
-            <div class="card">
-                <h3>Checklist</h3>
-                <div id="run_checklist_area"></div>
             </div>
         </div>
 
@@ -365,15 +365,28 @@
             </div>
         </div>
 
-        <div id="section_admin" class="container">
+        <div id="section_checklist" class="container">
             <div class="card">
-                <h3>Amministrazione</h3>
-                <div id="admin_users_list"></div>
-                <hr>
+                <h3>Checklist</h3>
+                <div id="run_checklist_area"></div>
+            </div>
+        </div>
+
+        <div id="section_admin" class="container">
+            <div class="card" style="border-left: 10px solid #2196f3;">
+                <h3>Configurazione Motore Workflow</h3>
+                <button class="nav-btn" onclick="addWorkflowOrg()" style="background:#2196f3; margin-bottom:15px;">+ CREA NUOVA ORGANIZZAZIONE</button>
+                <div id="admin_workflow_list"></div>
+            </div>
+
+            <div class="card">
+                <h3>Amministrazione Generale</h3>
                 <h4>Aggiungi Link Home</h4>
-                <input type="text" id="cfg_link_name" placeholder="Nome Link">
-                <input type="text" id="cfg_link_url" placeholder="URL">
-                <button onclick="addHomeLink()">Aggiungi</button>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="cfg_link_name" placeholder="Nome Link">
+                    <input type="text" id="cfg_link_url" placeholder="URL">
+                    <button onclick="addHomeLink()">Aggiungi</button>
+                </div>
                 <hr>
                 <h4>Carica Documento</h4>
                 <div id="drop_zone" class="dropzone">Trascina PDF qui</div>
@@ -385,14 +398,15 @@
     </div>
 
     <script>
-        // DB INIZIALE
+        // DATABASE INIZIALE
         let db = JSON.parse(localStorage.getItem('nsif_v18_db')) || {
             users: [{id: 1, n: "Admin", c: "User", e: "admin", p: "1234", l: "admin", s: true}],
             links: [],
             checklist: {},
             giornale: [],
             docs: [],
-            fornitori: []
+            fornitori: [],
+            workflows: []
         };
 
         let currentUser = null;
@@ -433,10 +447,11 @@
 
         function showSection(id) {
             const containers = document.querySelectorAll('.container');
-            containers.forEach(c => {
-                c.classList.remove('active-page');
-            });
+            containers.forEach(c => c.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
+            
+            if (id === 'section_admin') renderAdminWorkflow();
+            if (id === 'section_badge') renderUserWorkflows();
         }
 
         // OROLOGI
@@ -444,12 +459,8 @@
             const now = new Date();
             document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
             document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric'
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
             }).toUpperCase();
-            
             updateAnalog('clock-london', 0);
             updateAnalog('clock-tokyo', 8);
         }
@@ -458,171 +469,202 @@
             const now = new Date();
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
             const date = new Date(utc + (3600000 * offset));
-            
-            const s = date.getSeconds() * 6;
-            const m = date.getMinutes() * 6;
-            const h = (date.getHours() % 12) * 30 + (date.getMinutes() / 2);
-            
+            const s = date.getSeconds() * 6, m = date.getMinutes() * 6, h = (date.getHours() % 12) * 30 + (date.getMinutes() / 2);
             const el = document.getElementById(id);
             el.querySelector('.sec-hand').style.transform = `translateX(-50%) rotate(${s}deg)`;
             el.querySelector('.min-hand').style.transform = `translateX(-50%) rotate(${m}deg)`;
             el.querySelector('.hour-hand').style.transform = `translateX(-50%) rotate(${h}deg)`;
         }
 
-        // FORNITORI
-        function addFornitore() {
-            const azienda = document.getElementById('f_azienda').value;
-            const autista = document.getElementById('f_autista').value;
-            const targa = document.getElementById('f_targa').value;
-            const timeout = document.getElementById('f_timeout').value;
+        // LOGICA WORKFLOW ADMIN
+        function addWorkflowOrg() {
+            const nome = prompt("Nome Organizzazione (es. Badge Ditte):");
+            if (nome) {
+                db.workflows.push({ id: Date.now(), nome: nome, nodi: [] });
+                save();
+                renderAdminWorkflow();
+            }
+        }
 
-            if (!azienda || !targa) {
-                alert("Inserire almeno Azienda e Targa");
+        function addNodo(wfId) {
+            const tipo = prompt("Tipo Nodo: scelta / azione / fine").toLowerCase();
+            if (!['scelta', 'azione', 'fine'].includes(tipo)) return alert("Tipo non valido");
+            
+            const wf = db.workflows.find(x => x.id === wfId);
+            const nuovoNodo = {
+                id: Date.now(),
+                tipo: tipo,
+                titolo: prompt("Titolo/Domanda:"),
+                istruzione: (tipo !== 'fine') ? prompt("Dettagli istruzione:") : "",
+                idSi: null,
+                idNo: null
+            };
+            wf.nodi.push(nuovoNodo);
+            save();
+            renderAdminWorkflow();
+        }
+
+        function linkNodi(wfId, nodoId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            const n = wf.nodi.find(x => x.id === nodoId);
+            if (n.tipo === 'scelta') {
+                n.idSi = prompt("ID prossimo nodo se SÌ (o FINE):");
+                n.idNo = prompt("ID prossimo nodo se NO (o FINE):");
+            } else {
+                n.idSi = prompt("ID prossimo nodo (o FINE):");
+            }
+            save();
+            renderAdminWorkflow();
+        }
+
+        function renderAdminWorkflow() {
+            const area = document.getElementById('admin_workflow_list');
+            area.innerHTML = db.workflows.map(wf => `
+                <div class="card" style="border-top:4px solid #2196f3;">
+                    <strong>ORGANIZZAZIONE: ${wf.nome}</strong> (ID: ${wf.id})
+                    <button class="nav-btn" style="padding:5px 10px; margin-left:10px;" onclick="addNodo(${wf.id})">+ Nodo</button>
+                    <button class="nav-btn" style="background:var(--red); padding:5px 10px;" onclick="if(confirm('Elimina?')){db.workflows=db.workflows.filter(x=>x.id!=${wf.id});save();renderAdminWorkflow();}">Elimina</button>
+                    <div style="margin-top:10px;">
+                        ${wf.nodi.map(n => `
+                            <div class="wf-node-admin">
+                                <b>[ID: ${n.id}] ${n.tipo.toUpperCase()}</b>: ${n.titolo}<br>
+                                <small>-> Successivo: ${n.idSi || '--'} ${n.idNo ? '| NO: '+n.idNo : ''}</small><br>
+                                <button onclick="linkNodi(${wf.id}, ${n.id})" style="font-size:0.7rem;">Configura Salti</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // LOGICA WORKFLOW USER
+        function renderUserWorkflows() {
+            const container = document.getElementById('badge_start_btns');
+            container.innerHTML = db.workflows.map(wf => `
+                <button class="nav-btn" style="background:var(--blue); padding:15px;" onclick="startWorkflow(${wf.id})">
+                    📋 ${wf.nome}
+                </button>
+            `).join('');
+        }
+
+        function startWorkflow(wfId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            if (!wf || wf.nodi.length === 0) return alert("Nessun nodo configurato.");
+            eseguiNodo(wfId, wf.nodi[0].id);
+        }
+
+        function eseguiNodo(wfId, nodoId) {
+            const area = document.getElementById('flow_render_area');
+            if (nodoId === 'FINE' || !nodoId) {
+                area.innerHTML = `<div class="card" style="border-top:10px solid green; text-align:center;">
+                    <h2>✅ PROCEDURA COMPLETATA</h2>
+                    <button class="nav-btn" onclick="document.getElementById('flow_render_area').innerHTML=''">CHIUDI</button>
+                </div>`;
                 return;
             }
+            const wf = db.workflows.find(x => x.id === wfId);
+            const n = wf.nodi.find(x => x.id == nodoId);
+            if (!n) return;
 
-            const nuovo = {
-                id: Date.now(),
-                azienda: azienda,
-                autista: autista,
-                targa: targa,
-                entrata: new Date().toLocaleTimeString('it-IT'),
-                entrata_ts: Date.now(),
-                uscita: null,
-                timeout: parseInt(timeout),
-                alert: false
-            };
+            let html = `<div class="card" style="border-left:10px solid ${n.tipo==='scelta'?'orange':'var(--blue)'};">
+                <h2 style="margin-top:0;">${n.titolo}</h2>
+                <p style="background:#f0f0f0; padding:15px; border-radius:8px;">${n.istruzione}</p>`;
 
-            db.fornitori.push(nuovo);
-            save();
-            renderFornitori();
-            
-            document.getElementById('f_azienda').value = "";
-            document.getElementById('f_autista').value = "";
-            document.getElementById('f_targa').value = "";
+            if (n.tipo === 'scelta') {
+                html += `<div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="nav-btn" style="background:green; flex:1; padding:20px;" onclick="eseguiNodo(${wfId}, '${n.idSi}')">SÌ</button>
+                    <button class="nav-btn" style="background:var(--red); flex:1; padding:20px;" onclick="eseguiNodo(${wfId}, '${n.idNo}')">NO</button>
+                </div>`;
+            } else {
+                html += `<button class="nav-btn" style="width:100%; margin-top:20px; padding:20px;" onclick="eseguiNodo(${wfId}, '${n.idSi}')">AVANTI</button>`;
+            }
+            area.innerHTML = html + `</div>`;
+        }
+
+        // ALTRE FUNZIONI ORIGINALI (Fornitori, Giornale, Docs)
+        function addFornitore() {
+            const az = document.getElementById('f_azienda').value;
+            const tar = document.getElementById('f_targa').value;
+            if (!az || !tar) return alert("Mancano dati!");
+            db.fornitori.push({
+                id: Date.now(), azienda: az, autista: document.getElementById('f_autista').value,
+                targa: tar, entrata: new Date().toLocaleTimeString('it-IT'), entrata_ts: Date.now(),
+                uscita: null, timeout: parseInt(document.getElementById('f_timeout').value), alert: false
+            });
+            save(); renderFornitori();
         }
 
         function renderFornitori() {
             const tbody = document.getElementById('tbody_fornitori');
-            tbody.innerHTML = "";
-
-            db.fornitori.forEach(f => {
-                const tr = document.createElement('tr');
-                if (!f.uscita) {
-                    tr.className = "row-in-cantiere";
-                }
-
-                tr.innerHTML = `
-                    <td>${f.azienda}</td>
-                    <td>${f.autista}<br><small>${f.targa}</small></td>
-                    <td>${f.entrata}</td>
-                    <td>${f.uscita || '--:--'}</td>
-                    <td>
-                        ${f.uscita ? 'OK' : `<button onclick="outForn(${f.id})">ESCI</button>`}
-                    </td>
-                `;
-                tbody.prepend(tr);
-            });
+            tbody.innerHTML = db.fornitori.map(f => `
+                <tr class="${!f.uscita ? 'row-in-cantiere' : ''}">
+                    <td>${f.azienda}</td><td>${f.autista}<br><small>${f.targa}</small></td>
+                    <td>${f.entrata}</td><td>${f.uscita || '--:--'}</td>
+                    <td>${f.uscita ? 'OK' : `<button onclick="outForn(${f.id})">ESCI</button>`}</td>
+                </tr>`).reverse().join('');
         }
 
         function outForn(id) {
             const f = db.fornitori.find(x => x.id === id);
-            if (f) {
-                f.uscita = new Date().toLocaleTimeString('it-IT');
-                save();
-                renderFornitori();
-            }
+            if (f) { f.uscita = new Date().toLocaleTimeString('it-IT'); save(); renderFornitori(); }
         }
 
         function checkTimeouts() {
-            const oraAttuale = Date.now();
+            const now = Date.now();
             db.fornitori.forEach(f => {
-                if (!f.uscita && !f.alert) {
-                    const trascorso = (oraAttuale - f.entrata_ts) / 60000;
-                    if (trascorso > f.timeout) {
-                        f.alert = true;
-                        document.getElementById('alert_msg').innerText = "TIMEOUT MEZZO: " + f.targa;
-                        document.getElementById('alert_modal').style.display = 'flex';
-                        
-                        document.getElementById('btn_tutto_ok').onclick = function() {
-                            f.alert = false;
-                            f.entrata_ts = Date.now(); // Reset timer
-                            document.getElementById('alert_modal').style.display = 'none';
-                        };
-                    }
+                if (!f.uscita && !f.alert && (now - f.entrata_ts) / 60000 > f.timeout) {
+                    f.alert = true;
+                    document.getElementById('alert_msg').innerText = "TIMEOUT: " + f.targa;
+                    document.getElementById('alert_modal').style.display = 'flex';
+                    document.getElementById('btn_tutto_ok').onclick = () => { f.alert = false; f.entrata_ts = Date.now(); document.getElementById('alert_modal').style.display = 'none'; };
                 }
             });
         }
 
-        // GIORNALE
         function addGiornale() {
-            const luogo = document.getElementById('gb_luogo').value;
-            const desc = document.getElementById('gb_desc').value;
-
-            db.giornale.push({
-                ora: new Date().toLocaleString('it-IT'),
-                agente: currentUser.n,
-                luogo: luogo,
-                desc: desc
-            });
-
-            save();
-            renderGiornale();
-            document.getElementById('gb_luogo').value = "";
-            document.getElementById('gb_desc').value = "";
+            db.giornale.push({ ora: new Date().toLocaleString(), agente: currentUser.n, luogo: document.getElementById('gb_luogo').value, desc: document.getElementById('gb_desc').value });
+            save(); renderGiornale();
         }
 
         function renderGiornale() {
-            const tbody = document.getElementById('tbody_giornale');
-            tbody.innerHTML = "";
-            db.giornale.slice().reverse().forEach(g => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${g.ora}</td>
-                        <td>${g.agente}</td>
-                        <td>${g.luogo}</td>
-                        <td>${g.desc}</td>
-                    </tr>
-                `;
-            });
+            document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr><td>${g.ora}</td><td>${g.agente}</td><td>${g.luogo}</td><td>${g.desc}</td></tr>`).reverse().join('');
         }
 
-        // DOCS
         function setupDragDrop() {
             const zone = document.getElementById('drop_zone');
             zone.onclick = () => document.getElementById('file_input').click();
-            
             document.getElementById('file_input').onchange = (e) => {
-                const file = e.target.files[0];
                 const reader = new FileReader();
-                reader.onload = (ev) => {
-                    tempFileData = ev.target.result;
-                    zone.innerText = "File caricato in memoria";
-                };
-                reader.readAsDataURL(file);
+                reader.onload = (ev) => { tempFileData = ev.target.result; zone.innerText = "File pronto"; };
+                reader.readAsDataURL(e.target.files[0]);
             };
         }
 
         function uploadDocument() {
-            const nome = document.getElementById('doc_name').value;
-            if (!tempFileData || !nome) return alert("Dati mancanti");
-            
-            db.docs.push({
-                id: Date.now(),
-                n: nome,
-                data: tempFileData
-            });
-            save();
-            alert("Salvato correttamente");
-            showSection('section_docs');
-            renderDocsGrid();
+            if (!tempFileData) return alert("Seleziona un file");
+            db.docs.push({ id: Date.now(), n: document.getElementById('doc_name').value, data: tempFileData });
+            save(); renderDocsGrid();
         }
 
         function renderDocsGrid() {
-            const grid = document.getElementById('docs_grid');
-            grid.innerHTML = "";
-            db.docs.forEach(d => {
-                grid.innerHTML += `
-                    <div class="card" style="text-align:center;">
-                        <b>${d.n}</b><br><br>
-                        <button class
+            document.getElementById('docs_grid').innerHTML = db.docs.map(d => `<div class="card" style="text-align:center;"><b>${d.n}</b><br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join('');
+        }
+
+        function openPdf(id) {
+            const d = db.docs.find(x => x.id == id);
+            const w = window.open();
+            w.document.write(`<iframe src="${d.data}" frameborder="0" style="width:100%; height:100%;"></iframe>`);
+        }
+
+        function addHomeLink() {
+            db.links.push({ n: document.getElementById('cfg_link_name').value, u: document.getElementById('cfg_link_url').value });
+            save(); renderHomeLinks();
+        }
+
+        function renderHomeLinks() {
+            document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" onclick="window.open('${l.u}')">${l.n}</button>`).join('');
+        }
+
+    </script>
+</body>
+</html>
