@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.18.1 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.18.1.4 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; --warn: #ffcc00; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -62,7 +62,6 @@
             <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
             <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
             <div class="login-footer" style="margin-top:10px; font-size:0.8rem;">
-                <span style="color:var(--blue); cursor:pointer;" onclick="alert('Contattare Admin')">Password dimenticata?</span><br>
                 <span>Versione 1.18.1.4 BETA</span>
             </div>
         </div>
@@ -149,7 +148,6 @@
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <input type="text" id="adm_f_azienda" placeholder="Azienda"><input type="text" id="adm_f_targa" placeholder="Targa"><button class="nav-btn" onclick="addPredefinito()">SALVA MEZZO</button>
                 </div>
-                <tbody id="tbody_adm_predef"></tbody>
                 <table><thead><tr><th>Azienda</th><th>Targa</th><th>Elimina</th></tr></thead><tbody id="tbody_adm_predef"></tbody></table>
             </div>
 
@@ -175,18 +173,23 @@
                 <input type="file" id="file_input" accept="application/pdf" style="display:none">
                 <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-top:10px;"><input type="text" id="doc_name" placeholder="Titolo"><input type="date" id="doc_start"><input type="date" id="doc_end"></div>
                 <button class="nav-btn" style="background:green; width:100%; margin-top:10px;" onclick="uploadDocument()">PUBBLICA</button>
-                <table><tbody id="tbody_docs_admin"></tbody></table>
+                <table style="margin-top:10px;"><tbody id="tbody_docs_admin"></tbody></table>
             </div>
         </div>
     </div>
 
     <script>
+        // DB INITIALIZATION
         let db = JSON.parse(localStorage.getItem('nsif_v18_db')) || {
-            users: [{n: "Marco", c: "La Morgia", e: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", s: true, d: 365}],
+            users: [{id: 1, n: "Marco", c: "La Morgia", e: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", s: true, d: 365}],
             links: [{n: "GESTIONE ACCESSI", u: "https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard"}],
             checklist: {}, giornale: [], docs: [], fornitori: [], predefiniti: []
         };
 
+        // FIX PER UTENTE ESISTENTE (FORZA ATTIVO)
+        const masterUser = db.users.find(x => x.e === "marco.lamorgia@securitas.ch");
+        if(masterUser) { masterUser.s = true; masterUser.l = "admin"; }
+        
         let currentUser = null;
         let editUserId = null;
         let tempFileData = null;
@@ -204,7 +207,7 @@
             const p = document.getElementById('log_p').value;
             const user = db.users.find(x => x.e === u && x.p === p);
             if(user) {
-                if(!user.s) return alert("Account disattivato.");
+                if(user.s === false) { alert("Account disattivato."); return; }
                 currentUser = user;
                 localStorage.setItem('nsif_last_user', u);
                 document.getElementById('page_login').style.display = 'none';
@@ -226,7 +229,7 @@
             if(id === 'section_docs') renderDocsGrid();
         }
 
-        // --- GESTIONE ACCOUNT ---
+        // ACCOUNT MANAGEMENT
         function addUser() {
             const newUser = {
                 id: editUserId || Date.now(),
@@ -239,15 +242,12 @@
                 s: true
             };
             if(!newUser.e || !newUser.p) return alert("Email e Password obbligatorie");
-            
             if(editUserId) {
                 const idx = db.users.findIndex(x => x.id === editUserId);
                 db.users[idx] = newUser;
                 editUserId = null;
                 document.getElementById('btn_save_user').innerText = "CREA ACCOUNT";
-            } else {
-                db.users.push(newUser);
-            }
+            } else { db.users.push(newUser); }
             save(); renderAdminAll();
             ['adm_u_nome','adm_u_cognome','adm_u_email','adm_u_pass'].forEach(id => document.getElementById(id).value = "");
         }
@@ -266,10 +266,11 @@
 
         function toggleUser(id) {
             const u = db.users.find(x => x.id === id);
+            if(u.e === currentUser.e) return alert("Non puoi disattivare te stesso!");
             u.s = !u.s; save(); renderAdminAll();
         }
 
-        // --- FORNITORI CORE ---
+        // FORNITORI LOGIC
         function addFornitore() {
             const entry = {
                 id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
@@ -293,7 +294,7 @@
 
         function renderFornitori() {
             const oggi = new Date().toLocaleDateString('it-IT');
-            const listaOggi = db.fornitori.filter(f => f.data === oggi);
+            const listaOggi = (db.fornitori || []).filter(f => f.data === oggi);
             document.getElementById('tbody_fornitori').innerHTML = listaOggi.map(f => `
                 <tr class="${!f.uscita ? 'row-in-cantiere' : ''}">
                     <td>${f.azienda}</td><td>${f.autista}<br><small>${f.targa}</small></td>
@@ -326,7 +327,7 @@
 
         function checkTimeouts() {
             const now = Date.now();
-            db.fornitori.forEach(f => {
+            (db.fornitori || []).forEach(f => {
                 if(!f.uscita && !f.alert_scattato && ((now - f.entrata_ts)/60000) > f.timeout_min) {
                     f.alert_scattato = true;
                     document.getElementById('alert_msg').innerHTML = `⚠️ <b>${f.targa}</b> Tempo superato!`;
@@ -336,21 +337,18 @@
             });
         }
 
-        // --- ADMIN RENDER ---
         function renderAdminAll() {
-            // Render Account
             document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `
                 <tr class="${!u.s ? 'status-off' : ''}">
                     <td>${u.n} ${u.c}<br><small>${u.e}</small></td>
                     <td>${u.l.toUpperCase()}</td><td>${u.d} gg</td>
-                    <td>${u.s ? 'ATTIVO' : 'DISATTIVATO'}</td>
+                    <td>${u.s ? 'ATTIVO' : 'OFF'}</td>
                     <td>
                         <button onclick="editUser(${u.id})">MOD</button>
                         <button onclick="toggleUser(${u.id})">${u.s ? 'OFF' : 'ON'}</button>
                         <button onclick="if(confirm('Eliminare?')){db.users=db.users.filter(x=>x.id!=${u.id});save();renderAdminAll();}">X</button>
                     </td>
                 </tr>`).join('');
-
             document.getElementById('tbody_adm_predef').innerHTML = (db.predefiniti || []).map((p, i) => `<tr><td>${p.a}</td><td>${p.t}</td><td><button onclick="db.predefiniti.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
             document.getElementById('tbody_cfg_links').innerHTML = db.links.map((l, i) => `<tr><td>${l.n}</td><td>${l.u}</td><td><button onclick="db.links.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
             document.getElementById('tbody_docs_admin').innerHTML = db.docs.map((d,i) => `<tr><td>${d.n}</td><td><button onclick="db.docs.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
@@ -358,7 +356,7 @@
             document.getElementById('tbody_cfg_check').innerHTML = ch;
         }
 
-        // --- UTILS ---
+        // UTILS
         function addPredefinito() { const a = document.getElementById('adm_f_azienda').value; const t = document.getElementById('adm_f_targa').value; if(a && t) { if(!db.predefiniti) db.predefiniti = []; db.predefiniti.push({ a, t }); save(); renderAdminAll(); } }
         function addHomeLink() { const n = document.getElementById('cfg_link_name').value; const u = document.getElementById('cfg_link_url').value; if(n && u) { db.links.push({ n, u }); save(); renderAdminAll(); renderHomeLinks(); } }
         function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:15px 30px;" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
@@ -370,7 +368,7 @@
         function uploadDocument() { const n = document.getElementById('doc_name').value; if(!n || !tempFileData) return; db.docs.push({ id: Date.now(), n, s: document.getElementById('doc_start').value, e: document.getElementById('doc_end').value, data: tempFileData }); save(); renderAdminAll(); }
         function addGiornale() { db.giornale.push({ t: new Date().toLocaleString(), a: currentUser.n+" "+currentUser.c, l: document.getElementById('gb_luogo').value, d: document.getElementById('gb_desc').value, r: document.getElementById('gb_risolto').value }); save(); renderGiornale(); }
         function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr><td>${g.t}</td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td><td>${g.r}</td></tr>`).reverse().join(''); }
-        function renderDocsGrid() { const oggi = new Date().toISOString().split('T')[0]; const vis = db.docs.filter(d => (d.s==="" || oggi>=d.s) && (d.e==="" || oggi<=d.e)); document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join(''); }
+        function renderDocsGrid() { const oggi = new Date().toISOString().split('T')[0]; const vis = (db.docs || []).filter(d => (d.s==="" || oggi>=d.s) && (d.e==="" || oggi<=d.e)); document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join(''); }
         function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
         function updateClock() { const now = new Date(); document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT'); document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase(); }
     </script>
