@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.18.2.0 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.18.2.0</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; --warn: #ffcc00; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -26,11 +26,11 @@
         th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
         th { background: #f8f9fa; color: var(--blue); font-size: 0.8rem; text-transform: uppercase; }
 
-        /* Stili Diario e Admin */
+        /* NUOVE CLASSI DIARIO E ADMIN */
         .row-pendente { background-color: #fff9c4 !important; border-left: 5px solid #fbc02d; font-weight: bold; }
         .filter-bar { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; border: 1px solid #ddd; }
-        .btn-admin-action { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.8rem; }
-        .btn-mod { background: #2196f3; color: white; margin-right: 5px; }
+        .btn-admin-action { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.8rem; margin: 0 2px; }
+        .btn-mod { background: #2196f3; color: white; }
         .btn-status { background: #ff9800; color: white; }
 
         /* Dashboard Clocks */
@@ -47,10 +47,8 @@
         .clock-label { font-size: 0.9rem; font-weight: bold; color: var(--blue); margin-bottom: 5px; }
         .weather-box { background: linear-gradient(135deg, #003366 0%, #0055aa 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
-        /* Modale */
         #alert_modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20000; align-items:center; justify-content:center; }
         .modal-content { background:white; padding:30px; border-radius:15px; text-align:center; max-width:400px; border:5px solid var(--red); }
-
         #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; }
         .dropzone { border: 3px dashed #bbb; padding: 30px; text-align: center; background: #fafafa; border-radius: 10px; cursor: pointer; }
@@ -111,7 +109,7 @@
                     </div>
                     <div class="weather-box">
                         <h4 style="margin:0 0 15px 0;">METEO CASTIONE</h4>
-                        <a class="weatherwidget-io" href="https://forecast7.com/it/4611900/arbedo-castione/" data-label_1="CASTIONE" data-theme="pure" >METEO</a>
+                        <a class="weatherwidget-io" href="https://forecast7.com/it/4611900/arbedo-castione/" data-label_1="CASTIONE" data-theme="pure">METEO</a>
                     </div>
                 </div>
                 <div id="home_links" style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin-top:40px;"></div>
@@ -135,7 +133,7 @@
                 </div>
                 <button class="nav-btn" style="background:green; width:100%; margin-top:15px; padding: 15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
                 <div id="counter_box" style="margin-top:20px; padding:15px; background:#e3f2fd; border-radius:8px; display:flex; justify-content: space-around; align-items:center; font-weight:bold;"></div>
-                <table style="margin-top:20px;">
+                <table>
                     <thead><tr><th>Azienda</th><th>Dati</th><th>DPI</th><th>Entrata</th><th>Uscita</th><th>Azione</th></tr></thead>
                     <tbody id="tbody_fornitori"></tbody>
                 </table>
@@ -154,7 +152,7 @@
                 </div>
                 <div class="filter-bar">
                     <button class="nav-btn" style="background:#666;" onclick="renderGiornale('oggi')">OGGI + PENDENTI</button>
-                    <button class="nav-btn" style="background:#666;" onclick="renderGiornale('tutti')">MOSTRA TUTTO</button>
+                    <button class="nav-btn" style="background:#666;" onclick="renderGiornale('tutti')">STORICO COMPLETO</button>
                     <input type="date" id="filter_gb_date" onchange="renderGiornale('data')" style="padding:8px; border-radius:4px; border:1px solid #ccc;">
                     <button class="nav-btn" style="background:var(--red); margin-left:auto;" onclick="generatePDF('giornale')">📄 EXPORT PDF GIORNALE</button>
                 </div>
@@ -167,7 +165,7 @@
 
         <div id="section_checklist" class="container"><div class="card"><h3>Checklist Turni</h3><div id="run_turn_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div><div id="run_checklist_area"></div></div></div>
         <div id="section_badge" class="container"><div class="card"><h3>Badge / Accessi</h3><div id="badge_start_btns" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;"></div><hr><div id="flow_render_area"></div></div></div>
-        <div id="section_docs" class="container"><div class="card"><h3>Documenti</h3><div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div></div></div>
+        <div id="section_docs" class="container"><div class="card"><h3>Documenti Operativi</h3><div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div></div></div>
 
         <div id="section_admin" class="container">
             <div class="card" style="border-left: 10px solid #673ab7;">
@@ -186,11 +184,34 @@
                     <tbody id="tbody_adm_users"></tbody>
                 </table>
             </div>
-            <div class="card" style="border-left: 10px solid #2196f3;"><h3>Workflow Dinamico</h3><button class="nav-btn" onclick="addWorkflowOrg()">+ NUOVA ORG</button><div id="admin_workflow_list"></div></div>
+            
+            <div class="card" style="border-left: 10px solid #2196f3;">
+                <h3>Motore Workflow Dinamico</h3>
+                <button class="nav-btn" onclick="addWorkflowOrg()">+ NUOVA ORG</button>
+                <div id="admin_workflow_list"></div>
+            </div>
+
+            <div class="card" style="border-left: 10px solid green;">
+                <h3>Anagrafica Mezzi Predefiniti</h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="adm_f_azienda" placeholder="Azienda"><input type="text" id="adm_f_targa" placeholder="Targa"><button class="nav-btn" onclick="addPredefinito()">SALVA MEZZO</button>
+                </div>
+                <table><thead><tr><th>Azienda</th><th>Targa</th><th>Elimina</th></tr></thead><tbody id="tbody_adm_predef"></tbody></table>
+            </div>
+
+            <div class="card">
+                <h3>Caricamento Documenti PDF</h3>
+                <div id="drop_zone" class="dropzone">Trascina qui il PDF</div>
+                <input type="file" id="file_input" accept="application/pdf" style="display:none">
+                <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-top:10px;"><input type="text" id="doc_name" placeholder="Titolo"><input type="date" id="doc_start"><input type="date" id="doc_end"></div>
+                <button class="nav-btn" style="background:green; width:100%; margin-top:10px;" onclick="uploadDocument()">PUBBLICA</button>
+                <table><tbody id="tbody_docs_admin"></tbody></table>
+            </div>
         </div>
     </div>
 
     <script>
+        // LOGICA INTEGRALE DB
         let db = JSON.parse(localStorage.getItem('nsif_v18_db')) || {
             users: [{id: 1, n: "Marco", c: "La Morgia", e: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", s: true, d: 365}],
             links: [], checklist: {}, giornale: [], docs: [], fornitori: [], predefiniti: [], workflows: []
@@ -198,6 +219,7 @@
 
         let currentUser = null;
         let editUserId = null;
+        let tempFileData = null;
 
         function save() { localStorage.setItem('nsif_v18_db', JSON.stringify(db)); }
 
@@ -219,7 +241,7 @@
             } else alert("Accesso negato.");
         }
 
-        function initApp() { renderHomeLinks(); renderGiornale(); renderFornitori(); renderBadgeWorkflows(); renderRunTurnBtns(); }
+        function initApp() { renderHomeLinks(); renderGiornale(); renderFornitori(); renderBadgeWorkflows(); renderRunTurnBtns(); setupDragDrop(); }
 
         function showSection(id) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
@@ -228,7 +250,7 @@
             if(id === 'section_giornale') renderGiornale();
         }
 
-        /* --- LOGICA DIARIO DI BORDO --- */
+        /* --- DIARIO DI BORDO AGGIORNATO --- */
         function addGiornale() {
             const entry = {
                 id: Date.now(),
@@ -239,45 +261,4 @@
                 l: document.getElementById('gb_luogo').value,
                 d: document.getElementById('gb_desc').value,
                 r: document.getElementById('gb_risolto').value,
-                chiusura: document.getElementById('gb_risolto').value === 'SI' ? new Date().toLocaleString() : null
-            };
-            db.giornale.push(entry); save(); renderGiornale();
-            ['gb_luogo', 'gb_desc'].forEach(i => document.getElementById(i).value = "");
-        }
-
-        function renderGiornale(filter = 'oggi') {
-            const oggi = new Date().toISOString().split('T')[0];
-            const selDate = document.getElementById('filter_gb_date').value;
-            
-            let filtered = db.giornale.filter(g => {
-                if(filter === 'oggi') return g.iso_date === oggi || g.r === 'NO';
-                if(filter === 'data') return g.iso_date === selDate;
-                return true;
-            });
-
-            document.getElementById('tbody_giornale').innerHTML = filtered.map(g => `
-                <tr class="${g.r === 'NO' ? 'row-pendente' : ''}">
-                    <td>${g.data} ${g.ora}</td><td>${g.a}</td>
-                    <td><b>${g.l}</b>: ${g.d}</td>
-                    <td>${g.r === 'SI' ? `<small>Chiuso il:<br>${g.chiusura}</small>` : 'PENDENTE'}</td>
-                    <td>${g.r === 'NO' ? `<button onclick="chiudiNota(${g.id})">CHIUDI</button>` : '✅'}</td>
-                </tr>`).reverse().join('');
-        }
-
-        function chiudiNota(id) {
-            const n = db.giornale.find(x => x.id === id);
-            if(n) { n.r = 'SI'; n.chiusura = new Date().toLocaleString(); save(); renderGiornale(); }
-        }
-
-        /* --- LOGICA FORNITORI --- */
-        function addFornitore() {
-            const f = {
-                id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
-                azienda: document.getElementById('f_azienda').value, autista: document.getElementById('f_autista').value,
-                targa: document.getElementById('f_targa').value, timeout_min: parseInt(document.getElementById('f_timeout').value),
-                entrata: new Date().toLocaleTimeString('it-IT'), entrata_ts: Date.now(), uscita: null, alert_scattato: false
-            };
-            db.fornitori.push(f); save(); renderFornitori();
-        }
-
-        function renderFornitori()
+                chiusura: document.getElementById('gb_
