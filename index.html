@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.19.6.0</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.19.7.0</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; --warn: #ffcc00; --yellow: #ffff00; --orange: #ff9800; --green: #4caf50; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -42,25 +42,19 @@
         .clock-label { font-size: 0.9rem; font-weight: bold; color: var(--blue); margin-bottom: 5px; }
         .weather-box { background: linear-gradient(135deg, #003366 0%, #0055aa 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-        /* FORNITORI */
-        .row-in-cantiere { background-color: #fff9c4 !important; font-weight: bold; }
-        .freq-btn { background: #e3f2fd; border: 1px solid #90caf9; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: var(--blue); }
-        .time-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-weight: bold; }
-
-        /* BADGE FLOW ENGINE */
+        /* BADGE FLOW DESIGN */
         .flow-card { max-width: 700px; margin: 20px auto; padding: 30px; border: 3px solid var(--blue); border-radius: 20px; background: #fff; text-align: center;}
         .box-scelta { background: var(--yellow); padding: 20px; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; border: 2px solid #ddd; }
         .box-azione { background: var(--orange); color: white; padding: 20px; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; }
         .box-nota { background: #e3f2fd; color: #0d47a1; padding: 15px; border-left: 5px solid #2196f3; margin-bottom: 15px; font-style: italic; }
-        .btn-flow { padding: 20px 50px; font-size: 1.5rem; font-weight: bold; border-radius: 10px; cursor: pointer; border: none; margin: 5px; }
+        .btn-flow { padding: 20px 50px; font-size: 1.5rem; font-weight: bold; border-radius: 10px; cursor: pointer; border: none; margin: 5px; transition: 0.2s; }
         .btn-flow-si { background: var(--green); color: white; }
         .btn-flow-no { background: var(--red); color: white; }
         .btn-flow-next { background: var(--blue); color: white; width: 100%; }
+        .builder-row { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
 
-        /* ADMIN BUILDER */
-        .builder-row { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; }
-        .dropzone { border: 3px dashed #bbb; padding: 30px; text-align: center; background: #fafafa; border-radius: 10px; cursor: pointer; }
-        
+        /* DROPZONE & MODALS */
+        .dropzone { border: 3px dashed #bbb; padding: 30px; text-align: center; background: #fafafa; border-radius: 10px; cursor: pointer; margin-bottom: 10px; }
         #alert_modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20000; align-items:center; justify-content:center; }
         .modal-content { background:white; padding:30px; border-radius:15px; text-align:center; max-width:400px; border:5px solid var(--red); }
         #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
@@ -72,16 +66,16 @@
     <div id="alert_modal">
         <div class="modal-content">
             <h2 style="color:var(--red);">⚠️ ATTENZIONE!</h2>
-            <p id="alert_msg">Il mezzo ha superato la permanenza.</p>
-            <button class="nav-btn" style="background:green;" id="btn_tutto_ok">TUTTO OK</button>
+            <p id="alert_msg"></p>
+            <button class="nav-btn" style="background:green; width:100%;" id="btn_tutto_ok">TUTTO OK</button>
         </div>
     </div>
 
     <div id="page_login">
         <div class="login-box">
             <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" style="width:150px; margin-bottom:20px;">
-            <input type="text" id="log_u" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px;">
-            <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px;">
+            <input type="text" id="log_u" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
+            <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
             <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
         </div>
     </div>
@@ -89,7 +83,7 @@
     <div id="main_ui" style="display:none;">
         <div class="header">
             <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO NSIF">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.19.6</div>
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.19.7.0</div>
         </div>
 
         <div class="nav-bar">
@@ -105,7 +99,7 @@
 
         <div id="section_home" class="container active-page">
             <div class="card" style="text-align:center;">
-                <h1 id="clock_big" style="font-size:6rem; color:var(--blue); margin:0;">00:00:00</h1>
+                <h1 id="clock_big" style="font-size:6rem; color:var(--blue); margin:0; font-weight:800;">00:00:00</h1>
                 <p id="date_long" class="date-xl"></p>
                 <div class="dashboard-grid">
                     <div class="clocks-container">
@@ -114,110 +108,131 @@
                         <div class="clock-analog-box"><div class="clock-label">TOKYO</div><div class="analog-clock" id="clock-tokyo"><div class="clock-center"></div><div class="hand hour-hand"></div><div class="hand min-hand"></div><div class="hand sec-hand"></div></div></div>
                     </div>
                     <div class="weather-box">
-                        <a class="weatherwidget-io" href="https://forecast7.com/it/4611900/arbedo-castione/" data-label_1="CASTIONE" data-theme="pure" >METEO</a>
+                        <h4 style="margin:0 0 10px 0;">METEO CASTIONE</h4>
+                        <a class="weatherwidget-io" href="https://forecast7.com/it/4611900/arbedo-castione/" data-label_1="CASTIONE" data-font="Segoe UI" data-theme="pure" >METEO</a>
                         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');</script>
                     </div>
                 </div>
-                <div id="home_links" style="display:flex; gap:15px; justify-content:center; margin-top:40px;"></div>
+                <div id="home_links" style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin-top:40px;"></div>
             </div>
         </div>
 
         <div id="section_fornitori" class="container">
             <div class="card">
-                <h3>Gestione Fornitori</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px; gap:10px;">
+                <h3>Nuovo Ingresso Fornitore</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px; gap:10px; margin-bottom:10px;">
                     <input type="text" id="f_azienda" placeholder="Azienda"><input type="text" id="f_autista" placeholder="Autista">
-                    <input type="text" id="f_targa" placeholder="Targa"><input type="number" id="f_timeout" value="15">
+                    <input type="text" id="f_targa" placeholder="Targa"><input type="number" id="f_timeout" value="15" title="Minuti">
                 </div>
-                <div id="freq_area" style="margin:10px 0;"></div>
-                <button class="nav-btn" style="background:green; width:100%; margin:10px 0;" onclick="addFornitore()">REGISTRA ENTRATA</button>
-                <table><thead><tr><th>Azienda</th><th>Targa</th><th>Entrata</th><th>Uscita</th><th>Azione</th></tr></thead><tbody id="tbody_fornitori"></tbody></table>
+                <div id="freq_area" style="margin-bottom:15px; display:flex; gap:5px; flex-wrap:wrap;"></div>
+                <button class="nav-btn" style="background:green; width:100%; padding:15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
+                <table>
+                    <thead><tr><th>Azienda</th><th>Targa</th><th>Entrata</th><th>Uscita</th><th>Azione</th></tr></thead>
+                    <tbody id="tbody_fornitori"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="section_badge" class="container">
             <div class="card">
-                <h2 style="text-align:center;">Badge / Accessi - Seleziona Protocollo</h2>
-                <div id="badge_org_selector" style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;"></div>
+                <h2 style="text-align:center; color:var(--blue);">PROTOCOLLI BADGE E ACCESSI</h2>
+                <div id="badge_org_selector" style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin:30px 0;"></div>
+                
                 <div id="badge_flow_engine" style="display:none;">
                     <div class="flow-card">
-                        <h3 id="current_org_name" style="color:var(--red);"></h3>
+                        <h3 id="current_org_name" style="text-align:center; color:var(--red);"></h3>
                         <div id="step_render_area"></div>
-                        <button class="nav-btn" style="margin-top:20px; background:#666;" onclick="resetBadgeFlow()">INDIETRO</button>
+                        <div style="text-align:center; margin-top:30px;">
+                            <button class="nav-btn" style="background:#666;" onclick="resetBadgeFlow()">ANNULLA PROTOCOLLO</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="section_checklist" class="container">
-            <div class="card"><h3>Checklist Turno</h3><div id="run_turn_btns"></div><div id="run_checklist_area"></div></div>
+            <div class="card">
+                <h3>Checklist Operativa Turno</h3>
+                <div id="run_turn_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div>
+                <div id="run_checklist_area"></div>
+            </div>
         </div>
 
         <div id="section_giornale" class="container">
             <div class="card">
                 <h3>Giornale di Bordo</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div style="display:grid; grid-template-columns: 1fr 2fr 100px; gap:10px; margin-bottom:15px;">
                     <input type="text" id="gb_luogo" placeholder="Luogo"><input type="text" id="gb_desc" placeholder="Descrizione">
-                    <button class="nav-btn" onclick="addGiornale()">REGISTRA</button>
+                    <button class="nav-btn" style="background:green;" onclick="addGiornale()">REGISTRA</button>
                 </div>
-                <table><thead><tr><th>Ora</th><th>Agente</th><th>Dettagli</th></tr></thead><tbody id="tbody_giornale"></tbody></table>
+                <table>
+                    <thead><tr><th>Data/Ora</th><th>Agente</th><th>Luogo</th><th>Descrizione</th></tr></thead>
+                    <tbody id="tbody_giornale"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="section_docs" class="container">
-            <div class="card"><h3>Documenti Operativi</h3><div id="docs_grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px;"></div></div>
+            <div class="card">
+                <h3>Documenti Operativi PDF</h3>
+                <div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:20px;"></div>
+            </div>
         </div>
 
         <div id="section_admin" class="container">
             <div class="card" style="border-left: 10px solid var(--red);">
-                <h3>CONFIGURATORE FLUSSI BADGE</h3>
+                <h3>1. CONFIGURATORE WORKFLOW BADGE</h3>
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <input type="text" id="new_org_name" placeholder="Nome Organizzazione" style="flex-grow:1;">
-                    <button class="nav-btn" onclick="createOrganization()">CREA</button>
+                    <input type="text" id="new_org_name" placeholder="Nuova Organizzazione (es. Ditte Esterne)" style="flex-grow:1; padding:10px;">
+                    <button class="nav-btn" style="background:var(--red);" onclick="createOrganization()">CREA</button>
                 </div>
-                <div id="flow_builder_area" style="display:none; background:#f0f4f8; padding:20px; border-radius:10px; margin-bottom:20px;">
+                <div id="flow_builder_area" style="display:none; background:#f0f4f8; padding:20px; border-radius:10px; margin-bottom:20px; border:2px solid var(--blue);">
                     <h4 id="builder_title"></h4>
-                    <div style="display:flex; gap:5px; margin-bottom:15px;">
-                        <button onclick="addNode('scelta')">+ SCELTA</button><button onclick="addNode('azione')">+ AZIONE</button>
-                        <button onclick="addNode('nota')">+ NOTA</button><button onclick="addNode('fine')">+ FINE</button>
+                    <div style="display:flex; gap:5px; margin-bottom:15px; flex-wrap:wrap;">
+                        <button class="nav-btn" style="background:var(--yellow); color:black;" onclick="addNode('scelta')">+ SCELTA (SÌ/NO)</button>
+                        <button class="nav-btn" style="background:var(--orange);" onclick="addNode('azione')">+ AZIONE</button>
+                        <button class="nav-btn" style="background:#2196f3;" onclick="addNode('nota')">+ NOTA</button>
+                        <button class="nav-btn" style="background:#000;" onclick="addNode('fine')">+ FINE FLUSSO</button>
                     </div>
                     <div id="nodes_container"></div>
-                    <button class="nav-btn" onclick="document.getElementById('flow_builder_area').style.display='none'">CHIUDI EDITOR</button>
+                    <button class="nav-btn" style="background:#666; width:100%;" onclick="document.getElementById('flow_builder_area').style.display='none'">CHIUDI E SALVA</button>
                 </div>
-                <table><thead><tr><th>Org</th><th>Nodi</th><th>Azione</th></tr></thead><tbody id="tbody_org_list"></tbody></table>
+                <table><thead><tr><th>Org</th><th>Step Totali</th><th>Azioni</th></tr></thead><tbody id="tbody_org_list"></tbody></table>
             </div>
 
             <div class="card" style="border-left: 10px solid #673ab7;">
-                <h3>Account Utenti</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                <h3>2. GESTIONE ACCOUNT UTENTI</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
                     <input type="text" id="adm_u_e" placeholder="Email"><input type="password" id="adm_u_p" placeholder="Password">
-                    <button class="nav-btn" onclick="addUser()">AGGIUNGI UTENTE</button>
+                    <select id="adm_u_l"><option value="user">User</option><option value="admin">Admin</option></select>
                 </div>
-                <table><thead><tr><th>Email</th><th>Livello</th><th>Azioni</th></tr></thead><tbody id="tbody_adm_users"></tbody></table>
+                <button class="nav-btn" style="background:#673ab7; width:100%;" onclick="addUser()">CREA UTENTE</button>
+                <table><thead><tr><th>User</th><th>Livello</th><th>Azioni</th></tr></thead><tbody id="tbody_adm_users"></tbody></table>
             </div>
 
-            <div class="card" style="border-left: 10px solid green;">
-                <h3>Mezzi Predefiniti</h3>
-                <div style="display:flex; gap:10px;"><input type="text" id="adm_f_a" placeholder="Ditta"><input type="text" id="adm_f_t" placeholder="Targa"><button onclick="addPredefinito()">SALVA</button></div>
-                <tbody id="tbody_adm_predef"></tbody>
+            <div class="card" style="border-left: 10px solid var(--green);">
+                <h3>3. MEZZI FREQUENTI</h3>
+                <div style="display:flex; gap:10px;"><input type="text" id="adm_f_a" placeholder="Ditta"><input type="text" id="adm_f_t" placeholder="Targa"><button class="nav-btn" onclick="addPredefinito()">AGGIUNGI</button></div>
+                <table><thead><tr><th>Ditta</th><th>Targa</th><th>X</th></tr></thead><tbody id="tbody_adm_predef"></tbody></table>
             </div>
 
-            <div class="card">
-                <h3>Caricamento PDF</h3>
-                <div id="drop_zone" class="dropzone">Trascina PDF qui</div>
-                <input type="file" id="file_input" style="display:none">
-                <input type="text" id="doc_name" placeholder="Nome documento" style="width:100%; margin-top:10px;">
-                <button class="nav-btn" style="width:100%; margin-top:10px; background:green;" onclick="uploadDocument()">PUBBLICA</button>
+            <div class="card" style="border-left: 10px solid var(--blue);">
+                <h3>4. CARICAMENTO DOCUMENTI PDF</h3>
+                <div id="drop_zone" class="dropzone">Trascina qui il file PDF o Clicca per selezionare</div>
+                <input type="file" id="file_input" style="display:none" accept="application/pdf">
+                <input type="text" id="doc_name" placeholder="Titolo Documento" style="width:100%; padding:10px; margin:10px 0;">
+                <button class="nav-btn" style="width:100%; background:green;" onclick="uploadDocument()">PUBBLICA DOCUMENTO</button>
             </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('nsif_v196_db')) || {
+        // DATABASE PERSISTENTE
+        let db = JSON.parse(localStorage.getItem('nsif_v197_db')) || {
             users: [{id: 1, e: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", s: true, n: "Marco"}],
             links: [], checklist: {}, giornale: [], docs: [], fornitori: [], predefiniti: [], organizations: []
         };
-        function save() { localStorage.setItem('nsif_v196_db', JSON.stringify(db)); }
+        function save() { localStorage.setItem('nsif_v197_db', JSON.stringify(db)); }
         
         let currentUser = null;
         let activeBuilderOrgId = null;
@@ -235,21 +250,23 @@
                 document.getElementById('main_ui').style.display='block';
                 if(user.l==='admin') document.getElementById('nav_admin').style.display='block';
                 initApp();
-            } else alert("Dati errati");
+            } else alert("Dati errati o account non esistente.");
         }
 
         function initApp() {
             updateClock(); setInterval(updateClock, 1000);
-            renderFornitori(); renderOrgList(); renderDocsGrid(); setupDragDrop();
+            renderFornitori(); renderOrgList(); renderDocsGrid(); setupDragDrop(); renderPredefiniti(); renderGiornale();
+            setInterval(checkFornitoriTimeouts, 30000);
         }
 
         function showSection(id) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
             if(id === 'section_badge') renderBadgeOrgs();
+            if(id === 'section_admin') renderAdminData();
         }
 
-        // --- CLOCKS ---
+        // --- DASHBOARD OROLOGI ---
         function updateClock() {
             const now = new Date();
             document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
@@ -267,7 +284,44 @@
             el.querySelector('.hour-hand').style.transform = `translateX(-50%) rotate(${(h/12)*360 + (m/60)*30}deg)`;
         }
 
-        // --- BADGE WORKFLOW ---
+        // --- GESTIONE FORNITORI & TIMEOUT ---
+        function addFornitore() {
+            const az = document.getElementById('f_azienda').value;
+            const tg = document.getElementById('f_targa').value;
+            if(!az || !tg) return alert("Inserisci Azienda e Targa!");
+            db.fornitori.push({
+                id: Date.now(), a: az, aut: document.getElementById('f_autista').value, t: tg,
+                e: new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}),
+                u: null, data: new Date().toLocaleDateString('it-IT'), ts: Date.now(), 
+                to: parseInt(document.getElementById('f_timeout').value), alert: false
+            });
+            save(); renderFornitori();
+            document.getElementById('f_azienda').value=""; document.getElementById('f_targa').value="";
+        }
+        function renderFornitori() {
+            const oggi = new Date().toLocaleDateString('it-IT');
+            document.getElementById('tbody_fornitori').innerHTML = db.fornitori.filter(x=>x.data===oggi).map(f => `
+                <tr class="${!f.u?'row-in-cantiere':''}">
+                    <td><b>${f.a}</b><br><small>${f.aut}</small></td><td>${f.t}</td>
+                    <td><span class="time-badge">${f.e}</span></td><td><span class="time-badge">${f.u||'--:--'}</span></td>
+                    <td>${!f.u?`<button onclick="exitFornitore(${f.id})">USCITA</button>`:'OK'}</td>
+                </tr>`).reverse().join('');
+        }
+        function exitFornitore(id) { db.fornitori.find(x=>x.id===id).u = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}); save(); renderFornitori(); }
+        
+        function checkFornitoriTimeouts() {
+            const now = Date.now();
+            db.fornitori.forEach(f => {
+                if(!f.u && !f.alert && ((now - f.ts)/60000) > f.to) {
+                    f.alert = true;
+                    document.getElementById('alert_msg').innerText = `Il mezzo ${f.t} (${f.a}) ha superato i ${f.to} min di sosta!`;
+                    document.getElementById('alert_modal').style.display='flex';
+                    document.getElementById('btn_tutto_ok').onclick = () => { f.ts = Date.now(); f.alert = false; document.getElementById('alert_modal').style.display='none'; save(); };
+                }
+            });
+        }
+
+        // --- WORKFLOW BADGE (INTEGRAZIONE) ---
         function createOrganization() {
             const n = document.getElementById('new_org_name').value;
             if(!n) return;
@@ -276,15 +330,15 @@
         }
         function renderOrgList() {
             document.getElementById('tbody_org_list').innerHTML = db.organizations.map(org => `
-                <tr><td>${org.name}</td><td>${org.nodes.length} step</td>
-                <td><button onclick="openBuilder(${org.id})">EDIT</button> <button onclick="deleteOrg(${org.id})">X</button></td></tr>`).join('');
+                <tr><td><b>${org.name}</b></td><td>${org.nodes.length} step</td>
+                <td><button onclick="openBuilder(${org.id})">CONFIGURA</button> <button onclick="deleteOrg(${org.id})">X</button></td></tr>`).join('');
         }
-        function deleteOrg(id) { db.organizations = db.organizations.filter(x=>x.id!==id); save(); renderOrgList(); }
+        function deleteOrg(id) { if(confirm("Eliminare?")) { db.organizations = db.organizations.filter(x=>x.id!==id); save(); renderOrgList(); } }
         
         function openBuilder(id) {
             activeBuilderOrgId = id;
             const org = db.organizations.find(x=>x.id===id);
-            document.getElementById('builder_title').innerText = "Editor: " + org.name;
+            document.getElementById('builder_title').innerText = "Workflow: " + org.name;
             document.getElementById('flow_builder_area').style.display='block';
             renderNodes();
         }
@@ -297,19 +351,22 @@
             const org = db.organizations.find(x=>x.id===activeBuilderOrgId);
             document.getElementById('nodes_container').innerHTML = org.nodes.map((n, i) => `
                 <div class="builder-row">
-                    <b>#${i} [${n.type.toUpperCase()}]</b>
-                    <input type="text" value="${n.text}" onchange="db.organizations.find(x=>x.id===${activeBuilderOrgId}).nodes[${i}].text=this.value;save()" style="width:60%;">
-                    ${n.type==='scelta' ? `SÌ->#<input type="number" value="${n.nextSi}" onchange="db.organizations.find(x=>x.id===${activeBuilderOrgId}).nodes[${i}].nextSi=parseInt(this.value);save()" style="width:40px;"> NO->#<input type="number" value="${n.nextNo}" onchange="db.organizations.find(x=>x.id===${activeBuilderOrgId}).nodes[${i}].nextNo=parseInt(this.value);save()" style="width:40px;">` : 
-                    n.type!=='fine' ? `Next->#<input type="number" value="${n.nextStep}" onchange="db.organizations.find(x=>x.id===${activeBuilderOrgId}).nodes[${i}].nextStep=parseInt(this.value);save()" style="width:40px;">` : ''}
-                    <button onclick="db.organizations.find(x=>x.id===${activeBuilderOrgId}).nodes.splice(${i},1);save();renderNodes()">X</button>
+                    <b>#${i}</b> <span style="font-size:0.7rem; background:#ddd; padding:2px;">${n.type.toUpperCase()}</span>
+                    <input type="text" value="${n.text}" onchange="updateNodeVal(${i}, 'text', this.value)" style="flex-grow:1;" placeholder="Testo domanda/azione">
+                    ${n.type==='scelta' ? `SI->#<input type="number" value="${n.nextSi}" onchange="updateNodeVal(${i}, 'nextSi', this.value)" style="width:40px;"> NO->#<input type="number" value="${n.nextNo}" onchange="updateNodeVal(${i}, 'nextNo', this.value)" style="width:40px;">` : 
+                    n.type!=='fine' ? `Next->#<input type="number" value="${n.nextStep}" onchange="updateNodeVal(${i}, 'nextStep', this.value)" style="width:40px;">` : ''}
+                    <button onclick="removeNode(${i})" style="color:red;">X</button>
                 </div>`).join('');
         }
+        function updateNodeVal(idx, key, val) { db.organizations.find(x=>x.id===activeBuilderOrgId).nodes[idx][key] = (key==='text')?val:parseInt(val); save(); }
+        function removeNode(idx) { db.organizations.find(x=>x.id===activeBuilderOrgId).nodes.splice(idx,1); save(); renderNodes(); }
 
         function renderBadgeOrgs() {
-            document.getElementById('badge_org_selector').innerHTML = db.organizations.map(org => `<button class="nav-btn" style="padding:20px;" onclick="startBadgeFlow(${org.id})">${org.name}</button>`).join('');
+            document.getElementById('badge_org_selector').innerHTML = db.organizations.map(org => `<button class="nav-btn" style="padding:25px; font-size:1.1rem;" onclick="startBadgeFlow(${org.id})">${org.name.toUpperCase()}</button>`).join('');
         }
         function startBadgeFlow(id) {
             activeBadgeOrg = db.organizations.find(x=>x.id===id);
+            if(!activeBadgeOrg.nodes.length) return alert("Protocollo non configurato!");
             currentBadgeNodeIndex = 0;
             document.getElementById('badge_org_selector').style.display='none';
             document.getElementById('badge_flow_engine').style.display='block';
@@ -320,55 +377,68 @@
             const node = activeBadgeOrg.nodes[currentBadgeNodeIndex];
             const area = document.getElementById('step_render_area');
             if(node.type==='scelta') area.innerHTML = `<div class="box-scelta">${node.text}</div><button class="btn-flow btn-flow-si" onclick="nextBadgeStep('si')">SÌ</button><button class="btn-flow btn-flow-no" onclick="nextBadgeStep('no')">NO</button>`;
-            else if(node.type==='azione') area.innerHTML = `<div class="box-azione">${node.text}</div><button class="btn-flow btn-flow-next" onclick="nextBadgeStep('next')">CONFERMA E AVANTI</button>`;
-            else if(node.type==='nota') area.innerHTML = `<div class="box-nota">${node.text}</div><button class="btn-flow btn-flow-next" onclick="nextBadgeStep('next')">LETTO, AVANTI</button>`;
-            else area.innerHTML = `<div class="box-azione" style="background:green;">${node.text || 'FINE'}</div><button onclick="resetBadgeFlow()">CHIUDI</button>`;
+            else if(node.type==='azione') area.innerHTML = `<div class="box-azione">${node.text}</div><button class="btn-flow btn-flow-next" onclick="nextBadgeStep('next')">ESEGUITO / AVANTI</button>`;
+            else if(node.type==='nota') area.innerHTML = `<div class="box-nota">${node.text}</div><button class="btn-flow btn-flow-next" onclick="nextBadgeStep('next')">OK, AVANTI</button>`;
+            else area.innerHTML = `<div class="box-azione" style="background:green;">${node.text || 'PROCEDURA TERMINATA'}</div><button class="nav-btn" style="width:100%;" onclick="resetBadgeFlow()">FINE</button>`;
         }
         function nextBadgeStep(c) {
             const node = activeBadgeOrg.nodes[currentBadgeNodeIndex];
             let next = (c==='si')?node.nextSi : (c==='no')?node.nextNo : node.nextStep;
             if(next!==null && activeBadgeOrg.nodes[next]) { currentBadgeNodeIndex=next; renderBadgeStep(); }
-            else if(node.type!=='fine') alert("Errore flusso");
+            else if(node.type!=='fine') alert("Errore di configurazione flusso.");
         }
         function resetBadgeFlow() { document.getElementById('badge_org_selector').style.display='flex'; document.getElementById('badge_flow_engine').style.display='none'; }
-
-        // --- FORNITORI ---
-        function addFornitore() {
-            const f = { id:Date.now(), a:document.getElementById('f_azienda').value, t:document.getElementById('f_targa.').value, e:new Date().toLocaleTimeString(), u:null, data:new Date().toLocaleDateString(), ts:Date.now(), to:parseInt(document.getElementById('f_timeout').value), alert:false };
-            db.fornitori.push(f); save(); renderFornitori();
-        }
-        function renderFornitori() {
-            const oggi = new Date().toLocaleDateString();
-            document.getElementById('tbody_fornitori').innerHTML = db.fornitori.filter(x=>x.data===oggi).map(f => `
-                <tr class="${!f.u?'row-in-cantiere':''}"><td>${f.a}</td><td>${f.t}</td><td>${f.e}</td><td>${f.u||'--'}</td><td>${!f.u?`<button onclick="f_out(${f.id})">USCITA</button>`:'OK'}</td></tr>`).join('');
-        }
-        function f_out(id) { db.fornitori.find(x=>x.id===id).u = new Date().toLocaleTimeString(); save(); renderFornitori(); }
 
         // --- PDF GESTIONE ---
         function setupDragDrop() {
             const z = document.getElementById('drop_zone');
             z.onclick = () => document.getElementById('file_input').click();
-            z.ondragover = e => e.preventDefault();
-            z.ondrop = e => { e.preventDefault(); processFile(e.dataTransfer.files[0]); };
+            z.ondragover = e => { e.preventDefault(); z.style.borderColor = 'var(--red)'; };
+            z.ondragleave = () => z.style.borderColor = '#bbb';
+            z.ondrop = e => { e.preventDefault(); z.style.borderColor = '#bbb'; processFile(e.dataTransfer.files[0]); };
             document.getElementById('file_input').onchange = e => processFile(e.target.files[0]);
         }
         function processFile(f) {
+            if(!f || f.type !== "application/pdf") return alert("Solo file PDF!");
             const reader = new FileReader();
-            reader.onload = e => { tempFileData = e.target.result; document.getElementById('drop_zone').innerText = "Caricato: " + f.name; };
+            reader.onload = e => { tempFileData = e.target.result; document.getElementById('drop_zone').innerText = "PDF Caricato correttamente: " + f.name; };
             reader.readAsDataURL(f);
         }
         function uploadDocument() {
-            db.docs.push({ id:Date.now(), n:document.getElementById('doc_name').value, data:tempFileData });
-            save(); renderDocsGrid(); document.getElementById('doc_name').value="";
+            const name = document.getElementById('doc_name').value;
+            if(!tempFileData || !name) return alert("Manca file o titolo!");
+            db.docs.push({ id:Date.now(), n:name, data:tempFileData, date:new Date().toLocaleDateString() });
+            save(); renderDocsGrid(); document.getElementById('doc_name').value=""; document.getElementById('drop_zone').innerText="Trascina qui il file PDF..."; tempFileData=null;
         }
         function renderDocsGrid() {
-            document.getElementById('docs_grid').innerHTML = db.docs.map(d => `<div class="card" style="text-align:center;">${d.n}<br><button onclick="window.open().document.write('<iframe src=\\\'${d.data}\\\' width=\\\'100%\\\' height=\\\'100%\\\'></iframe>')">APRI</button></div>`).join('');
+            document.getElementById('docs_grid').innerHTML = db.docs.map(d => `
+                <div class="card" style="text-align:center;">
+                    <h4 style="margin:0 0 10px 0;">${d.n}</h4>
+                    <button class="nav-btn" onclick="openPdf('${d.id}')">APRI PDF</button>
+                    <button onclick="deleteDoc(${d.id})" style="margin-top:10px; font-size:0.7rem; color:red; border:none; background:none; cursor:pointer;">ELIMINA</button>
+                </div>`).join('');
         }
+        function openPdf(id) { const d=db.docs.find(x=>x.id==id); const win=window.open(); win.document.write(`<iframe src="${d.data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`); }
+        function deleteDoc(id) { if(confirm("Eliminare documento?")) { db.docs=db.docs.filter(x=>x.id!=id); save(); renderDocsGrid(); } }
 
-        // UTILS
-        function addGiornale() { db.giornale.push({ t:new Date().toLocaleTimeString(), a:currentUser.n, l:document.getElementById('gb_luogo').value, d:document.getElementById('gb_desc').value }); save(); renderGiornale(); }
-        function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g=>`<tr><td>${g.t}</td><td>${g.a}</td><td>${g.l} - ${g.d}</td></tr>`).reverse().join(''); }
-        function addUser() { db.users.push({ id:Date.now(), e:document.getElementById('adm_u_e').value, p:document.getElementById('adm_u_p').value, l:'user', s:true }); save(); }
+        // --- ALTRE FUNZIONI ---
+        function addGiornale() { 
+            db.giornale.push({ t:new Date().toLocaleString('it-IT'), a:currentUser.n, l:document.getElementById('gb_luogo').value, d:document.getElementById('gb_desc').value }); 
+            save(); renderGiornale(); document.getElementById('gb_luogo').value=""; document.getElementById('gb_desc').value="";
+        }
+        function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g=>`<tr><td><small>${g.t}</small></td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td></tr>`).reverse().join(''); }
+        
+        function renderAdminData() {
+            document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `<tr><td>${u.e}</td><td>${u.l}</td><td><button onclick="deleteUser(${u.id})">X</button></td></tr>`).join('');
+            renderPredefiniti();
+            renderOrgList();
+        }
+        function addUser() { db.users.push({ id:Date.now(), e:document.getElementById('adm_u_e').value, p:document.getElementById('adm_u_p').value, l:document.getElementById('adm_u_l').value, s:true, n:"Agente" }); save(); renderAdminData(); }
+        function addPredefinito() { db.predefiniti.push({ a:document.getElementById('adm_f_a').value, t:document.getElementById('adm_f_t').value }); save(); renderAdminData(); }
+        function renderPredefiniti() {
+            document.getElementById('tbody_adm_predef').innerHTML = db.predefiniti.map((p,i)=>`<tr><td>${p.a}</td><td>${p.t}</td><td><button onclick="db.predefiniti.splice(${i},1);save();renderAdminData()">X</button></td></tr>`).join('');
+            document.getElementById('freq_area').innerHTML = db.predefiniti.map(p=>`<button class="nav-btn" style="background:#fff; color:var(--blue); border:1px solid var(--blue); font-size:0.7rem;" onclick="document.getElementById('f_azienda').value='${p.a}';document.getElementById('f_targa').value='${p.t}'">${p.a} (${p.t})</button>`).join('');
+        }
     </script>
 </body>
 </html>
