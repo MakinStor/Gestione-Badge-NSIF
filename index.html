@@ -56,6 +56,9 @@
         .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; }
         .dropzone { border: 3px dashed #bbb; padding: 30px; text-align: center; background: #fafafa; border-radius: 10px; cursor: pointer; }
         .status-off { color: #ccc; text-decoration: line-through; }
+
+        /* Workflow styles */
+        .wf-node-admin { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 8px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -176,8 +179,20 @@
         </div>
 
         <div id="section_checklist" class="container"><div class="card"><h3>Checklist Turni</h3><div id="run_turn_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div><div id="run_checklist_area"></div></div></div>
-        <div id="section_badge" class="container"><div class="card"><h3>Badge / Accessi</h3><div id="badge_start_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div><div id="flow_render_area"></div></div></div>
+        
+        <div id="section_badge" class="container">
+            <div class="card">
+                <h3>Badge / Accessi - Workflow Operativi</h3>
+                <div id="badge_start_btns" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;"></div>
+                <hr>
+                <div id="flow_render_area">
+                    <p style="color:var(--grey); text-align:center;">Seleziona un'organizzazione per avviare la procedura guidata.</p>
+                </div>
+            </div>
+        </div>
+
         <div id="section_giornale" class="container"><div class="card"><h3>Diario di Bordo</h3><div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px 150px; gap:10px;"><input type="text" id="gb_luogo" placeholder="Luogo"><input type="text" id="gb_desc" placeholder="Descrizione"><input type="text" id="gb_misure" placeholder="Misure"><select id="gb_risolto"><option value="SI">SI</option><option value="NO">NO</option></select><button class="nav-btn" style="background:green;" onclick="addGiornale()">REGISTRA</button></div><table><thead><tr><th>Data</th><th>Agente</th><th>Dettagli</th><th>Stato</th></tr></thead><tbody id="tbody_giornale"></tbody></table></div></div>
+        
         <div id="section_docs" class="container"><div class="card"><h3>Documenti Operativi</h3><div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div></div></div>
 
         <div id="section_admin" class="container">
@@ -200,6 +215,12 @@
                     <thead><tr><th>Utente</th><th>Livello</th><th>Scadenza</th><th>Stato</th><th>Azioni</th></tr></thead>
                     <tbody id="tbody_adm_users"></tbody>
                 </table>
+            </div>
+
+            <div class="card" style="border-left: 10px solid #2196f3;">
+                <h3>Motore Workflow Dinamico (Badge/Accessi)</h3>
+                <button class="nav-btn" onclick="addWorkflowOrg()" style="background:#2196f3; margin-bottom:15px;">+ CREA NUOVA ORGANIZZAZIONE</button>
+                <div id="admin_workflow_list"></div>
             </div>
 
             <div class="card" style="border-left: 10px solid green;">
@@ -242,10 +263,10 @@
         let db = JSON.parse(localStorage.getItem('nsif_v18_db')) || {
             users: [{id: 1, n: "Marco", c: "La Morgia", e: "marco.lamorgia@securitas.ch", p: "1234", l: "admin", s: true, d: 365}],
             links: [{n: "GESTIONE ACCESSI", u: "https://app.bausicht.com/site/cmfciguey0me7vv19a6aj915n/dashboard"}],
-            checklist: {}, giornale: [], docs: [], fornitori: [], predefiniti: []
+            checklist: {}, giornale: [], docs: [], fornitori: [], predefiniti: [],
+            workflows: [] // Nuova implementazione
         };
 
-        // FORCE LOGIN ADMIN
         const masterUser = db.users.find(x => x.e === "marco.lamorgia@securitas.ch");
         if(masterUser) { masterUser.s = true; masterUser.l = "admin"; }
         
@@ -286,6 +307,7 @@
             document.getElementById(id).classList.add('active-page');
             if(id === 'section_admin') renderAdminAll();
             if(id === 'section_docs') renderDocsGrid();
+            if(id === 'section_badge') renderBadgeWorkflows();
         }
 
         // --- DASHBOARD CLOCKS ---
@@ -293,74 +315,28 @@
             const now = new Date();
             document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
             document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
-            
-            // Analogici
-            updateAnalogClock('clock-london', 0); // UTC
-            updateAnalogClock('clock-ny', -5);    // New York
-            updateAnalogClock('clock-tokyo', 9);   // Tokyo
+            updateAnalogClock('clock-london', 0);
+            updateAnalogClock('clock-ny', -5);
+            updateAnalogClock('clock-tokyo', 9);
         }
 
         function updateAnalogClock(id, offset) {
             const now = new Date();
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
             const date = new Date(utc + (3600000 * offset));
-            
             const seconds = date.getSeconds();
             const minutes = date.getMinutes();
             const hours = date.getHours();
-
             const sDeg = (seconds / 60) * 360;
             const mDeg = (minutes / 60) * 360 + (seconds / 60) * 6;
             const hDeg = (hours / 12) * 360 + (minutes / 60) * 30;
-
             const clockEl = document.getElementById(id);
             clockEl.querySelector('.sec-hand').style.transform = `translateX(-50%) rotate(${sDeg}deg)`;
             clockEl.querySelector('.min-hand').style.transform = `translateX(-50%) rotate(${mDeg}deg)`;
             clockEl.querySelector('.hour-hand').style.transform = `translateX(-50%) rotate(${hDeg}deg)`;
         }
 
-        // ACCOUNT MANAGEMENT
-        function addUser() {
-            const newUser = {
-                id: editUserId || Date.now(),
-                n: document.getElementById('adm_u_nome').value,
-                c: document.getElementById('adm_u_cognome').value,
-                e: document.getElementById('adm_u_email').value,
-                p: document.getElementById('adm_u_pass').value,
-                d: document.getElementById('adm_u_durata').value,
-                l: document.getElementById('adm_u_lvl').value,
-                s: true
-            };
-            if(!newUser.e || !newUser.p) return alert("Email e Password obbligatorie");
-            if(editUserId) {
-                const idx = db.users.findIndex(x => x.id === editUserId);
-                db.users[idx] = newUser;
-                editUserId = null;
-                document.getElementById('btn_save_user').innerText = "CREA ACCOUNT";
-            } else { db.users.push(newUser); }
-            save(); renderAdminAll();
-            ['adm_u_nome','adm_u_cognome','adm_u_email','adm_u_pass'].forEach(id => document.getElementById(id).value = "");
-        }
-
-        function editUser(id) {
-            const u = db.users.find(x => x.id === id);
-            document.getElementById('adm_u_nome').value = u.n;
-            document.getElementById('adm_u_cognome').value = u.c;
-            document.getElementById('adm_u_email').value = u.e;
-            document.getElementById('adm_u_pass').value = u.p;
-            document.getElementById('adm_u_durata').value = u.d;
-            document.getElementById('adm_u_lvl').value = u.l;
-            editUserId = id;
-            document.getElementById('btn_save_user').innerText = "SALVA MODIFICHE";
-        }
-
-        function toggleUser(id) {
-            const u = db.users.find(x => x.id === id);
-            if(u.e === currentUser.e) return alert("Non puoi disattivare te stesso!");
-            u.s = !u.s; save(); renderAdminAll();
-        }
-
-        // FORNITORI
+        // --- FORNITORI ---
         function addFornitore() {
             const entry = {
                 id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
@@ -375,13 +351,6 @@
             document.getElementById('f_azienda').value = ""; document.getElementById('f_autista').value = ""; document.getElementById('f_targa').value = "";
         }
 
-        function recallFornitore(az, aut, tar, c, g, isPredef) {
-            document.getElementById('f_azienda').value = az; document.getElementById('f_targa').value = tar;
-            document.getElementById('f_casco').checked = c; document.getElementById('f_gilet').checked = g;
-            if(isPredef) { document.getElementById('f_autista').value = ""; document.getElementById('f_autista').focus(); }
-            else { document.getElementById('f_autista').value = aut; addFornitore(); }
-        }
-
         function renderFornitori() {
             const oggi = new Date().toLocaleDateString('it-IT');
             const listaOggi = (db.fornitori || []).filter(f => f.data === oggi);
@@ -393,17 +362,11 @@
                     <td><span class="time-badge" style="background:#ffebee">${f.uscita || '--:--'}</span></td>
                     <td>${f.uscita ? 'OK' : `<button onclick="registraUscita(${f.id})">USCITA</button>`}</td>
                 </tr>`).reverse().join('');
+            
             const freqArea = document.getElementById('freq_area'); freqArea.innerHTML = "";
             (db.predefiniti || []).forEach(p => {
                 const b = document.createElement('button'); b.className = "freq-btn freq-btn-predef"; b.innerText = `${p.t} - ${p.a}`;
                 b.onclick = () => recallFornitore(p.a, "", p.t, true, true, true); freqArea.appendChild(b);
-            });
-            const unique = [];
-            listaOggi.forEach(f => {
-                if(!unique.includes(f.targa) && !(db.predefiniti || []).some(p => p.t === f.targa)) {
-                    unique.push(f.targa); const b = document.createElement('button'); b.className = "freq-btn"; b.innerText = `${f.targa} - ${f.azienda}`;
-                    b.onclick = () => recallFornitore(f.azienda, f.autista, f.targa, f.casco, f.gilet, false); freqArea.appendChild(b);
-                }
             });
             const inC = listaOggi.filter(x => !x.uscita).length;
             document.getElementById('counter_box').innerHTML = `<span>TRANSITI: ${listaOggi.length}</span> <span style="color:red">IN CANTIERE: ${inC}</span> <span style="color:green">USCITI: ${listaOggi.length - inC}</span>`;
@@ -427,27 +390,7 @@
             });
         }
 
-        // ADMIN RENDER
-        function renderAdminAll() {
-            document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `
-                <tr class="${!u.s ? 'status-off' : ''}">
-                    <td>${u.n} ${u.c}<br><small>${u.e}</small></td>
-                    <td>${u.l.toUpperCase()}</td><td>${u.d} gg</td>
-                    <td>${u.s ? 'ATTIVO' : 'OFF'}</td>
-                    <td>
-                        <button onclick="editUser(${u.id})">MOD</button>
-                        <button onclick="toggleUser(${u.id})">${u.s ? 'OFF' : 'ON'}</button>
-                        <button onclick="if(confirm('Eliminare?')){db.users=db.users.filter(x=>x.id!=${u.id});save();renderAdminAll();}">X</button>
-                    </td>
-                </tr>`).join('');
-            document.getElementById('tbody_adm_predef').innerHTML = (db.predefiniti || []).map((p, i) => `<tr><td>${p.a}</td><td>${p.t}</td><td><button onclick="db.predefiniti.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
-            document.getElementById('tbody_cfg_links').innerHTML = db.links.map((l, i) => `<tr><td>${l.n}</td><td>${l.u}</td><td><button onclick="db.links.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
-            document.getElementById('tbody_docs_admin').innerHTML = db.docs.map((d,i) => `<tr><td>${d.n}</td><td><button onclick="db.docs.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
-            let ch = ""; Object.keys(db.checklist).forEach(t => { db.checklist[t].forEach((item, idx) => { ch += `<tr><td>${t}</td><td>${item.fase}</td><td>${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${idx},1); if(db.checklist['${t}'].length==0) delete db.checklist['${t}']; save(); renderAdminAll();">X</button></td></tr>`; }); });
-            document.getElementById('tbody_cfg_check').innerHTML = ch;
-        }
-
-        // UTILS
+        // --- UTILS & RENDERS ---
         function addPredefinito() { const a = document.getElementById('adm_f_azienda').value; const t = document.getElementById('adm_f_targa').value; if(a && t) { if(!db.predefiniti) db.predefiniti = []; db.predefiniti.push({ a, t }); save(); renderAdminAll(); } }
         function addHomeLink() { const n = document.getElementById('cfg_link_name').value; const u = document.getElementById('cfg_link_url').value; if(n && u) { db.links.push({ n, u }); save(); renderAdminAll(); renderHomeLinks(); } }
         function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:15px 30px;" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
@@ -461,6 +404,169 @@
         function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr><td>${g.t}</td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td><td>${g.r}</td></tr>`).reverse().join(''); }
         function renderDocsGrid() { const oggi = new Date().toISOString().split('T')[0]; const vis = (db.docs || []).filter(d => (d.s==="" || oggi>=d.s) && (d.e==="" || oggi<=d.e)); document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join(''); }
         function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
+
+        // --- ACCOUNT MANAGEMENT ---
+        function addUser() {
+            const newUser = {
+                id: editUserId || Date.now(),
+                n: document.getElementById('adm_u_nome').value,
+                c: document.getElementById('adm_u_cognome').value,
+                e: document.getElementById('adm_u_email').value,
+                p: document.getElementById('adm_u_pass').value,
+                d: document.getElementById('adm_u_durata').value,
+                l: document.getElementById('adm_u_lvl').value,
+                s: true
+            };
+            if(!newUser.e || !newUser.p) return alert("Email e Password obbligatorie");
+            if(editUserId) {
+                const idx = db.users.findIndex(x => x.id === editUserId);
+                db.users[idx] = newUser;
+                editUserId = null;
+                document.getElementById('btn_save_user').innerText = "CREA ACCOUNT";
+            } else { db.users.push(newUser); }
+            save(); renderAdminAll();
+            ['adm_u_nome','adm_u_cognome','adm_u_email','adm_u_pass'].forEach(id => document.getElementById(id).value = "");
+        }
+
+        // --- NUOVO MOTORE WORKFLOW (LOGICA) ---
+        function addWorkflowOrg() {
+            const nome = prompt("Inserisci il nome dell'Organizzazione (es. Badge Ditte):");
+            if (nome) {
+                if(!db.workflows) db.workflows = [];
+                db.workflows.push({ id: Date.now(), nome: nome, nodi: [] });
+                save(); renderAdminAll();
+            }
+        }
+
+        function addNodo(wfId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            const tipo = prompt("Tipo Nodo: scelta / azione / nota / fine").toLowerCase();
+            if(!['scelta','azione','nota','fine'].includes(tipo)) return alert("Tipo non valido");
+            
+            const nuovoNodo = {
+                id: Date.now(),
+                tipo: tipo,
+                titolo: prompt("Testo della domanda o istruzione:"),
+                istruzione: (tipo !== 'scelta') ? prompt("Dettagli aggiuntivi (opzionale):") : "",
+                idSi: null, idNo: null
+            };
+            wf.nodi.push(nuovoNodo);
+            save(); renderAdminAll();
+        }
+
+        function linkNodi(wfId, nodoId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            const n = wf.nodi.find(x => x.id === nodoId);
+            if(n.tipo === 'scelta') {
+                n.idSi = prompt("ID Nodo se SÌ (scrivi FINE per terminare):");
+                n.idNo = prompt("ID Nodo se NO (scrivi FINE per terminare):");
+            } else {
+                n.idSi = prompt("ID Prossimo Nodo (scrivi FINE per terminare):");
+            }
+            save(); renderAdminAll();
+        }
+
+        function renderBadgeWorkflows() {
+            const container = document.getElementById('badge_start_btns');
+            container.innerHTML = (db.workflows || []).map(wf => `
+                <button class="nav-btn" style="background:#003366; padding:15px;" onclick="startWorkflow(${wf.id})">
+                    📋 ${wf.nome}
+                </button>
+            `).join('');
+        }
+
+        function startWorkflow(wfId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            if (!wf || wf.nodi.length === 0) return alert("Workflow non configurato.");
+            eseguiNodo(wfId, wf.nodi[0].id);
+        }
+
+        function eseguiNodo(wfId, nodoId) {
+            const area = document.getElementById('flow_render_area');
+            if (nodoId === 'FINE' || !nodoId) {
+                area.innerHTML = `<div class="card" style="border-top:4px solid green; text-align:center;"><h2>✅ FINE PROCEDURA</h2><button class="nav-btn" onclick="document.getElementById('flow_render_area').innerHTML=''">OK</button></div>`;
+                return;
+            }
+            const wf = db.workflows.find(x => x.id === wfId);
+            const n = wf.nodi.find(x => x.id == nodoId);
+            if(!n) return;
+
+            let content = `<div class="card" style="border-left:10px solid ${n.tipo==='scelta'?'var(--warn)':'var(--blue)'};">
+                <small>Step ID: ${n.id}</small>
+                <h2 style="margin:10px 0;">${n.titolo}</h2>
+                ${n.istruzione ? `<p style="background:#eee; padding:10px; border-radius:5px;">${n.istruzione}</p>` : ''}`;
+
+            if (n.tipo === 'scelta') {
+                content += `<div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="nav-btn" style="background:green; flex:1; padding:15px;" onclick="eseguiNodo(${wfId}, '${n.idSi}')">SÌ</button>
+                    <button class="nav-btn" style="background:var(--red); flex:1; padding:15px;" onclick="eseguiNodo(${wfId}, '${n.idNo}')">NO</button>
+                </div>`;
+            } else {
+                content += `<button class="nav-btn" style="width:100%; margin-top:20px; padding:15px;" onclick="eseguiNodo(${wfId}, '${n.idSi}')">PROSEGUI</button>`;
+            }
+            area.innerHTML = content + `</div>`;
+        }
+
+        function renderAdminAll() {
+            // Render Utenti
+            document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `
+                <tr class="${!u.s ? 'status-off' : ''}">
+                    <td>${u.n} ${u.c}<br><small>${u.e}</small></td>
+                    <td>${u.l.toUpperCase()}</td><td>${u.d} gg</td>
+                    <td>${u.s ? 'ATTIVO' : 'OFF'}</td>
+                    <td><button onclick="editUser(${u.id})">MOD</button><button onclick="toggleUser(${u.id})">S</button></td>
+                </tr>`).join('');
+            
+            // Render Workflows Admin
+            document.getElementById('admin_workflow_list').innerHTML = (db.workflows || []).map(wf => `
+                <div class="card" style="border-top:2px solid #2196f3;">
+                    <strong>ORG: ${wf.nome}</strong> (ID: ${wf.id}) 
+                    <button onclick="addNodo(${wf.id})">+ Nodo</button>
+                    <button style="color:red" onclick="if(confirm('Elimina Workflow?')){db.workflows=db.workflows.filter(x=>x.id!=${wf.id});save();renderAdminAll();}">Elimina</button>
+                    <div style="margin-top:10px;">
+                        ${wf.nodi.map(n => `
+                            <div class="wf-node-admin">
+                                <b>[${n.id}] ${n.tipo.toUpperCase()}</b>: ${n.titolo} <br>
+                                <button onclick="linkNodi(${wf.id}, ${n.id})">Configura Salti</button>
+                                <small>-> SÌ/Prossimo: ${n.idSi || '--'} | NO: ${n.idNo || '--'}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            // Altri Render originali
+            document.getElementById('tbody_adm_predef').innerHTML = (db.predefiniti || []).map((p, i) => `<tr><td>${p.a}</td><td>${p.t}</td><td><button onclick="db.predefiniti.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
+            document.getElementById('tbody_cfg_links').innerHTML = db.links.map((l, i) => `<tr><td>${l.n}</td><td>${l.u}</td><td><button onclick="db.links.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
+            document.getElementById('tbody_docs_admin').innerHTML = db.docs.map((d,i) => `<tr><td>${d.n}</td><td><button onclick="db.docs.splice(${i},1); save(); renderAdminAll();">X</button></td></tr>`).join('');
+            let ch = ""; Object.keys(db.checklist).forEach(t => { db.checklist[t].forEach((item, idx) => { ch += `<tr><td>${t}</td><td>${item.fase}</td><td>${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${idx},1); save(); renderAdminAll();">X</button></td></tr>`; }); });
+            document.getElementById('tbody_cfg_check').innerHTML = ch;
+        }
+
+        function recallFornitore(az, aut, tar, c, g, isPredef) {
+            document.getElementById('f_azienda').value = az; document.getElementById('f_targa').value = tar;
+            document.getElementById('f_casco').checked = c; document.getElementById('f_gilet').checked = g;
+            if(isPredef) { document.getElementById('f_autista').value = ""; document.getElementById('f_autista').focus(); }
+            else { document.getElementById('f_autista').value = aut; addFornitore(); }
+        }
+
+        function toggleUser(id) {
+            const u = db.users.find(x => x.id === id);
+            if(u.e === currentUser.e) return alert("Non puoi disattivare te stesso!");
+            u.s = !u.s; save(); renderAdminAll();
+        }
+
+        function editUser(id) {
+            const u = db.users.find(x => x.id === id);
+            document.getElementById('adm_u_nome').value = u.n;
+            document.getElementById('adm_u_cognome').value = u.c;
+            document.getElementById('adm_u_email').value = u.e;
+            document.getElementById('adm_u_pass').value = u.p;
+            document.getElementById('adm_u_durata').value = u.d;
+            document.getElementById('adm_u_lvl').value = u.l;
+            editUserId = id;
+            document.getElementById('btn_save_user').innerText = "SALVA MODIFICHE";
+        }
     </script>
 </body>
 </html>
