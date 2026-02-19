@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.19.2 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.19.3 BETA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -28,7 +28,6 @@
         th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
         th { background: #f8f9fa; color: var(--blue); font-size: 0.8rem; text-transform: uppercase; }
 
-        /* Popup Allarme Centrato e Rosso */
         #alert_modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(227, 6, 19, 0.7); z-index:20000; align-items:center; justify-content:center; }
         .modal-content { background:white; padding:40px; border-radius:20px; text-align:center; max-width:550px; border:10px solid var(--red); box-shadow: 0 0 60px rgba(0,0,0,0.7); }
 
@@ -39,11 +38,8 @@
         .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center; }
         .dropzone { border: 3px dashed #bbb; padding: 20px; text-align: center; background: #fafafa; border-radius: 10px; cursor: pointer; margin-bottom:10px; }
         
-        .analog-clock { width: 120px; height: 120px; border: 5px solid var(--blue); border-radius: 50%; position: relative; margin: 10px auto; background: white; }
-        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom; border-radius: 5px; background: #333; transform: translateX(-50%); }
-        .hour-hand { width: 6px; height: 25%; }
-        .min-hand { width: 4px; height: 40%; }
-        .sec-hand { width: 2px; height: 45%; background: var(--red); }
+        /* Stili originali Giornale */
+        .check-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
     </style>
 </head>
 <body>
@@ -54,7 +50,7 @@
             <p id="alert_msg" style="font-size: 1.6rem; margin: 25px 0; font-weight:bold;"></p>
             <div style="display:flex; gap:15px; margin-top:30px;">
                 <button class="nav-btn" style="background:#666; flex:1; padding:20px;" onclick="closeAlarm()">CHIUDI</button>
-                <button class="nav-btn" style="background:green; flex:1; padding:20px;" id="btn_tutto_ok">TUTTO OK (RESET)</button>
+                <button class="nav-btn" style="background:green; flex:1; padding:20px;" id="btn_tutto_ok">TUTTO OK</button>
             </div>
         </div>
     </div>
@@ -71,7 +67,7 @@
     <div id="main_ui" style="display:none;">
         <div class="header">
             <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO NSIF">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.19.2</div>
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.19.3</div>
         </div>
 
         <div class="nav-bar">
@@ -88,18 +84,8 @@
         <div id="section_home" class="container active-page">
             <div class="card" style="text-align:center;">
                 <h1 id="clock_big" style="font-size:6rem; color:var(--blue); margin:0; font-weight: 800;">00:00:00</h1>
-                <p id="date_long" style="font-size:2.5rem; color:var(--grey); text-transform:uppercase;">...</p>
-                <div class="dashboard-grid" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
-                    <div class="clock-analog-box">
-                        <div class="analog-clock" id="clock-london"><div class="hand hour-hand"></div><div class="hand min-hand"></div><div class="hand sec-hand"></div></div>
-                        <small>LONDRA (UTC)</small>
-                    </div>
-                    <div class="clock-analog-box">
-                        <div class="analog-clock" id="clock-ny"><div class="hand hour-hand"></div><div class="hand min-hand"></div><div class="hand sec-hand"></div></div>
-                        <small>NEW YORK (EST)</small>
-                    </div>
-                </div>
-                <div id="home_links" style="margin-top:40px; display:flex; gap:10px; justify-content:center;"></div>
+                <p id="date_long" style="font-size:2.5rem; color:var(--grey); text-transform:uppercase;">CARICAMENTO...</p>
+                <div id="home_links" style="margin-top:40px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;"></div>
             </div>
         </div>
 
@@ -113,11 +99,11 @@
                     <select id="f_varco_in" style="padding:10px;"></select>
                     <input type="number" id="f_timeout" value="15" title="Minuti Allarme">
                 </div>
-                <div id="freq_area" style="display:flex; gap:8px; margin-bottom:15px;"></div>
-                <div style="display:flex; gap:20px; background:#f9f9f9; padding:15px; border-radius:8px;">
+                <div id="freq_area" style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;"></div>
+                <div style="display:flex; gap:20px; background:#f9f9f9; padding:15px; border-radius:8px; align-items:center;">
                     <label><input type="checkbox" id="f_casco"> Casco</label>
                     <label><input type="checkbox" id="f_gilet"> Gilet</label>
-                    <input type="text" id="f_nota_dpi" placeholder="Note aggiuntive" style="flex-grow:1;">
+                    <input type="text" id="f_nota_dpi" placeholder="Note DPI aggiuntive" style="flex-grow:1; padding:8px;">
                 </div>
                 <button class="nav-btn" style="background:green; width:100%; margin-top:15px; padding:15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
                 
@@ -137,15 +123,31 @@
                     <tbody id="tbody_fornitori"></tbody>
                 </table>
                 <div id="counter_box" style="margin-top:20px; padding:20px; background:var(--blue); color:white; border-radius:8px; display:flex; justify-content: space-around; font-weight:bold; font-size:1.2rem;"></div>
-                <div style="text-align:right; margin-top:15px;">
-                    <button class="nav-btn" style="background:#607d8b;" onclick="generatePDFReport()">📄 GENERA REPORT PDF GIORNALIERO</button>
+            </div>
+        </div>
+
+        <div id="section_giornale" class="container">
+            <div class="card">
+                <h3>Diario di Bordo Operativo</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px 150px; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="gb_luogo" placeholder="Luogo">
+                    <input type="text" id="gb_desc" placeholder="Descrizione">
+                    <input type="text" id="gb_misure" placeholder="Misure">
+                    <select id="gb_risolto"><option value="SI">SI</option><option value="NO">NO</option></select>
+                    <button class="nav-btn" style="background:green;" onclick="addGiornale()">REGISTRA</button>
                 </div>
+                <table>
+                    <thead>
+                        <tr><th>Data/Ora</th><th>Agente</th><th>Luogo</th><th>Dettagli/Misure</th><th>Stato</th></tr>
+                    </thead>
+                    <tbody id="tbody_giornale"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="section_checklist" class="container">
             <div class="card">
-                <h3>Checklist Operative Turni</h3>
+                <h3>Checklist Turni</h3>
                 <div id="run_turn_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div>
                 <div id="run_checklist_area"></div>
             </div>
@@ -153,11 +155,13 @@
 
         <div id="section_admin" class="container">
             <div class="card" style="border-left:10px solid var(--red);">
-                <h3>Sistema Allarme Sonoro</h3>
-                <div class="dropzone" id="drop_zone_alarm">Trascina qui file WAV o MP3 per l'allarme</div>
+                <h3>Sistema Allarme Sonoro (.wav / .mp3)</h3>
+                <div class="dropzone" id="drop_zone_alarm">Trascina qui il file audio per l'allarme</div>
                 <input type="file" id="alarm_file_input" accept="audio/*" style="display:none">
-                <button class="nav-btn" onclick="testAlarm()">RIPRODUCI SUONO ATTUALE</button>
-                <button class="nav-btn" style="background:green;" onclick="saveAlarmFile()">SALVA NUOVO SUONO</button>
+                <div style="margin-top:10px; display:flex; gap:10px;">
+                    <button class="nav-btn" onclick="testAlarm()">PROVA SUONO</button>
+                    <button class="nav-btn" style="background:green;" onclick="saveAlarmFile()">SALVA NEL SISTEMA</button>
+                </div>
             </div>
 
             <div class="card" style="border-left:10px solid #673ab7;">
@@ -165,44 +169,41 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
                     <input type="text" id="adm_u_nome" placeholder="Nome">
                     <input type="text" id="adm_u_cognome" placeholder="Cognome">
-                    <input type="text" id="adm_u_email" placeholder="Email/User">
+                    <input type="text" id="adm_u_email" placeholder="User/Email">
                     <input type="password" id="adm_u_pass" placeholder="Password">
                     <input type="number" id="adm_u_durata" value="365">
                     <select id="adm_u_lvl"><option value="user">User</option><option value="admin">Admin</option></select>
                 </div>
-                <button class="nav-btn" style="background:#673ab7; width:100%;" onclick="addUser()">SALVA/AGGIORNA ACCOUNT</button>
+                <button class="nav-btn" style="background:#673ab7; width:100%;" onclick="addUser()">CREA/AGGIORNA UTENTE</button>
                 <table style="margin-top:15px;"><thead><tr><th>Utente</th><th>Ruolo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody id="tbody_adm_users"></tbody></table>
             </div>
 
             <div class="card" style="border-left:10px solid orange;">
-                <h3>Configurazione Checklist</h3>
+                <h3>Configurazione Varchi e Checklist</h3>
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="adm_v_nome" placeholder="Nuovo Varco">
+                    <button class="nav-btn" onclick="addVarco()">AGGIUNGI VARCO</button>
+                </div>
+                <div style="display:flex; gap:10px;">
                     <input type="text" id="cfg_turn_name" placeholder="Nome Turno">
                     <select id="cfg_fase"><option value="Inizio">Inizio</option><option value="Durante">Durante</option><option value="Fine">Fine</option></select>
                     <input type="text" id="cfg_title" placeholder="Attività" style="flex-grow:1;">
-                    <button class="nav-btn" onclick="addCheckItem()">AGGIUNGI</button>
+                    <button class="nav-btn" onclick="addCheckItem()">AGGIUNGI ITEM</button>
                 </div>
-                <table id="table_cfg_check"><thead><tr><th>Turno</th><th>Fase</th><th>Attività</th><th>Rimuovi</th></tr></thead><tbody id="tbody_cfg_check"></tbody></table>
-            </div>
-            
-            <div class="card" style="border-left:10px solid #ff5722;">
-                <h3>Configurazione Varchi</h3>
-                <div style="display:flex; gap:10px;"><input type="text" id="adm_v_nome" placeholder="Nome Varco"><button class="nav-btn" onclick="addVarco()">AGGIUNGI</button></div>
-                <table style="margin-top:10px;"><thead><tr><th>Nome</th><th>Azione</th></tr></thead><tbody id="tbody_adm_varchi"></tbody></table>
+                <table style="margin-top:15px;"><thead><tr><th>Tipo</th><th>Dettaglio</th><th>Azione</th></tr></thead><tbody id="tbody_admin_config"></tbody></table>
             </div>
         </div>
 
-        <div id="section_badge" class="container"><div class="card"><h3>Gestione Badge</h3><div id="badge_start_btns"></div><div id="flow_render_area"></div></div></div>
-        <div id="section_giornale" class="container"><div class="card"><h3>Diario di Bordo</h3><div style="display:grid; grid-template-columns: 1fr 2fr 100px; gap:10px; margin-bottom:15px;"><input type="text" id="gb_luogo" placeholder="Luogo"><input type="text" id="gb_desc" placeholder="Descrizione"><button class="nav-btn" style="background:green;" onclick="addGiornale()">REGISTRA</button></div><table><thead><tr><th>Data</th><th>Agente</th><th>Dettagli</th></tr></thead><tbody id="tbody_giornale"></tbody></table></div></div>
-        <div id="section_docs" class="container"><div class="card"><h3>Documentazione PDF</h3><div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div></div></div>
+        <div id="section_badge" class="container"><div class="card"><h3>Badge / Accessi</h3><div id="badge_start_btns"></div><div id="flow_render_area"></div></div></div>
+        <div id="section_docs" class="container"><div class="card"><h3>Documenti</h3><div id="docs_grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div></div></div>
     </div>
 
     <script>
-        // DB ORIGINALE INTEGRALE
+        [cite_start]// DB INTEGRALE [cite: 100]
         let db = JSON.parse(localStorage.getItem('nsif_v19_db')) || {
             users: [{id: 1, n: "Admin", c: "NSIF", e: "admin", p: "1234", l: "admin", s: true, d: 365}],
             varchi: [{id: 1, nome: "Varco Nord"}, {id: 2, nome: "Varco Sud"}],
-            fornitori: [], checklist: {}, giornale: [], docs: [], workflows: [], alarmSoundData: null,
+            fornitori: [], checklist: {}, giornale: [], docs: [], alarmSoundData: null,
             links: [{n: "BAUSICHT", u: "https://app.bausicht.com"}]
         };
 
@@ -212,7 +213,7 @@
 
         function save() { localStorage.setItem('nsif_v19_db', JSON.stringify(db)); }
 
-        // LOGIN E PERSISTENZA
+        [cite_start]// LOGIN E PERSISTENZA [cite: 103, 107]
         window.onload = function() {
             const saved = localStorage.getItem('nsif_logged_user');
             if(saved) {
@@ -252,23 +253,18 @@
             setInterval(checkTimeouts, 10000);
         }
 
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
+            document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+        }
+
         function showSection(id) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
         }
 
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock_big').innerText = now.toLocaleTimeString('it-IT');
-            document.getElementById('date_long').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
-            // Logica orologi analogici London/NY qui...
-        }
-
-        function updateAnalogClock(id, offset) {
-            // (Funzione omessa per brevità ma presente nel codice finale se necessario)
-        }
-
-        // FORNITORI
+        [cite_start]// REGISTRAZIONE MEZZI (RIPRISTINATA) [cite: 119, 120, 121, 125, 126]
         function addFornitore() {
             const azi = document.getElementById('f_azienda').value;
             const tar = document.getElementById('f_targa').value.toUpperCase();
@@ -304,8 +300,7 @@
                 </tr>`).reverse().join('');
 
             const inC = lista.filter(x => !x.uscita).length;
-            const usciti = lista.length - inC;
-            document.getElementById('counter_box').innerHTML = `<span>TRANSITI: ${lista.length}</span> <span style="color:#ffcc00">IN CANTIERE: ${inC}</span> <span style="color:#4caf50">USCITI: ${usciti}</span>`;
+            document.getElementById('counter_box').innerHTML = `<span>TRANSITI: ${lista.length}</span> <span style="color:#ffcc00">IN CANTIERE: ${inC}</span> <span style="color:#4caf50">USCITI: ${lista.length - inC}</span>`;
         }
 
         function registraUscita(id) {
@@ -320,47 +315,78 @@
             }
         }
 
+        [cite_start]// GIORNALE DI BORDO (RIPRISTINATO) [cite: 149, 150]
+        function addGiornale() {
+            db.giornale.push({
+                t: new Date().toLocaleString('it-IT'), 
+                a: currentUser.n + " " + currentUser.c, 
+                l: document.getElementById('gb_luogo').value, 
+                d: document.getElementById('gb_desc').value + " | " + document.getElementById('gb_misure').value, 
+                r: document.getElementById('gb_risolto').value
+            });
+            save(); renderGiornale();
+            document.getElementById('gb_desc').value = ""; document.getElementById('gb_misure').value = "";
+        }
+
+        function renderGiornale() {
+            document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `
+                <tr><td>${g.t}</td><td>${g.a}</td><td>${g.l}</td><td>${g.d}</td><td>${g.r}</td></tr>
+            `).reverse().join('');
+        }
+
         // ALLARME E CARICAMENTO SUONO
         function setupAlarmUpload() {
             const zone = document.getElementById('drop_zone_alarm');
             zone.onclick = () => document.getElementById('alarm_file_input').click();
             document.getElementById('alarm_file_input').onchange = (e) => {
                 const reader = new FileReader();
-                reader.onload = (ev) => { tempAlarmData = ev.target.result; zone.innerText = "File Audio Caricato correttamente!"; };
+                reader.onload = (ev) => { tempAlarmData = ev.target.result; zone.innerText = "Audio Caricato!"; };
                 reader.readAsDataURL(e.target.files[0]);
             };
         }
-
-        function saveAlarmFile() {
-            if(!tempAlarmData) return alert("Nessun file caricato.");
-            db.alarmSoundData = tempAlarmData;
-            alarmAudio.src = tempAlarmData;
-            save(); alert("Suono allarme aggiornato nel sistema.");
-        }
-
-        function testAlarm() { alarmAudio.play(); setTimeout(()=> { alarmAudio.pause(); alarmAudio.currentTime=0; }, 4000); }
+        function saveAlarmFile() { if(tempAlarmData) { db.alarmSoundData = tempAlarmData; alarmAudio.src = tempAlarmData; save(); alert("Salvato."); } }
+        function testAlarm() { alarmAudio.play(); setTimeout(()=> { alarmAudio.pause(); alarmAudio.currentTime=0; }, 3000); }
 
         function checkTimeouts() {
             const now = Date.now();
             db.fornitori.forEach(f => {
                 if(!f.uscita && !f.alert_scattato && ((now - f.entrata_ts)/60000) > f.timeout_min) {
                     f.alert_scattato = true;
-                    document.getElementById('alert_msg').innerText = `PERMANENZA SUPERATA: ${f.targa} (${f.azienda})`;
+                    document.getElementById('alert_msg').innerText = `TIMEOUT: ${f.targa} (${f.azienda})`;
                     document.getElementById('alert_modal').style.display = 'flex';
-                    alarmAudio.play().catch(e => console.log("Interazione audio necessaria"));
+                    alarmAudio.play().catch(e => console.log("Permesso audio negato"));
                     document.getElementById('btn_tutto_ok').onclick = () => { f.entrata_ts = Date.now(); f.alert_scattato = false; closeAlarm(); save(); };
                 }
             });
         }
         function closeAlarm() { document.getElementById('alert_modal').style.display = 'none'; alarmAudio.pause(); alarmAudio.currentTime = 0; }
 
-        // CHECKLIST TURNI (LOGICA ORIGINALE)
+        [cite_start]// CHECKLIST E ADMIN CONFIG (RIPRISTINATO) [cite: 139, 142]
         function addCheckItem() {
             const t = document.getElementById('cfg_turn_name').value;
             if(!t) return;
             if(!db.checklist[t]) db.checklist[t] = [];
             db.checklist[t].push({ fase: document.getElementById('cfg_fase').value, titolo: document.getElementById('cfg_title').value });
-            save(); renderAdminAll();
+            save(); renderAdminAll(); renderRunTurnBtns();
+        }
+
+        function addVarco() {
+            const v = document.getElementById('adm_v_nome').value;
+            if(v) { db.varchi.push({id: Date.now(), nome: v}); save(); renderAdminAll(); }
+        }
+
+        function renderAdminAll() {
+            // Utenti
+            document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `<tr><td>${u.n} ${u.c}</td><td>${u.l}</td><td>${u.s?'ATTIVO':'OFF'}</td><td><button onclick="db.users=db.users.filter(x=>x.id!=${u.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
+            
+            // Varchi e Checklist (Configurazione Unificata)
+            let h = db.varchi.map(v => `<tr><td>VARCO</td><td>${v.nome}</td><td><button onclick="db.varchi=db.varchi.filter(x=>x.id!=${v.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
+            Object.keys(db.checklist).forEach(t => {
+                db.checklist[t].forEach((item, i) => {
+                    h += `<tr><td>CHECK (${t})</td><td>${item.fase}: ${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${i},1);save();renderAdminAll();">❌</button></td></tr>`;
+                });
+            });
+            document.getElementById('tbody_admin_config').innerHTML = h;
         }
 
         function renderRunTurnBtns() {
@@ -370,15 +396,11 @@
         function openRunCheck(t) {
             let h = `<h3>${t}</h3>`;
             db.checklist[t].forEach((item, i) => {
-                h += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                        <span><b>${item.fase}</b>: ${item.titolo}</span>
-                        <input type="checkbox">
-                      </div>`;
+                h += `<div class="check-item"><span><b>${item.fase}</b>: ${item.titolo}</span><input type="checkbox"></div>`;
             });
             document.getElementById('run_checklist_area').innerHTML = h;
         }
 
-        // ADMIN UTENTI
         function addUser() {
             const u = {
                 id: Date.now(), n: document.getElementById('adm_u_nome').value, c: document.getElementById('adm_u_cognome').value,
@@ -388,38 +410,6 @@
             db.users.push(u); save(); renderAdminAll();
         }
 
-        function addVarco() {
-            const v = document.getElementById('adm_v_nome').value;
-            if(v) { db.varchi.push({id: Date.now(), nome: v}); save(); renderAdminAll(); }
-        }
-
-        function renderAdminAll() {
-            document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `<tr><td>${u.n} ${u.c}</td><td>${u.l}</td><td>${u.s?'ATTIVO':'OFF'}</td><td><button onclick="db.users=db.users.filter(x=>x.id!=${u.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
-            document.getElementById('tbody_adm_varchi').innerHTML = db.varchi.map(v => `<tr><td>${v.nome}</td><td><button onclick="db.varchi=db.varchi.filter(x=>x.id!=${v.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
-            
-            let ch = "";
-            Object.keys(db.checklist).forEach(t => {
-                db.checklist[t].forEach((item, i) => {
-                    ch += `<tr><td>${t}</td><td>${item.fase}</td><td>${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${i},1);save();renderAdminAll();">❌</button></td></tr>`;
-                });
-            });
-            document.getElementById('tbody_cfg_check').innerHTML = ch;
-        }
-
-        // PDF REPORT
-        function generatePDFReport() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const oggi = new Date().toLocaleDateString('it-IT');
-            doc.text(`NSIF CASTIONE - REPORT TRANSITI ${oggi}`, 14, 20);
-            const data = db.fornitori.filter(f => f.data === oggi).map(f => [f.azienda, f.targa, f.entrata, f.varco_in, f.uscita||'IN CANTIERE', f.varco_out||'-']);
-            doc.autoTable({ head: [['Azienda', 'Targa', 'H Entrata', 'Varco IN', 'H Uscita', 'Varco OUT']], body: data, startY: 30 });
-            doc.save(`Report_Mezzi_${oggi}.pdf`);
-        }
-
-        // Placeholder Giornale e Links
-        function addGiornale() { db.giornale.push({t: new Date().toLocaleString(), a: currentUser.n, d: document.getElementById('gb_desc').value}); save(); renderGiornale(); }
-        function renderGiornale() { document.getElementById('tbody_giornale').innerHTML = db.giornale.map(g => `<tr><td>${g.t}</td><td>${g.a}</td><td>${g.d}</td></tr>`).reverse().join(''); }
         function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue);" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
 
     </script>
