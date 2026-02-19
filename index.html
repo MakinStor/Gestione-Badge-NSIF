@@ -76,14 +76,14 @@
             <input type="text" id="log_u" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
             <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
             <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
-            <div style="margin-top: 15px; font-size: 0.7rem; color: #999;">Versione 1.19.0 BETA</div>
+            <div style="margin-top: 15px; font-size: 0.7rem; color: #999;">Versione 1.1.0 BETA</div>
         </div>
     </div>
 
     <div id="main_ui" style="display:none;">
         <div class="header">
             <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO NSIF">
-            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.19.0</div>
+            <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.1.0</div>
         </div>
 
         <div class="nav-bar">
@@ -244,7 +244,7 @@
     </div>
 
     <script>
-        const alarmSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+        const alarmSound = new Audio('superamento_tempo.mp3');
         alarmSound.loop = true;
 
         let db = JSON.parse(localStorage.getItem('nsif_v19_db')) || {
@@ -463,4 +463,5 @@
     </script>
 </body>
 </html>
+
 
