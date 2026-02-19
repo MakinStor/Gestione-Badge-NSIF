@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NSIF CASTIONE - GESTIONALE V 1.1.0 BETA</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; --warn: #ffcc00; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -161,15 +159,6 @@
                 </div>
                 <button class="nav-btn" style="background:green; width:100%; margin-top:15px; padding: 15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
                 <table style="margin-top:20px;">
-<button class="nav-btn" style="background:green; width:100%; margin-top:15px; padding: 15px;" onclick="addFornitore()">REGISTRA ENTRATA</button>
-
-<div id="exit_popup_custom" style="display:none; background:#fff1f1; border:3px solid var(--red); padding:20px; border-radius:10px; margin: 20px 0; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-    <h3 style="color:var(--red); margin:0 0 15px 0;">⚠️ SELEZIONA VARCO DI USCITA</h3>
-    <div id="exit_btns_area" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-        </div>
-    <button onclick="document.getElementById('exit_popup_custom').style.display='none'" style="margin-top:15px; background:none; border:none; color:var(--grey); cursor:pointer; text-decoration:underline;">Annulla operazione</button>
-</div>
-<table style="margin-top:20px;">
                     <thead><tr><th>Azienda</th><th>Dati / Targa</th><th>Varco IN</th><th>Varco OUT</th><th>DPI</th><th>Entrata</th><th>Uscita</th><th>Azione</th></tr></thead>
                     <tbody id="tbody_fornitori"></tbody>
                 </table>
@@ -253,7 +242,7 @@
     </div>
 
     <script>
-        const alarmSound = new Audio('superamento_tempo.mp3');
+        const alarmSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
         alarmSound.loop = true;
 
         let db = JSON.parse(localStorage.getItem('nsif_v19_db')) || {
@@ -373,39 +362,14 @@
         }
 
         function renderFornitori() {
-    // Selettore data: se non esiste lo crea la prima volta
-    let filterDate = document.getElementById('f_filtro_data');
-    if(!filterDate) {
-        const headerDiv = document.querySelector('#section_fornitori h3');
-        headerDiv.parentElement.innerHTML += `<div style="float:right"><input type="date" id="f_filtro_data" onchange="renderFornitori()" style="padding:5px; border-radius:5px; border:1px solid #ccc;"> <button class="nav-btn" onclick="printFornitoriPDF()">STAMPA PDF</button></div>`;
-        document.getElementById('f_filtro_data').value = new Date().toISOString().split('T')[0];
-    }
-    
-    const targetDate = document.getElementById('f_filtro_data').value;
-    const listaFiltro = db.fornitori.filter(f => f.data_iso === targetDate || f.data === targetDate);
-
-    document.getElementById('f_varco_in').innerHTML = db.varchi.map(v => `<option value="${v.nome}">${v.nome}</option>`).join('');
-    document.getElementById('recenti_area').innerHTML = db.recenti.map(r => `<button class="freq-btn" onclick="recallFornitore('${r.azienda}','${r.autista}','${r.targa}',${r.casco},${r.gilet},false)">${r.targa}</button>`).join('');
-    document.getElementById('freq_area').innerHTML = db.predefiniti.map(p => `<button class="freq-btn freq-btn-predef" onclick="recallFornitore('${p.a}','','${p.t}',true,true,true)">${p.a}</button>`).join('');
-
-    // Tabella con colonne riorganizzate: Varco e Ora vicini
-    document.getElementById('tbody_fornitori').innerHTML = listaFiltro.map(f => `
-        <tr class="${!f.uscita ? 'row-in-cantiere' : ''}">
-            <td>${f.azienda}<br><small>${f.autista}</small></td>
-            <td>${f.targa}</td>
-            <td style="background:#e3f2fd">${f.varco_entrata}</td>
-            <td style="background:#e3f2fd"><b>${f.entrata}</b></td>
-            <td style="background:#fbe9e7">${f.varco_uscita || '-'}</td>
-            <td style="background:#fbe9e7"><b>${f.uscita || '-'}</b></td>
-            <td>C:${f.casco?'✅':'❌'} G:${f.gilet?'✅':'❌'}</td>
-            <td>${f.uscita ? 'OK' : `<button class="nav-btn" style="background:var(--red); padding:5px 10px;" onclick="openExitPopup(${f.id})">ESCI</button>`}</td>
-        </tr>`).reverse().join('');
-
-    // Counter box aggiornato con "Mezzi Usciti"
-    const inC = listaFiltro.filter(x => !x.uscita).length;
-    const usciti = listaFiltro.filter(x => x.uscita).length;
-    document.getElementById('counter_box').innerHTML = `TRANSITI TOTALI: ${listaFiltro.length} | <span style="color:green">USCITI: ${usciti}</span> | <span style="color:red">PRESENTI: ${inC}</span>`;
-}
+            const oggi = new Date().toLocaleDateString('it-IT');
+            const listaOggi = (db.fornitori || []).filter(f => f.data === oggi);
+            document.getElementById('f_varco_in').innerHTML = (db.varchi || []).map(v => `<option value="${v.nome}">${v.nome}</option>`).join('');
+            document.getElementById('recenti_area').innerHTML = (db.recenti || []).map(r => `<div class="freq-btn" onclick="recallFornitore('${r.azienda}','${r.autista}','${r.targa}',${r.casco},${r.gilet}, false)">${r.targa} <span style="color:red; margin-left:5px;" onclick="event.stopPropagation(); delRecente('${r.targa}')">×</span></div>`).join('');
+            document.getElementById('freq_area').innerHTML = (db.predefiniti || []).map(p => `<button class="freq-btn freq-btn-predef" onclick="recallFornitore('${p.a}', '', '${p.t}', true, true, true)">${p.t} - ${p.a}</button>`).join('');
+            document.getElementById('tbody_fornitori').innerHTML = listaOggi.map(f => `<tr class="${!f.uscita ? 'row-in-cantiere' : ''}"><td>${f.azienda}</td><td>${f.autista}<br><small>${f.targa}</small></td><td>${f.varco_entrata || '-'}</td><td>${f.varco_uscita || '-'}</td><td><small>C:${f.casco?'✅':'❌'} G:${f.gilet?'✅':'❌'}</small></td><td><span class="time-badge">${f.entrata}</span></td><td><span class="time-badge" style="background:#ffebee">${f.uscita || '--:--'}</span></td><td>${f.uscita ? 'OK' : `<button onclick="registraUscita(${f.id})">USCITA</button>`}</td></tr>`).reverse().join('');
+            const inC = listaOggi.filter(x => !x.uscita).length;
+            document.getElementById('counter_box').innerHTML = `<span>TRANSITI: ${listaOggi.length}</span> <span style="color:red">IN CANTIERE: ${inC}</span>`;
         }
 
         function recallFornitore(az, aut, tar, c, g, isPredef) {
@@ -497,6 +461,3 @@
     </script>
 </body>
 </html>
-
-
-
