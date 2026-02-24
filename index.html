@@ -15,271 +15,242 @@
         .nav-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 15px; background: #e9ecef; position: sticky; top:0; z-index: 999; }
         .nav-btn { padding: 12px 20px; border: none; border-radius: 4px; background: var(--blue); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.85rem; }
         .nav-btn:hover { background: #004488; transform: translateY(-2px); }
-        .nav-btn.logout { background: var(--red); }
 
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px; }
+        .container { display: none; padding: 25px; max-width: 1300px; margin: auto; }
+        .active-page { display: block; }
+        .card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 5px solid var(--blue); }
         
-        h3 { border-bottom: 2px solid var(--red); padding-bottom: 10px; margin-bottom: 20px; color: var(--blue); text-transform: uppercase; }
-
-        /* INPUT GROUP FORNITORI */
+        /* STILE INPUT MIGLIORATO */
         .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
-        .input-group input, .input-group select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+        .input-group input, .input-group select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; transition: all 0.3s; }
+        .input-group input:focus { border-color: var(--blue); box-shadow: 0 0 5px rgba(0,51,102,0.2); outline: none; }
+        
+        .btn-small { padding: 8px 15px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: none; color: white; }
 
-        /* TASTI RAPIDI MOBILI */
+        /* TASTI RAPIDI DINAMICI */
         .draggable-area { display: flex; gap: 10px; flex-wrap: wrap; min-height: 50px; padding: 15px; background: #fdfdfd; border-radius: 8px; border: 1px dashed #bbb; margin: 10px 0; }
-        .freq-btn { background: #fff; border: 1px solid #ddd; padding: 8px 35px 8px 12px; border-radius: 6px; font-size: 0.85rem; position: relative; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; min-width: 130px; cursor: pointer; }
+        .freq-btn { background: #fff; border: 1px solid #ddd; padding: 8px 35px 8px 12px; border-radius: 6px; font-size: 0.85rem; position: relative; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; min-width: 130px; }
         .btn-controls { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; background: #f0f0f0; border-radius: 4px; padding: 2px; border: 1px solid #ccc; }
         .btn-controls span { cursor: pointer; font-size: 10px; text-align: center; line-height: 1; padding: 2px; }
+        .btn-controls span:hover { background: #ddd; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: var(--blue); color: white; padding: 12px; text-align: left; font-size: 0.9rem; }
+        th { background: #f8f9fa; color: var(--blue); padding: 12px; text-align: left; font-size: 0.85rem; border-bottom: 2px solid #eee; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .row-in-cantiere { border-left: 5px solid #4caf50; background: #f1f8e9; }
         .time-badge { background: #e3f2fd; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: var(--blue); }
 
-        /* LOGIN SCREEN */
-        #login_screen { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center; }
-        .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        
-        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .dash-card { background: white; padding: 20px; border-radius: 10px; border-top: 5px solid var(--blue); text-align: center; }
-        .dash-val { font-size: 2.5rem; font-weight: bold; color: var(--red); margin: 10px 0; }
-
-        @media print { .nav-bar, .no-print, .btn-controls { display: none !important; } }
+        #page_login { position: fixed; top:0; left:0; width: 100%; height: 100%; background: var(--blue); display: flex; align-items: center; justify-content: center; z-index: 10000; }
     </style>
 </head>
 <body>
 
-<div id="login_screen">
-    <div class="login-box">
-        <h2 style="color: var(--blue); margin-bottom:20px;">ACCESSO NSIF</h2>
-        <input type="text" id="log_u" placeholder="Username">
-        <input type="password" id="log_p" placeholder="Password">
-        <button class="nav-btn" style="width:100%; margin-top:20px;" onclick="doLogin()">ACCEDI</button>
-        <p style="font-size: 0.7rem; color: #999; margin-top:15px;">GESTIONALE V 1.19.0 BETA</p>
-    </div>
-</div>
-
-<div id="main_app" style="display:none;">
-    <div class="header">
-        <img src="https://it.nsi.ch/wp-content/uploads/2021/05/logo_nsi.png" class="logo-main" alt="Logo">
-        <div class="version-label">Gestionale Sicurezza & Logistica</div>
-        <div id="user_info" style="margin-top:10px; font-weight: bold; color: var(--grey);"></div>
-    </div>
-
-    <div class="nav-bar">
-        <button class="nav-btn" onclick="showSection('dashboard')">🏠 Dashboard</button>
-        <button class="nav-btn" onclick="showSection('fornitori')">🚛 Fornitori</button>
-        <button class="nav-btn" onclick="showSection('checklist')">✅ Checklist</button>
-        <button class="nav-btn" onclick="showSection('badge')">🏷️ Badge/Workflow</button>
-        <button class="nav-btn" onclick="showSection('giornale')">📖 Giornale</button>
-        <button class="nav-btn" id="btn_admin" onclick="showSection('admin')" style="display:none;">⚙️ Admin</button>
-        <button class="nav-btn logout" onclick="doLogout()">Esci</button>
-    </div>
-
-    <div id="section_dashboard" class="container section">
-        <div class="dash-grid">
-            <div class="dash-card"><h3>Mezzi in Cantiere</h3><div id="dash_mezzi" class="dash-val">0</div></div>
-            <div class="dash-card"><h3>Transiti Odierni</h3><div id="dash_transiti" class="dash-val">0</div></div>
-            <div class="dash-card"><h3>Ultimo Transito</h3><div id="dash_ultimo" style="font-size:1.1rem; font-weight:bold;">--</div></div>
+    <div id="page_login">
+        <div style="background:white; padding:40px; border-radius:15px; width:350px; text-align:center;">
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" style="width:150px; margin-bottom:20px;">
+            <input type="text" id="log_u" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
+            <input type="password" id="log_p" placeholder="Password" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;">
+            <button class="nav-btn" style="width:100%; background:var(--red);" onclick="login()">ACCEDI</button>
         </div>
     </div>
 
-    <div id="section_fornitori" class="container section" style="display:none;">
-        <div class="card">
-            <h3>Gestione Ingressi Fornitori</h3>
-            <div class="input-group">
-                <input type="text" id="f_azienda" placeholder="Azienda">
-                <input type="text" id="f_autista" placeholder="Autista">
-                <input type="text" id="f_targa" placeholder="Targa">
-                <select id="f_varco_in"></select>
-                <input type="number" id="f_timeout" value="15" title="Minuti permanenza">
-            </div>
-            <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
-                <div style="display:flex; gap:15px; align-items: center; background: #eee; padding: 10px; border-radius: 6px;">
-                    <label><input type="checkbox" id="f_casco"> 🪖 Casco</label>
-                    <label><input type="checkbox" id="f_gilet"> 🦺 Gilet</label>
+    <div id="main_ui" style="display:none;">
+        <div class="header">
+            <img src="https://it.nsi.ch/wp-content/uploads/2021/05/logo_nsi.png" class="logo-main">
+            <div class="version-label">NSIF CASTIONE – GESTIONALE V 1.19.0</div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="showSection('section_fornitori')">GESTIONE FORNITORI</button>
+            <button class="nav-btn" onclick="showSection('section_badge')">BADGE / WORKFLOW</button>
+            <button class="nav-btn" id="nav_admin" style="display:none; background:#333;" onclick="showSection('section_admin')">ADMIN</button>
+            <button class="nav-btn" style="background:#666;" onclick="location.reload()">LOGOUT</button>
+        </div>
+
+        <div id="section_fornitori" class="container active-page">
+            <div class="card">
+                <h3>Nuovo Ingresso Fornitore</h3>
+                <div class="input-group">
+                    <input type="text" id="f_azienda" placeholder="Ditta / Azienda">
+                    <input type="text" id="f_autista" placeholder="Nome Cognome Autista">
+                    <input type="text" id="f_targa" placeholder="Targa Mezzo">
+                    <select id="f_varco_in" title="Varco di Accesso"></select>
+                    <input type="number" id="f_timeout" value="15" title="Minuti permanenza">
                 </div>
-                <button class="nav-btn" style="background:green;" onclick="addFornitore()">REGISTRA ENTRATA</button>
-            </div>
-            <div style="margin-top:20px;">
-                <small><b>MEZZI FREQUENTI:</b></small>
-                <div id="recenti_area" class="draggable-area"></div>
-            </div>
-            <div class="no-print" style="margin-top:20px; padding:15px; background:#e9ecef; border-radius:8px;">
-                <label><b>Report PDF:</b> </label>
-                <input type="date" id="export_date">
-                <button class="nav-btn" style="padding:5px 15px; font-size:0.8rem;" onclick="generatePDF()">GENERA</button>
-            </div>
-            <div style="overflow-x: auto;">
+                
+                <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
+                    <div style="display:flex; gap:15px; align-items: center; background: #eee; padding: 10px; border-radius: 6px;">
+                        <label><input type="checkbox" id="f_casco"> 🪖 Casco</label>
+                        <label><input type="checkbox" id="f_gilet"> 🦺 Gilet</label>
+                        <input type="text" id="f_nota_dpi" placeholder="Note DPI" style="width:150px; padding:5px; border-radius:4px; border:1px solid #ccc;">
+                    </div>
+                    <button class="nav-btn btn-small" style="background:green; font-weight: bold;" onclick="addFornitore()">REGISTRA ENTRATA</button>
+                </div>
+
+                <div style="margin-top:20px;">
+                    <small><b>MEZZI FREQUENTI:</b> (▲▼ sposta, ✖ cancella)</small>
+                    <div id="recenti_area" class="draggable-area"></div>
+                </div>
+
                 <table>
                     <thead>
-                        <tr><th>Azienda</th><th>Targa/Autista</th><th>Varco IN</th><th>Ora IN</th><th>Varco OUT</th><th>Ora OUT</th><th>DPI</th><th>Azione</th></tr>
+                        <tr>
+                            <th>Azienda</th><th>Targa / Autista</th><th>Varco IN</th><th>Ora IN</th><th>Varco OUT</th><th>Ora OUT</th><th>DPI</th><th>Azione</th>
+                        </tr>
                     </thead>
                     <tbody id="tbody_fornitori"></tbody>
                 </table>
+                <div id="counter_box" style="margin-top:20px; padding:15px; background:#e3f2fd; border-radius:8px; display:flex; justify-content: space-around; font-weight:bold;"></div>
             </div>
-            <div id="counter_box" style="margin-top:20px; padding:15px; background:#e3f2fd; border-radius:8px; display:flex; justify-content: space-around; font-weight:bold;"></div>
+        </div>
+
+        <div id="section_badge" class="container">
+            <div class="card">
+                <h3>Workflow Operativi</h3>
+                <div id="badge_start_btns"></div>
+                <div id="flow_render_area"></div>
+            </div>
+        </div>
+
+        <div id="section_admin" class="container">
+            <div class="card">
+                <h3>Amministrazione Sistema</h3>
+                <div id="admin_varchi_area">
+                    <h4>Varchi Predefiniti</h4>
+                    <input type="text" id="adm_v_nome" placeholder="Nome Varco">
+                    <button onclick="addVarco()">Aggiungi Varco</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="section_checklist" class="container section" style="display:none;"><div class="card"><h3>Checklist Sicurezza</h3><div id="checklist_area"></div></div></div>
-    <div id="section_badge" class="container section" style="display:none;"><div class="card"><h3>Badge & Workflow</h3><div id="badge_start_btns"></div><div id="flow_render_area"></div></div></div>
-    <div id="section_giornale" class="container section" style="display:none;"><div class="card"><h3>Giornale</h3><textarea id="g_testo" style="width:100%; height:100px;"></textarea><button class="nav-btn" onclick="addGiornale()">AGGIUNGI</button><div id="g_lista"></div></div></div>
-    <div id="section_admin" class="container section" style="display:none;"><div class="card"><h3>Amministrazione</h3><div id="admin_content"></div></div></div>
-</div>
-
-<script>
-    let db = JSON.parse(localStorage.getItem('nsif_db_v1_19')) || {
-        utenti: [
-            {u:'admin', p:'admin', n:'Admin', c:'Sistema', r:'admin'},
-            {u:'guardia', p:'1234', n:'Gualtiero', c:'Sicurezza', r:'user'}
-        ],
-        fornitori: [], recenti: [], varchi: [{nome:'CAST09'}], checklist: [], giornale: [], workflows: []
-    };
-    let currentUser = null;
-
-    function save() { localStorage.setItem('nsif_db_v1_19', JSON.stringify(db)); }
-
-    function doLogin() {
-        const u = document.getElementById('log_u').value;
-        const p = document.getElementById('log_p').value;
-        const user = db.utenti.find(x => x.u === u && x.p === p);
-        if(user) {
-            currentUser = user;
-            document.getElementById('login_screen').style.display = 'none';
-            document.getElementById('main_app').style.display = 'block';
-            document.getElementById('user_info').innerText = `OPERATORE: ${user.n} ${user.c}`;
-            if(user.r === 'admin') document.getElementById('btn_admin').style.display = 'inline-block';
-            showSection('dashboard');
-        } else alert("Credenziali errate");
-    }
-
-    function doLogout() { location.reload(); }
-
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        document.getElementById('section_' + id).style.display = 'block';
-        if(id === 'fornitori') renderFornitori();
-        if(id === 'dashboard') renderDashboard();
-        if(id === 'giornale') renderGiornale();
-    }
-
-    function addFornitore() {
-        const az = document.getElementById('f_azienda').value.toUpperCase();
-        const ta = document.getElementById('f_targa').value.toUpperCase().replace(/\s/g, '');
-        if(!az || !ta) return alert("Inserire Azienda e Targa");
-
-        const f = {
-            id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
-            entrata: new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}),
-            entrata_ts: Date.now(), azienda: az, autista: document.getElementById('f_autista').value.toUpperCase(),
-            targa: ta, varco_entrata: document.getElementById('f_varco_in').value, uscita: null,
-            casco: document.getElementById('f_casco').checked, gilet: document.getElementById('f_gilet').checked
+    <script>
+        let db = JSON.parse(localStorage.getItem('nsif_v19_db')) || {
+            users: [{e: "admin", p: "admin", l: "admin", s: true}],
+            fornitori: [], predefiniti: [], varchi: [{nome: 'CAST09'}], recenti: [], workflows: []
         };
-        db.fornitori.push(f);
-        if(!db.recenti.some(r => r.targa === ta)) {
-            db.recenti.push({azienda: az, autista: f.autista, targa: ta, casco: f.casco, gilet: f.gilet});
+        let currentUser = null;
+
+        function save() { localStorage.setItem('nsif_v19_db', JSON.stringify(db)); }
+
+        function login() {
+            const u = document.getElementById('log_u').value;
+            const p = document.getElementById('log_p').value;
+            const user = db.users.find(x => x.e === u && x.p === p);
+            if(user) {
+                currentUser = user;
+                document.getElementById('page_login').style.display = 'none';
+                document.getElementById('main_ui').style.display = 'block';
+                if(user.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
+                renderFornitori();
+            } else alert("Dati errati");
         }
-        save(); renderFornitori();
-        ['f_azienda','f_autista','f_targa'].forEach(i => document.getElementById(i).value = '');
-    }
 
-    function recallFornitore(az, au, ta, ca, gi) {
-        document.getElementById('f_azienda').value = az;
-        document.getElementById('f_autista').value = au;
-        document.getElementById('f_targa').value = ta;
-        document.getElementById('f_casco').checked = ca;
-        document.getElementById('f_gilet').checked = gi;
-    }
+        function showSection(id) {
+            document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
 
-    function moveRecente(index, direction) {
-        const n = index + direction;
-        if(n >= 0 && n < db.recenti.length) {
-            [db.recenti[index], db.recenti[n]] = [db.recenti[n], db.recenti[index]];
+        function addVarco() {
+            const n = document.getElementById('adm_v_nome').value;
+            if(n) { db.varchi.push({nome: n.toUpperCase()}); save(); renderFornitori(); }
+        }
+
+        function addFornitore() {
+            const azi = document.getElementById('f_azienda').value.toUpperCase();
+            const tar = document.getElementById('f_targa').value.toUpperCase().replace(/\s/g, '');
+            if(!azi || !tar) return alert("Ditta e Targa obbligatorie!");
+
+            const entry = {
+                id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
+                azienda: azi, autista: document.getElementById('f_autista').value.toUpperCase(),
+                targa: tar, casco: document.getElementById('f_casco').checked, gilet: document.getElementById('f_gilet').checked,
+                entrata: new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}),
+                entrata_ts: Date.now(), uscita: null, varco_entrata: document.getElementById('f_varco_in').value || 'CAST09',
+                varco_uscita: ""
+            };
+
+            db.fornitori.push(entry);
+            // Crea tasto rapido se non esiste in admin o nei recenti [cite: 315]
+            if(!db.recenti.find(r => r.targa === tar)) {
+                db.recenti.push({azienda: azi, autista: entry.autista, targa: tar, casco: entry.casco, gilet: entry.gilet});
+            }
             save(); renderFornitori();
+            ['f_azienda','f_autista','f_targa'].forEach(i => document.getElementById(i).value = "");
         }
-    }
 
-    function delRecente(targa) {
-        if(confirm("Eliminare?")) {
-            db.recenti = db.recenti.filter(r => r.targa !== targa);
-            save(); renderFornitori();
-        }
-    }
+        function renderFornitori() {
+            const oggi = new Date().toLocaleDateString('it-IT');
+            const listaOggi = (db.fornitori || []).filter(f => f.data === oggi);
+            
+            // Popola Select Varchi [cite: 318]
+            document.getElementById('f_varco_in').innerHTML = db.varchi.map(v => `<option value="${v.nome}">${v.nome}</option>`).join('');
 
-    function registraUscita(id) {
-        const f = db.fornitori.find(x => x.id === id);
-        let vOut = prompt(`Varco USCITA per ${f.targa}:`, f.varco_entrata);
-        if(vOut) {
-            f.uscita = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-            f.varco_uscita = vOut.toUpperCase();
-            save(); renderFornitori();
-        }
-    }
-
-    function renderFornitori() {
-        const oggi = new Date().toLocaleDateString('it-IT');
-        const lista = db.fornitori.filter(f => f.data === oggi);
-        document.getElementById('f_varco_in').innerHTML = db.varchi.map(v => `<option value="${v.nome}">${v.nome}</option>`).join('');
-
-        document.getElementById('recenti_area').innerHTML = db.recenti.map((r, i) => `
-            <div class="freq-btn">
-                <span onclick="recallFornitore('${r.azienda}','${r.autista}','${r.targa}',${r.casco},${r.gilet})">
-                    <b>${r.targa}</b><br><small>${r.azienda}</small>
-                </span>
-                <div class="btn-controls">
-                    <span onclick="moveRecente(${i},-1)">▲</span>
-                    <span onclick="delRecente('${r.targa}')" style="color:red">✖</span>
-                    <span onclick="moveRecente(${i},1)">▼</span>
+            // Render Tasti Rapidi con controlli spostamento [cite: 319]
+            document.getElementById('recenti_area').innerHTML = db.recenti.map((r, i) => `
+                <div class="freq-btn">
+                    <span onclick="recallFornitore('${r.azienda}','${r.autista}','${r.targa}',${r.casco},${r.gilet})">
+                        <b>${r.targa}</b><br><small>${r.azienda}</small>
+                    </span>
+                    <div class="btn-controls">
+                        <span onclick="moveRecente(${i},-1)">▲</span>
+                        <span onclick="delRecente('${r.targa}')" style="color:red">✖</span>
+                        <span onclick="moveRecente(${i},1)">▼</span>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
 
-        document.getElementById('tbody_fornitori').innerHTML = lista.map(f => `
-            <tr class="${!f.uscita ? 'row-in-cantiere' : ''}">
-                <td>${f.azienda}</td><td>${f.targa}<br><small>${f.autista}</small></td>
-                <td>${f.varco_entrata}</td><td><span class="time-badge">${f.entrata}</span></td>
-                <td>${f.varco_uscita || '-'}</td><td><span class="time-badge">${f.uscita || '--:--'}</span></td>
-                <td>${f.casco?'✅':'❌'}${f.gilet?'✅':'❌'}</td>
-                <td>${f.uscita ? 'OK' : `<button onclick="registraUscita(${f.id})">ESCI</button>`}</td>
-            </tr>
-        `).reverse().join('');
-        const inC = lista.filter(x => !x.uscita).length;
-        document.getElementById('counter_box').innerHTML = `<span>TRANSITI: ${lista.length}</span> <span style="color:red">IN CANTIERE: ${inC}</span>`;
-    }
+            // Tabella con colonna ORA ENTRATA di fianco al varco [cite: 321]
+            document.getElementById('tbody_fornitori').innerHTML = listaOggi.map(f => `
+                <tr class="${!f.uscita ? 'row-in-cantiere' : ''}">
+                    <td>${f.azienda}</td>
+                    <td>${f.targa}<br><small>${f.autista}</small></td>
+                    <td>${f.varco_entrata}</td>
+                    <td><span class="time-badge">${f.entrata}</span></td>
+                    <td>${f.varco_uscita || '-'}</td>
+                    <td><span class="time-badge" style="background:#ffebee">${f.uscita || '--:--'}</span></td>
+                    <td>${f.casco?'✅':'❌'}${f.gilet?'✅':'❌'}</td>
+                    <td>${f.uscita ? 'OK' : `<button class="btn-small" style="background:var(--red)" onclick="registraUscita(${f.id})">ESCI</button>`}</td>
+                </tr>
+            `).reverse().join('');
+            
+            const inC = listaOggi.filter(x => !x.uscita).length;
+            document.getElementById('counter_box').innerHTML = `<span>TRANSITI: ${listaOggi.length}</span> <span style="color:red">IN CANTIERE: ${inC}</span>`;
+        }
 
-    function generatePDF() {
-        const val = document.getElementById('export_date').value;
-        if(!val) return alert("Seleziona data");
-        const dStr = val.split('-').reverse().join('/');
-        const dati = db.fornitori.filter(f => f.data === dStr);
-        const win = window.open('', '_blank');
-        win.document.write(`<html><body><h2>REPORT ${dStr}</h2><table border="1" style="width:100%; border-collapse:collapse;">
-            <thead><tr><th>AZIENDA</th><th>TARGA</th><th>IN</th><th>OUT</th></tr></thead>
-            <tbody>${dati.map(f=>`<tr><td>${f.azienda}</td><td>${f.targa}</td><td>${f.entrata}</td><td>${f.uscita||'IN LOCO'}</td></tr>`).join('')}</tbody>
-        </table></body></html>`);
-        win.document.close(); win.print();
-    }
+        function recallFornitore(az, aut, tar, c, g) {
+            document.getElementById('f_azienda').value = az;
+            document.getElementById('f_autista').value = aut;
+            document.getElementById('f_targa').value = tar;
+            document.getElementById('f_casco').checked = c;
+            document.getElementById('f_gilet').checked = g;
+        }
 
-    function renderDashboard() {
-        const oggi = new Date().toLocaleDateString('it-IT');
-        const lista = db.fornitori.filter(f => f.data === oggi);
-        document.getElementById('dash_transiti').innerText = lista.length;
-        document.getElementById('dash_mezzi').innerText = lista.filter(x => !x.uscita).length;
-        const last = lista[lista.length-1];
-        document.getElementById('dash_ultimo').innerText = last ? last.targa : "--";
-    }
+        function moveRecente(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < db.recenti.length) {
+                const item = db.recenti.splice(index, 1)[0];
+                db.recenti.splice(newIndex, 0, item);
+                save(); renderFornitori();
+            }
+        }
 
-    function addGiornale() {
-        const t = document.getElementById('g_testo').value;
-        if(t) { db.giornale.push({d:new Date().toLocaleString(), u:currentUser.n, t}); save(); renderGiornale(); }
-    }
-    function renderGiornale() {
-        document.getElementById('g_lista').innerHTML = db.giornale.map(g => `<div><small>${g.d}</small> - ${g.t}</div>`).reverse().join('');
-    }
-</script>
+        function delRecente(targa) {
+            if(confirm("Eliminare tasto rapido?")) {
+                db.recenti = db.recenti.filter(r => r.targa !== targa);
+                save(); renderFornitori();
+            }
+        }
+
+        function registraUscita(id) {
+            const f = db.fornitori.find(x => x.id === id);
+            // Conferma o cambio varco uscita [cite: 328, 329]
+            let vOut = prompt(`Conferma varco USCITA per ${f.targa}:`, f.varco_entrata);
+            if(vOut) {
+                f.uscita = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+                f.varco_uscita = vOut.toUpperCase();
+                save(); renderFornitori();
+            }
+        }
+    </script>
 </body>
 </html>
