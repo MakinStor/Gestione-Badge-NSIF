@@ -22,19 +22,15 @@
         
         h3 { border-bottom: 2px solid var(--red); padding-bottom: 10px; margin-bottom: 20px; color: var(--blue); text-transform: uppercase; }
 
-        /* INPUT GROUP MIGLIORATO FORNITORI */
+        /* INPUT GROUP FORNITORI */
         .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
-        .input-group input, .input-group select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; transition: all 0.3s; }
-        .input-group input:focus { border-color: var(--blue); box-shadow: 0 0 5px rgba(0,51,102,0.2); outline: none; }
-        
-        .btn-small { padding: 8px 15px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: none; color: white; }
+        .input-group input, .input-group select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
 
         /* TASTI RAPIDI MOBILI */
         .draggable-area { display: flex; gap: 10px; flex-wrap: wrap; min-height: 50px; padding: 15px; background: #fdfdfd; border-radius: 8px; border: 1px dashed #bbb; margin: 10px 0; }
-        .freq-btn { background: #fff; border: 1px solid #ddd; padding: 8px 35px 8px 12px; border-radius: 6px; font-size: 0.85rem; position: relative; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; min-width: 130px; }
+        .freq-btn { background: #fff; border: 1px solid #ddd; padding: 8px 35px 8px 12px; border-radius: 6px; font-size: 0.85rem; position: relative; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; min-width: 130px; cursor: pointer; }
         .btn-controls { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; background: #f0f0f0; border-radius: 4px; padding: 2px; border: 1px solid #ccc; }
         .btn-controls span { cursor: pointer; font-size: 10px; text-align: center; line-height: 1; padding: 2px; }
-        .btn-controls span:hover { background: #ddd; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { background: var(--blue); color: white; padding: 12px; text-align: left; font-size: 0.9rem; }
@@ -42,26 +38,27 @@
         .row-in-cantiere { border-left: 5px solid #4caf50; background: #f1f8e9; }
         .time-badge { background: #e3f2fd; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: var(--blue); }
 
-        .login-box { max-width: 400px; margin: 100px auto; padding: 40px; }
-        .login-box input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        /* LOGIN SCREEN */
+        #login_screen { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center; }
+        .login-box { background: white; padding: 40px; border-radius: 15px; width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         
         .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
         .dash-card { background: white; padding: 20px; border-radius: 10px; border-top: 5px solid var(--blue); text-align: center; }
         .dash-val { font-size: 2.5rem; font-weight: bold; color: var(--red); margin: 10px 0; }
-
-        .wf-node { padding: 20px; border: 2px solid var(--blue); border-radius: 10px; margin: 10px 0; background: #f9f9f9; }
 
         @media print { .nav-bar, .no-print, .btn-controls { display: none !important; } }
     </style>
 </head>
 <body>
 
-<div id="login_screen" class="container">
-    <div class="card login-box">
-        <h2 style="text-align:center; color: var(--blue);">ACCESSO NSIF</h2>
+<div id="login_screen">
+    <div class="login-box">
+        <h2 style="color: var(--blue); margin-bottom:20px;">ACCESSO NSIF</h2>
         <input type="text" id="log_u" placeholder="Username">
         <input type="password" id="log_p" placeholder="Password">
         <button class="nav-btn" style="width:100%; margin-top:20px;" onclick="doLogin()">ACCEDI</button>
+        <p style="font-size: 0.7rem; color: #999; margin-top:15px;">GESTIONALE V 1.19.0 BETA</p>
     </div>
 </div>
 
@@ -95,34 +92,31 @@
             <h3>Gestione Ingressi Fornitori</h3>
             <div class="input-group">
                 <input type="text" id="f_azienda" placeholder="Azienda">
-                <input type="text" id="f_autista" placeholder="Nome Cognome Autista">
-                <input type="text" id="f_targa" placeholder="Targa Mezzo">
-                <select id="f_varco_in" title="Varco di Accesso"></select>
+                <input type="text" id="f_autista" placeholder="Autista">
+                <input type="text" id="f_targa" placeholder="Targa">
+                <select id="f_varco_in"></select>
                 <input type="number" id="f_timeout" value="15" title="Minuti permanenza">
             </div>
             <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
                 <div style="display:flex; gap:15px; align-items: center; background: #eee; padding: 10px; border-radius: 6px;">
                     <label><input type="checkbox" id="f_casco"> 🪖 Casco</label>
                     <label><input type="checkbox" id="f_gilet"> 🦺 Gilet</label>
-                    <input type="text" id="f_nota_dpi" placeholder="Note DPI" style="width:150px; padding:5px; border-radius:4px; border:1px solid #ccc;">
                 </div>
-                <button class="nav-btn btn-small" style="background:green; font-weight: bold;" onclick="addFornitore()">REGISTRA ENTRATA</button>
+                <button class="nav-btn" style="background:green;" onclick="addFornitore()">REGISTRA ENTRATA</button>
             </div>
             <div style="margin-top:20px;">
-                <small><b>MEZZI FREQUENTI:</b> (▲▼ sposta, ✖ cancella)</small>
+                <small><b>MEZZI FREQUENTI:</b></small>
                 <div id="recenti_area" class="draggable-area"></div>
             </div>
-            <div class="no-print" style="margin-top:20px; padding:15px; background:#e9ecef; border-radius:8px; border-left: 5px solid var(--blue);">
-                <label><b>Report Registro PDF:</b> </label>
+            <div class="no-print" style="margin-top:20px; padding:15px; background:#e9ecef; border-radius:8px;">
+                <label><b>Report PDF:</b> </label>
                 <input type="date" id="export_date">
-                <button class="nav-btn btn-small" style="background:var(--blue);" onclick="generatePDF()">GENERA REPORT</button>
+                <button class="nav-btn" style="padding:5px 15px; font-size:0.8rem;" onclick="generatePDF()">GENERA</button>
             </div>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Azienda</th><th>Targa / Autista</th><th>Varco IN</th><th>Ora IN</th><th>Varco OUT</th><th>Ora OUT</th><th>DPI</th><th>Azione</th>
-                        </tr>
+                        <tr><th>Azienda</th><th>Targa/Autista</th><th>Varco IN</th><th>Ora IN</th><th>Varco OUT</th><th>Ora OUT</th><th>DPI</th><th>Azione</th></tr>
                     </thead>
                     <tbody id="tbody_fornitori"></tbody>
                 </table>
@@ -131,61 +125,24 @@
         </div>
     </div>
 
-    <div id="section_checklist" class="container section" style="display:none;">
-        <div class="card">
-            <h3>Checklist Turni Sicurezza</h3>
-            <div id="checklist_area"></div>
-            <button class="nav-btn" style="margin-top:20px;" onclick="saveChecklist()">SALVA CHECKLIST</button>
-        </div>
-    </div>
-
-    <div id="section_badge" class="container section" style="display:none;">
-        <div class="card">
-            <h3>Badge & Workflow Operativi</h3>
-            <div id="badge_start_btns" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;"></div>
-            <div id="flow_render_area"></div>
-        </div>
-    </div>
-
-    <div id="section_giornale" class="container section" style="display:none;">
-        <div class="card">
-            <h3>Giornale di Cantiere</h3>
-            <textarea id="g_testo" style="width:100%; height:120px; padding:10px; border-radius:8px; border:1px solid #ccc;" placeholder="Inserisci nota evento..."></textarea>
-            <button class="nav-btn" style="margin-top:10px;" onclick="addGiornale()">REGISTRA EVENTO</button>
-            <div id="g_lista" style="margin-top:30px;"></div>
-        </div>
-    </div>
-
-    <div id="section_admin" class="container section" style="display:none;">
-        <div class="card">
-            <h3>Pannello Amministrazione</h3>
-            <div id="admin_content"></div>
-        </div>
-    </div>
+    <div id="section_checklist" class="container section" style="display:none;"><div class="card"><h3>Checklist Sicurezza</h3><div id="checklist_area"></div></div></div>
+    <div id="section_badge" class="container section" style="display:none;"><div class="card"><h3>Badge & Workflow</h3><div id="badge_start_btns"></div><div id="flow_render_area"></div></div></div>
+    <div id="section_giornale" class="container section" style="display:none;"><div class="card"><h3>Giornale</h3><textarea id="g_testo" style="width:100%; height:100px;"></textarea><button class="nav-btn" onclick="addGiornale()">AGGIUNGI</button><div id="g_lista"></div></div></div>
+    <div id="section_admin" class="container section" style="display:none;"><div class="card"><h3>Amministrazione</h3><div id="admin_content"></div></div></div>
 </div>
 
 <script>
-    // --- DATABASE INIZIALIZZAZIONE ---
     let db = JSON.parse(localStorage.getItem('nsif_db_v1_19')) || {
         utenti: [
             {u:'admin', p:'admin', n:'Admin', c:'Sistema', r:'admin'},
             {u:'guardia', p:'1234', n:'Gualtiero', c:'Sicurezza', r:'user'}
         ],
-        fornitori: [], recenti: [], predefiniti: [], 
-        varchi: [{nome:'CAST09'}],
-        checklist: [
-            {t:'Verifica recinzioni perimetrali', v:false},
-            {t:'Controllo illuminazione notturna', v:false},
-            {t:'Ispezione varchi d\'accesso', v:false}
-        ],
-        giornale: [],
-        workflows: []
+        fornitori: [], recenti: [], varchi: [{nome:'CAST09'}], checklist: [], giornale: [], workflows: []
     };
-
     let currentUser = null;
+
     function save() { localStorage.setItem('nsif_db_v1_19', JSON.stringify(db)); }
 
-    // --- LOGICA NAVIGAZIONE E LOGIN ---
     function doLogin() {
         const u = document.getElementById('log_u').value;
         const p = document.getElementById('log_p').value;
@@ -197,7 +154,7 @@
             document.getElementById('user_info').innerText = `OPERATORE: ${user.n} ${user.c}`;
             if(user.r === 'admin') document.getElementById('btn_admin').style.display = 'inline-block';
             showSection('dashboard');
-        } else alert("Accesso negato.");
+        } else alert("Credenziali errate");
     }
 
     function doLogout() { location.reload(); }
@@ -208,31 +165,23 @@
         if(id === 'fornitori') renderFornitori();
         if(id === 'dashboard') renderDashboard();
         if(id === 'giornale') renderGiornale();
-        if(id === 'checklist') renderChecklist();
-        if(id === 'badge') renderBadgeWorkflows();
-        if(id === 'admin') renderAdminAll();
     }
 
-    // --- LOGICA FORNITORI (AGGIORNATA) ---
     function addFornitore() {
-        const azienda = document.getElementById('f_azienda').value.toUpperCase();
-        const autista = document.getElementById('f_autista').value.toUpperCase();
-        const targa = document.getElementById('f_targa').value.toUpperCase().replace(/\s/g, '');
-        const varcoIn = document.getElementById('f_varco_in').value || 'CAST09';
-
-        if(!azienda || !targa) return alert("Dati incompleti.");
+        const az = document.getElementById('f_azienda').value.toUpperCase();
+        const ta = document.getElementById('f_targa').value.toUpperCase().replace(/\s/g, '');
+        if(!az || !ta) return alert("Inserire Azienda e Targa");
 
         const f = {
             id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
             entrata: new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}),
-            entrata_ts: Date.now(), azienda, autista, targa, varco_entrata: varcoIn,
-            uscita: null, varco_uscita: null,
-            casco: document.getElementById('f_casco').checked,
-            gilet: document.getElementById('f_gilet').checked
+            entrata_ts: Date.now(), azienda: az, autista: document.getElementById('f_autista').value.toUpperCase(),
+            targa: ta, varco_entrata: document.getElementById('f_varco_in').value, uscita: null,
+            casco: document.getElementById('f_casco').checked, gilet: document.getElementById('f_gilet').checked
         };
         db.fornitori.push(f);
-        if(!db.recenti.some(r => r.targa === targa)) {
-            db.recenti.push({azienda, autista, targa, casco: f.casco, gilet: f.gilet});
+        if(!db.recenti.some(r => r.targa === ta)) {
+            db.recenti.push({azienda: az, autista: f.autista, targa: ta, casco: f.casco, gilet: f.gilet});
         }
         save(); renderFornitori();
         ['f_azienda','f_autista','f_targa'].forEach(i => document.getElementById(i).value = '');
@@ -263,7 +212,7 @@
 
     function registraUscita(id) {
         const f = db.fornitori.find(x => x.id === id);
-        let vOut = prompt(`Varco USCITA per ${f.targa}:`, f.varco_entrata || "CAST09");
+        let vOut = prompt(`Varco USCITA per ${f.targa}:`, f.varco_entrata);
         if(vOut) {
             f.uscita = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
             f.varco_uscita = vOut.toUpperCase();
@@ -274,10 +223,9 @@
     function renderFornitori() {
         const oggi = new Date().toLocaleDateString('it-IT');
         const lista = db.fornitori.filter(f => f.data === oggi);
-        const opts = (db.varchi || []).map(v => `<option value="${v.nome}">${v.nome}</option>`).join('') || '<option value="CAST09">CAST09</option>';
-        document.getElementById('f_varco_in').innerHTML = opts;
+        document.getElementById('f_varco_in').innerHTML = db.varchi.map(v => `<option value="${v.nome}">${v.nome}</option>`).join('');
 
-        document.getElementById('recenti_area').innerHTML = (db.recenti || []).map((r, i) => `
+        document.getElementById('recenti_area').innerHTML = db.recenti.map((r, i) => `
             <div class="freq-btn">
                 <span onclick="recallFornitore('${r.azienda}','${r.autista}','${r.targa}',${r.casco},${r.gilet})">
                     <b>${r.targa}</b><br><small>${r.azienda}</small>
@@ -292,14 +240,11 @@
 
         document.getElementById('tbody_fornitori').innerHTML = lista.map(f => `
             <tr class="${!f.uscita ? 'row-in-cantiere' : ''}">
-                <td>${f.azienda}</td>
-                <td>${f.targa}<br><small>${f.autista}</small></td>
-                <td>${f.varco_entrata || 'CAST09'}</td>
-                <td><span class="time-badge">${f.entrata}</span></td>
-                <td>${f.varco_uscita || '-'}</td>
-                <td><span class="time-badge" style="background:#ffebee">${f.uscita || '--:--'}</span></td>
+                <td>${f.azienda}</td><td>${f.targa}<br><small>${f.autista}</small></td>
+                <td>${f.varco_entrata}</td><td><span class="time-badge">${f.entrata}</span></td>
+                <td>${f.varco_uscita || '-'}</td><td><span class="time-badge">${f.uscita || '--:--'}</span></td>
                 <td>${f.casco?'✅':'❌'}${f.gilet?'✅':'❌'}</td>
-                <td>${f.uscita ? 'OK' : `<button class="btn-small" style="background:var(--red)" onclick="registraUscita(${f.id})">ESCI</button>`}</td>
+                <td>${f.uscita ? 'OK' : `<button onclick="registraUscita(${f.id})">ESCI</button>`}</td>
             </tr>
         `).reverse().join('');
         const inC = lista.filter(x => !x.uscita).length;
@@ -308,104 +253,32 @@
 
     function generatePDF() {
         const val = document.getElementById('export_date').value;
-        if(!val) return alert("Data mancante.");
+        if(!val) return alert("Seleziona data");
         const dStr = val.split('-').reverse().join('/');
         const dati = db.fornitori.filter(f => f.data === dStr);
-        if(!dati.length) return alert("Nessun dato.");
-        let minTot = 0, countUsciti = 0;
-        dati.forEach(f => {
-            if(f.uscita && f.entrata_ts) {
-                const [h, m] = f.uscita.split(':');
-                const dU = new Date(f.entrata_ts); dU.setHours(h, m);
-                const diff = Math.floor((dU - f.entrata_ts)/60000);
-                if(diff > 0) { minTot += diff; countUsciti++; }
-            }
-        });
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #ddd;padding:8px;font-size:12px;} th{background:#003366;color:white;} .stat-box{display:flex;gap:10px;margin-bottom:20px;} .s-card{flex:1;background:#f0f0f0;padding:15px;border-radius:5px;text-align:center;} .s-card b{color:red;display:block;font-size:1.2rem;}</style></head><body><h2>REGISTRO ${dStr}</h2><div class="stat-box"><div class="s-card">TOTALI<b>${dati.length}</b></div><div class="s-card">USCITI<b>${countUsciti}</b></div><div class="s-card">PERM. MEDIA<b>${countUsciti?Math.round(minTot/countUsciti):0} min</b></div></div><table><thead><tr><th>DITTA</th><th>TARGA</th><th>V.IN</th><th>ORA.IN</th><th>V.OUT</th><th>ORA.OUT</th></tr></thead><tbody>${dati.map(f=>`<tr><td>${f.azienda}</td><td>${f.targa}</td><td>${f.varco_entrata}</td><td>${f.entrata}</td><td>${f.varco_uscita||'-'}</td><td>${f.uscita||'IN LOCO'}</td></tr>`).join('')}</tbody></table></body></html>`);
-        win.document.close(); setTimeout(() => win.print(), 500);
+        win.document.write(`<html><body><h2>REPORT ${dStr}</h2><table border="1" style="width:100%; border-collapse:collapse;">
+            <thead><tr><th>AZIENDA</th><th>TARGA</th><th>IN</th><th>OUT</th></tr></thead>
+            <tbody>${dati.map(f=>`<tr><td>${f.azienda}</td><td>${f.targa}</td><td>${f.entrata}</td><td>${f.uscita||'IN LOCO'}</td></tr>`).join('')}</tbody>
+        </table></body></html>`);
+        win.document.close(); win.print();
     }
 
-    // --- LOGICA DASHBOARD ---
     function renderDashboard() {
         const oggi = new Date().toLocaleDateString('it-IT');
         const lista = db.fornitori.filter(f => f.data === oggi);
         document.getElementById('dash_transiti').innerText = lista.length;
         document.getElementById('dash_mezzi').innerText = lista.filter(x => !x.uscita).length;
-        const last = lista[lista.length - 1];
-        document.getElementById('dash_ultimo').innerText = last ? `${last.entrata} - ${last.targa}` : "--";
+        const last = lista[lista.length-1];
+        document.getElementById('dash_ultimo').innerText = last ? last.targa : "--";
     }
 
-    // --- LOGICA CHECKLIST ---
-    function renderChecklist() {
-        document.getElementById('checklist_area').innerHTML = db.checklist.map((c, i) => `
-            <div style="padding:10px; border-bottom:1px solid #eee;">
-                <label><input type="checkbox" ${c.v?'checked':''} onchange="db.checklist[${i}].v=this.checked; save();"> ${c.t}</label>
-            </div>
-        `).join('');
-    }
-    function saveChecklist() { save(); alert("Checklist aggiornata."); }
-
-    // --- LOGICA GIORNALE ---
     function addGiornale() {
         const t = document.getElementById('g_testo').value;
-        if(!t) return;
-        db.giornale.push({id:Date.now(), data:new Date().toLocaleString(), user:currentUser.n, testo:t});
-        save(); document.getElementById('g_testo').value = ''; renderGiornale();
+        if(t) { db.giornale.push({d:new Date().toLocaleString(), u:currentUser.n, t}); save(); renderGiornale(); }
     }
     function renderGiornale() {
-        document.getElementById('g_lista').innerHTML = db.giornale.map(g => `<div class="card" style="padding:10px; margin-bottom:10px;"><small><b>${g.data}</b> - Op: ${g.user}</small><p style="margin:5px 0;">${g.testo}</p></div>`).reverse().join('');
-    }
-
-    // --- LOGICA WORKFLOW (INTEGRALE) ---
-    function renderBadgeWorkflows() {
-        document.getElementById('badge_start_btns').innerHTML = (db.workflows || []).map(wf => `<button class="nav-btn" onclick="startWorkflow(${wf.id})">📋 ${wf.nome}</button>`).join('');
-    }
-    function startWorkflow(wfId) {
-        const wf = db.workflows.find(x => x.id === wfId);
-        if(wf && wf.nodi.length) eseguiNodo(wfId, wf.nodi[0].id);
-    }
-    function eseguiNodo(wfId, nId) {
-        if(!nId || nId === 'FINE') { document.getElementById('flow_render_area').innerHTML = "<h3>✅ PROCEDURA COMPLETATA</h3>"; return; }
-        const wf = db.workflows.find(x => x.id === wfId);
-        const n = wf.nodi.find(x => x.id == nId);
-        if(!n) return;
-        let h = `<div class="wf-node"><h4>${n.titolo}</h4><p>${n.istruzione}</p>`;
-        if(n.tipo === 'info') h += `<button class="nav-btn" onclick="eseguiNodo(${wfId}, '${n.idSi}')">PROSEGUI</button>`;
-        else if(n.tipo === 'scelta') h += `<button class="nav-btn" style="background:green; margin-right:10px;" onclick="eseguiNodo(${wfId}, '${n.idSi}')">SÌ</button><button class="nav-btn" style="background:red;" onclick="eseguiNodo(${wfId}, '${n.idNo}')">NO</button>`;
-        h += `</div>`;
-        document.getElementById('flow_render_area').innerHTML = h;
-    }
-
-    // --- ADMIN (GESTIONE COMPLETA) ---
-    function renderAdminAll() {
-        document.getElementById('admin_content').innerHTML = `
-            <h4>Varchi</h4>
-            <input type="text" id="new_varco" placeholder="Nome"> <button onclick="addVarco()">Aggiungi</button>
-            <div style="margin:10px 0;">${db.varchi.map(v=>`<span class="time-badge">${v.nome}</span>`).join(' ')}</div>
-            <hr>
-            <h4>Workflows</h4>
-            <input type="text" id="wf_name" placeholder="Nome Procedura"> <button onclick="addWF()">Crea</button>
-            <div id="wf_admin_list" style="margin-top:15px;"></div>
-        `;
-        renderWfAdmin();
-    }
-    function addVarco() { const v = document.getElementById('new_varco').value; if(v){db.varchi.push({nome:v.toUpperCase()}); save(); renderAdminAll();}}
-    function addWF() { const n = document.getElementById('wf_name').value; if(n){db.workflows.push({id:Date.now(), nome:n, nodi:[]}); save(); renderAdminAll();}}
-    function renderWfAdmin() {
-        document.getElementById('wf_admin_list').innerHTML = db.workflows.map(wf => `
-            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                <b>${wf.nome}</b> <button onclick="addNodo(${wf.id})">+ Nodo</button>
-                <div style="font-size:0.8rem;">Nodi: ${wf.nodi.map(n=>`[ID:${n.id} ${n.tipo}]`).join(', ')}</div>
-            </div>
-        `).join('');
-    }
-    function addNodo(wfId) {
-        const wf = db.workflows.find(x => x.id === wfId);
-        const t = prompt("Tipo (info / scelta):");
-        if(!t) return;
-        const nodo = { id: Date.now(), tipo: t, titolo: prompt("Titolo:"), istruzione: prompt("Testo:"), idSi: prompt("Prossimo ID (o FINE):"), idNo: t==='scelta'?prompt("ID se NO:"):null };
-        wf.nodi.push(nodo); save(); renderAdminAll();
+        document.getElementById('g_lista').innerHTML = db.giornale.map(g => `<div><small>${g.d}</small> - ${g.t}</div>`).reverse().join('');
     }
 </script>
 </body>
