@@ -10,6 +10,7 @@
         
         .header { text-align: center; padding: 30px 20px; background: var(--white); border-bottom: 6px solid var(--red); }
         .logo-main { width: 95%; max-width: 1000px; height: auto; }
+        .logo-securitas-header { width: 120px; margin-top: 10px; display: block; margin-left: auto; margin-right: auto; }
         .version-label { color: var(--blue); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; margin-top:10px; }
 
         .nav-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 15px; background: #e9ecef; position: sticky; top:0; z-index: 999; }
@@ -99,6 +100,7 @@
     <div id="main_ui" style="display:none;">
         <div class="header">
             <img src="logo_Consorzio.jpg" class="logo-main" alt="LOGO NSIF">
+            <img src="https://www.securitas.ch/_assets/1f4f58cb8ec7ef7ef807190874a5a8cd/img/logos/securitas.svg" class="logo-securitas-header" alt="SECURITAS">
             <div class="version-label">NSFI CASTIONE – GESTIONALE V 1.19.0</div>
         </div>
 
@@ -110,7 +112,7 @@
             <button class="nav-btn" onclick="showSection('section_giornale')">GIORNALE DI BORDO</button>
             <button class="nav-btn" onclick="showSection('section_docs')">DOCUMENTI</button>
             <button id="nav_admin" class="nav-btn nav-admin" style="display:none;" onclick="showSection('section_admin')">AMMINISTRATORE</button>
-            <button class="nav-btn" style="background:#666;" onclick="location.reload()">LOGOUT</button>
+            <button class="nav-btn" style="background:#666;" onclick="logout()">LOGOUT</button>
         </div>
 
         <div id="section_home" class="container active-page">
@@ -193,7 +195,6 @@
         <div id="section_giornale" class="container">
             <div class="card">
                 <h3>Diario di Bordo Operativo</h3>
-                
                 <div style="display:grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 120px; gap:10px; align-items: end;">
                     <div class="field-group">
                         <label>Luogo / Punto</label>
@@ -217,8 +218,8 @@
                     <div class="field-group">
                         <label>Stato</label>
                         <select id="gb_risolto">
-                            <option value="SI">SI (Completato)</option>
-                            <option value="NO">NO (In Sospeso)</option>
+                            <option value="SI">Risolto</option>
+                            <option value="NO">In Sospeso</option>
                         </select>
                     </div>
                     <button class="nav-btn" style="background:green; height: 42px;" onclick="addGiornale()">REGISTRA</button>
@@ -318,6 +319,23 @@
         function save() { localStorage.setItem('nsif_v19_db', JSON.stringify(db)); }
 
         window.onload = function() {
+            // Controllo persistenza login
+            const savedUser = localStorage.getItem('nsif_logged_user');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                // Verifica che l'utente esista ancora nel DB
+                const check = db.users.find(x => x.e === user.e && x.p === user.p);
+                if (check && check.s) {
+                    currentUser = check;
+                    document.getElementById('page_login').style.display = 'none';
+                    document.getElementById('main_ui').style.display = 'block';
+                    if(currentUser.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
+                    initApp();
+                } else {
+                    localStorage.removeItem('nsif_logged_user');
+                }
+            }
+            
             const lastUser = localStorage.getItem('nsif_last_user');
             if(lastUser) document.getElementById('log_u').value = lastUser;
         };
@@ -330,11 +348,17 @@
                 if(!user.s) return alert("Account disattivato.");
                 currentUser = user;
                 localStorage.setItem('nsif_last_user', u);
+                localStorage.setItem('nsif_logged_user', JSON.stringify(user));
                 document.getElementById('page_login').style.display = 'none';
                 document.getElementById('main_ui').style.display = 'block';
                 if(user.l === 'admin') document.getElementById('nav_admin').style.display = 'block';
                 initApp();
             } else alert("Dati errati");
+        }
+
+        function logout() {
+            localStorage.removeItem('nsif_logged_user');
+            location.reload();
         }
 
         function initApp() {
@@ -374,7 +398,7 @@
             }
         }
 
-        /* GIORNALE DI BORDO - LOGICA RICHIESTA */
+        /* GIORNALE DI BORDO */
         function addGiornale() {
             const entry = {
                 id: Date.now(),
@@ -398,7 +422,6 @@
             const search = document.getElementById('gb_search').value.toLowerCase();
             const isAdmin = (currentUser.l === 'admin');
             const oggiIso = new Date().toISOString().split('T')[0];
-
             let list = db.giornale.filter(g => {
                 const textMatch = g.d.toLowerCase().includes(search) || g.l.toLowerCase().includes(search) || g.a.toLowerCase().includes(search);
                 const isSospeso = (g.r === 'NO');
@@ -406,7 +429,6 @@
                 return textMatch && (isSospeso || isOggi || search !== "");
             });
 
-            // Ordinamento: Sospesi (NO) sempre in cima, poi Cronologico Inverso
             list.sort((a, b) => {
                 if (a.r === 'NO' && b.r === 'SI') return -1;
                 if (a.r === 'SI' && b.r === 'NO') return 1;
@@ -427,8 +449,8 @@
                     </td>
                     <td>
                         <select onchange="updateGbField(${g.id}, 'r', this.value)" style="font-weight:bold; padding:4px;">
-                            <option value="SI" ${g.r === 'SI' ? 'selected' : ''}>SI (Risolto)</option>
-                            <option value="NO" ${g.r === 'NO' ? 'selected' : ''}>NO (Sospeso)</option>
+                            <option value="SI" ${g.r === 'SI' ? 'selected' : ''}>Risolto</option>
+                            <option value="NO" ${g.r === 'NO' ? 'selected' : ''}>In Sospeso</option>
                         </select>
                     </td>
                     <td>
@@ -454,7 +476,7 @@
             const oggi = new Date().toLocaleDateString();
             let txt = `RAPPORTO GIORNALIERO NSIF CASTIONE - ${oggi}\n\n`;
             db.giornale.filter(g => g.data_iso === new Date().toISOString().split('T')[0] || g.r === 'NO').forEach(g => {
-                txt += `[${g.t}] AGENTE: ${g.a}\nLUOGO: ${g.l} | STATO: ${g.r}\nDESC: ${g.d}\nMISURE: ${g.m}\n----------------------------------\n`;
+                txt += `[${g.t}] AGENTE: ${g.a}\nLUOGO: ${g.l} | STATO: ${g.r === 'SI' ? 'RISOLTO' : 'SOSPESO'}\nDESC: ${g.d}\nMISURE: ${g.m}\n----------------------------------\n`;
             });
             const blob = new Blob([txt], {type: "text/plain"});
             const a = document.createElement("a");
@@ -469,14 +491,23 @@
             const aut = document.getElementById('f_autista').value;
             const tar = document.getElementById('f_targa').value.toUpperCase();
             if(!azi || !tar || !aut) return alert("Mancano dati!");
+            
             const entry = {
-                id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
-                azienda: azi, autista: aut, targa: tar, 
-                casco: document.getElementById('f_casco').checked, gilet: document.getElementById('f_gilet').checked, 
+                id: Date.now(),
+                data: new Date().toLocaleDateString('it-IT'),
+                azienda: azi,
+                autista: aut,
+                targa: tar,
+                casco: document.getElementById('f_casco').checked,
+                gilet: document.getElementById('f_gilet').checked,
                 nota: document.getElementById('f_nota_dpi').value,
                 entrata: new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}),
-                entrata_ts: Date.now(), uscita: null, varco_entrata: document.getElementById('f_varco_in').value,
-                varco_uscita: "", timeout_min: parseInt(document.getElementById('f_timeout').value) || 15, alert_scattato: false
+                entrata_ts: Date.now(),
+                uscita: null,
+                varco_entrata: document.getElementById('f_varco_in').value,
+                varco_uscita: "",
+                timeout_min: parseInt(document.getElementById('f_timeout').value) || 15,
+                alert_scattato: false
             };
             db.fornitori.push(entry);
             if(!db.recenti.find(r => r.targa === tar) && !db.predefiniti.find(p => p.targa === tar)) {
@@ -498,13 +529,23 @@
         }
 
         function recallFornitore(az, aut, tar, c, g, isPre) {
-            document.getElementById('f_azienda').value = az; document.getElementById('f_targa').value = tar;
-            document.getElementById('f_casco').checked = c; document.getElementById('f_gilet').checked = g;
-            if(!isPre) { document.getElementById('f_autista').value = aut; addFornitore(); }
-            else { document.getElementById('f_autista').value = ""; document.getElementById('f_autista').focus(); }
+            document.getElementById('f_azienda').value = az;
+            document.getElementById('f_targa').value = tar;
+            document.getElementById('f_casco').checked = c;
+            document.getElementById('f_gilet').checked = g;
+            if(!isPre) {
+                document.getElementById('f_autista').value = aut;
+                addFornitore();
+            } else {
+                document.getElementById('f_autista').value = "";
+                document.getElementById('f_autista').focus();
+            }
         }
 
-        function delRecente(t) { db.recenti = db.recenti.filter(r => r.targa !== t); save(); renderFornitori(); }
+        function delRecente(t) {
+            db.recenti = db.recenti.filter(r => r.targa !== t);
+            save(); renderFornitori();
+        }
 
         function openOutModal(id) {
             activeOutFornitoreId = id;
@@ -518,7 +559,11 @@
 
         function confirmUscita(v) {
             const f = db.fornitori.find(x => x.id === activeOutFornitoreId);
-            if(f) { f.uscita = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}); f.varco_uscita = v; save(); renderFornitori(); }
+            if(f) {
+                f.uscita = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+                f.varco_uscita = v;
+                save(); renderFornitori();
+            }
             closeOutModal();
         }
 
@@ -530,109 +575,223 @@
                     document.getElementById('alert_msg').innerHTML = `⚠️ <b>${f.targa}</b> Tempo superato!`;
                     document.getElementById('alert_modal').style.display = 'flex';
                     alarmSound.play().catch(e => {});
-                    document.getElementById('btn_tutto_ok').onclick = () => { f.entrata_ts = Date.now(); f.alert_scattato = false; closeAlarm(); save(); };
+                    document.getElementById('btn_tutto_ok').onclick = () => {
+                        f.entrata_ts = Date.now();
+                        f.alert_scattato = false;
+                        closeAlarm();
+                    };
                 }
             });
         }
 
-        function closeAlarm() { document.getElementById('alert_modal').style.display = 'none'; alarmSound.pause(); alarmSound.currentTime = 0; }
-
-        /* CHECKLIST */
-        function addCheckItem() {
-            const t = document.getElementById('cfg_turn_name').value;
-            if(!t) return;
-            if(!db.checklist[t]) db.checklist[t] = [];
-            db.checklist[t].push({ fase: document.getElementById('cfg_fase').value, titolo: document.getElementById('cfg_title').value });
-            save(); renderAdminAll();
+        function closeAlarm() {
+            document.getElementById('alert_modal').style.display = 'none';
+            alarmSound.pause();
+            alarmSound.currentTime = 0;
         }
 
-        function renderRunTurnBtns() {
-            document.getElementById('run_turn_btns').innerHTML = Object.keys(db.checklist).map(t => `<button class="nav-btn" onclick="openRunCheck('${t}')">${t}</button>`).join('');
+        /* RESTO DELLE FUNZIONI (Badge, Admin, Home Links, Checklist, Docs) */
+        function renderHomeLinks() {
+            document.getElementById('home_links').innerHTML = (db.links || []).map(l => `<button class="nav-btn" style="padding:25px; min-width:200px; font-size:1.1rem;" onclick="window.open('${l.u}','_blank')">🔗 ${l.n}</button>`).join('');
         }
 
-        function openRunCheck(t) {
-            currentActiveTurn = t;
-            const items = db.checklist[t] || [];
-            const fasi = ["Inizio", "Durante", "Fine"];
-            let h = `<h2>Checklist Operativa: ${t}</h2>`;
-            fasi.forEach(f => {
-                const faseItems = items.filter(i => i.fase === f);
-                if(faseItems.length) {
-                    h += `<div class="checklist-section-title">${f.toUpperCase()} TURNO</div>`;
-                    faseItems.forEach((item, idx) => {
-                        const gIdx = items.indexOf(item);
-                        h += `<div class="check-item"><span>${item.titolo}</span><div><span class="time-badge" id="ts_${gIdx}">--:--</span> <input type="checkbox" onchange="updateCheckTime(${gIdx}, this)"></div></div>`;
-                    });
-                }
-            });
-            h += `<div style="margin-top:15px;"><label>NOTE INTEGRATIVE:</label><textarea id="check_notes" style="width:100%; height:60px;"></textarea></div><button class="nav-btn" style="background:green; width:100%; margin-top:10px;" onclick="concludeChecklist()">SALVA E CHIUDI</button>`;
-            document.getElementById('run_checklist_area').innerHTML = h;
-        }
-
-        function updateCheckTime(idx, cb) { document.getElementById('ts_'+idx).innerText = cb.checked ? new Date().toLocaleTimeString('it-IT',{hour:'2-digit', minute:'2-digit'}) : '--:--'; }
-
-        function concludeChecklist() {
-            const n = document.getElementById('check_notes').value;
-            db.giornale.push({
-                id: Date.now(), t: new Date().toLocaleString(), data_iso: new Date().toISOString().split('T')[0],
-                a: currentUser.n+" "+currentUser.c, l: "CHECKLIST "+currentActiveTurn, d: "Completata. Note: "+(n||"Nessuna"), r: "SI", p: "normale"
-            });
-            save(); renderGiornale(); alert("Registrato nel Diario."); document.getElementById('run_checklist_area').innerHTML = "";
-        }
-
-        /* WORKFLOW */
-        function renderAdminWorkflowList() {
-            document.getElementById('admin_workflow_list').innerHTML = (db.workflows || []).map(wf => `
-                <div class="card">
-                    <h4>${wf.nome} <button onclick="addNodo(${wf.id})">Aggiungi Nodo</button></h4>
-                    <div id="nodes_${wf.id}">${wf.nodi.map(n => `<div class="wf-node-admin">ID: ${n.id} - ${n.tipo.toUpperCase()} - ${n.titolo} <button onclick="linkNodi(${wf.id}, ${n.id})">Link</button></div>`).join('')}</div>
-                </div>`).join('');
-        }
-        function addWorkflowOrg() { const n = prompt("Nome Org:"); if(n) { if(!db.workflows) db.workflows=[]; db.workflows.push({id:Date.now(), nome:n, nodi:[]}); save(); renderAdminAll(); } }
-        function addNodo(wfId) { const wf = db.workflows.find(x => x.id === wfId); const t = prompt("Tipo (scelta/azione/fine):"); if(t) { wf.nodi.push({id:Date.now(), tipo:t, titolo:prompt("Testo:"), istruzione:prompt("Istruzioni:"), idSi:null, idNo:null}); save(); renderAdminAll(); } }
-        function linkNodi(wfId, nId) { const wf = db.workflows.find(x => x.id === wfId); const n = wf.nodi.find(x => x.id === nId); n.idSi = prompt("ID Prossimo/SÌ:"); if(n.tipo==='scelta') n.idNo = prompt("ID NO:"); save(); renderAdminAll(); }
-        function renderBadgeWorkflows() { document.getElementById('badge_start_btns').innerHTML = (db.workflows || []).map(wf => `<button class="nav-btn" onclick="startWorkflow(${wf.id})">📋 ${wf.nome}</button>`).join(''); }
-        function startWorkflow(wfId) { const wf = db.workflows.find(x => x.id === wfId); if(wf && wf.nodi.length) eseguiNodo(wfId, wf.nodi[0].id); }
-        function eseguiNodo(wfId, nId) {
-            if(!nId || nId === 'FINE') { document.getElementById('flow_render_area').innerHTML = "<h2>COMPLETATO</h2>"; return; }
-            const wf = db.workflows.find(x => x.id === wfId); const n = wf.nodi.find(x => x.id == nId);
-            let h = `<div class="card"><h2>${n.titolo}</h2><p>${n.istruzione}</p>`;
-            if(n.tipo==='scelta') h += `<button class="nav-btn" onclick="eseguiNodo(${wfId}, ${n.idSi})">SÌ</button> <button class="nav-btn" style="background:var(--red);" onclick="eseguiNodo(${wfId}, ${n.idNo})">NO</button>`;
-            else h += `<button class="nav-btn" onclick="eseguiNodo(${wfId}, ${n.idSi})">PROSEGUI</button>`;
-            document.getElementById('flow_render_area').innerHTML = h + "</div>";
-        }
-
-        /* ADMIN MISC */
         function renderAdminAll() {
-            document.getElementById('tbody_adm_varchi').innerHTML = db.varchi.map(v => `<tr><td>${v.nome}</td><td>${v.note}</td><td><button onclick="db.varchi=db.varchi.filter(x=>x.id!=${v.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
-            document.getElementById('tbody_adm_users').innerHTML = db.users.map(u => `<tr><td>${u.n} ${u.c}</td><td>${u.l}</td><td>${u.d}</td><td>${u.s?'✅':'🚫'}</td><td><button onclick="editUser(${u.id})">EDIT</button></td></tr>`).join('');
-            document.getElementById('tbody_adm_predef').innerHTML = db.predefiniti.map((p,i) => `<tr><td>${p.a}</td><td>${p.t}</td><td><button onclick="db.predefiniti.splice(${i},1);save();renderAdminAll();">❌</button></td></tr>`).join('');
-            document.getElementById('tbody_cfg_links').innerHTML = db.links.map((l,i) => `<tr><td>${l.n}</td><td>${l.u}</td><td><button onclick="db.links.splice(${i},1);save();renderAdminAll();">❌</button></td></tr>`).join('');
-            let ch = ""; Object.keys(db.checklist).forEach(t => { db.checklist[t].forEach((item, i) => { ch += `<tr><td>${t}</td><td>${item.fase}</td><td>${item.titolo}</td><td><button onclick="db.checklist['${t}'].splice(${i},1);save();renderAdminAll();">❌</button></td></tr>`; }); });
-            document.getElementById('tbody_cfg_check').innerHTML = ch;
-            renderAdminWorkflowList(); renderDocsAdmin();
+            renderUsersAdmin(); renderVarchiAdmin(); renderPredefAdmin(); renderLinksAdmin(); renderCheckAdmin(); renderDocsAdmin();
+        }
+
+        function renderUsersAdmin() {
+            document.getElementById('tbody_adm_users').innerHTML = (db.users || []).map(u => `<tr><td>${u.n} ${u.c}<br><small>${u.e}</small></td><td>${u.l}</td><td>${u.d} gg</td><td>${u.s?'Attivo':'OFF'}</td><td><button onclick="editUser(${u.id})">✏️</button><button onclick="db.users=db.users.filter(x=>x.id!=${u.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
         }
 
         function addUser() {
-            const nUser = { id: editUserId || Date.now(), n: document.getElementById('adm_u_nome').value, c: document.getElementById('adm_u_cognome').value, e: document.getElementById('adm_u_email').value, p: document.getElementById('adm_u_pass').value, d: document.getElementById('adm_u_durata').value, l: document.getElementById('adm_u_lvl').value, s: true };
-            if(editUserId) { const idx = db.users.findIndex(x => x.id === editUserId); db.users[idx] = nUser; editUserId = null; document.getElementById('btn_save_user').innerText = "CREA ACCOUNT"; }
-            else { db.users.push(nUser); }
+            const u = {
+                id: editUserId || Date.now(),
+                n: document.getElementById('adm_u_nome').value,
+                c: document.getElementById('adm_u_cognome').value,
+                e: document.getElementById('adm_u_email').value,
+                p: document.getElementById('adm_u_pass').value,
+                d: document.getElementById('adm_u_durata').value,
+                l: document.getElementById('adm_u_lvl').value,
+                s: true
+            };
+            if(editUserId) db.users = db.users.map(x => x.id === editUserId ? u : x);
+            else db.users.push(u);
+            editUserId = null;
+            document.getElementById('btn_save_user').innerText = "CREA ACCOUNT";
             save(); renderAdminAll();
         }
-        function editUser(id) { const u = db.users.find(x => x.id === id); document.getElementById('adm_u_nome').value = u.n; document.getElementById('adm_u_cognome').value = u.c; document.getElementById('adm_u_email').value = u.e; document.getElementById('adm_u_pass').value = u.p; editUserId = id; document.getElementById('btn_save_user').innerText = "AGGIORNA"; }
-        function addVarco() { const n = document.getElementById('adm_v_nome').value; if(n) { db.varchi.push({id: Date.now(), nome: n, note: document.getElementById('adm_v_note').value}); save(); renderAdminAll(); } }
-        function addPredefinito() { const a = document.getElementById('adm_f_azienda').value; const t = document.getElementById('adm_f_targa').value; if(a && t) { db.predefiniti.push({ a, t }); save(); renderAdminAll(); } }
-        function addHomeLink() { const n = document.getElementById('cfg_link_name').value; const u = document.getElementById('cfg_link_url').value; if(n && u) { db.links.push({ n, u }); save(); renderAdminAll(); renderHomeLinks(); } }
-        function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue);" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
 
-        /* DOCS */
-        function setupDragDrop() { const zone = document.getElementById('drop_zone'); zone.onclick = () => document.getElementById('file_input').click(); zone.ondragover = (e) => e.preventDefault(); zone.ondrop = (e) => { e.preventDefault(); processFile(e.dataTransfer.files[0]); }; document.getElementById('file_input').onchange = (e) => processFile(e.target.files[0]); }
-        function processFile(file) { if(!file || file.type !== "application/pdf") return alert("Solo PDF"); const reader = new FileReader(); reader.onload = (e) => { tempFileData = e.target.result; document.getElementById('drop_zone').innerText = "File pronto: " + file.name; }; reader.readAsDataURL(file); }
-        function uploadDocument() { const n = document.getElementById('doc_name').value; if(!n || !tempFileData) return alert("Mancano dati"); db.docs.push({ id: Date.now(), n, s: document.getElementById('doc_start').value, e: document.getElementById('doc_end').value, data: tempFileData }); save(); renderAdminAll(); tempFileData = null; document.getElementById('drop_zone').innerText = "Trascina qui il PDF o clicca"; }
-        function renderDocsAdmin() { document.getElementById('tbody_docs_admin').innerHTML = (db.docs || []).map(d => `<tr><td>${d.n}</td><td>${d.s}</td><td>${d.e}</td><td><button onclick="db.docs=db.docs.filter(x=>x.id!=${d.id});save();renderAdminAll();">❌</button></td></tr>`).join(''); }
-        function renderDocsGrid() { const oggi = new Date().toISOString().split('T')[0]; const vis = (db.docs || []).filter(d => (d.s==="" || oggi>=d.s) && (d.e==="" || oggi<=d.e)); document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join(''); }
-        function openPdf(id) { const d = db.docs.find(x => x.id == id); const w = window.open(); w.document.write(`<iframe src="${d.data}" width="100%" height="100%" style="border:none;"></iframe>`); }
+        function editUser(id) {
+            const u = db.users.find(x => x.id === id);
+            editUserId = id;
+            document.getElementById('adm_u_nome').value = u.n;
+            document.getElementById('adm_u_cognome').value = u.c;
+            document.getElementById('adm_u_email').value = u.e;
+            document.getElementById('adm_u_pass').value = u.p;
+            document.getElementById('adm_u_durata').value = u.d;
+            document.getElementById('adm_u_lvl').value = u.l;
+            document.getElementById('btn_save_user').innerText = "AGGIORNA ACCOUNT";
+        }
 
+        function addVarco() {
+            db.varchi.push({id:Date.now(), nome:document.getElementById('adm_v_nome').value, coords:document.getElementById('adm_v_coords').value, note:document.getElementById('adm_v_note').value});
+            save(); renderAdminAll();
+        }
+        function renderVarchiAdmin() {
+            document.getElementById('tbody_adm_varchi').innerHTML = (db.varchi || []).map(v => `<tr><td>${v.nome}</td><td>${v.note}</td><td><button onclick="db.varchi=db.varchi.filter(x=>x.id!=${v.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
+        }
+
+        function addPredefinito() {
+            db.predefiniti.push({id:Date.now(), a:document.getElementById('adm_f_azienda').value, t:document.getElementById('adm_f_targa').value.toUpperCase()});
+            save(); renderAdminAll();
+        }
+        function renderPredefAdmin() {
+            document.getElementById('tbody_adm_predef').innerHTML = (db.predefiniti || []).map(p => `<tr><td>${p.a}</td><td>${p.t}</td><td><button onclick="db.predefiniti=db.predefiniti.filter(x=>x.id!=${p.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
+        }
+
+        function addHomeLink() {
+            db.links.push({id:Date.now(), n:document.getElementById('cfg_link_name').value, u:document.getElementById('cfg_link_url').value});
+            save(); renderAdminAll();
+        }
+        function renderLinksAdmin() {
+            document.getElementById('tbody_cfg_links').innerHTML = (db.links || []).map(l => `<tr><td>${l.n}</td><td>${l.u}</td><td><button onclick="db.links=db.links.filter(x=>x.id!=${l.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
+        }
+
+        function addCheckItem() {
+            const turno = document.getElementById('cfg_turn_name').value;
+            if(!db.checklist[turno]) db.checklist[turno] = [];
+            db.checklist[turno].push({id:Date.now(), f:document.getElementById('cfg_fase').value, t:document.getElementById('cfg_title').value});
+            save(); renderAdminAll();
+        }
+        function renderCheckAdmin() {
+            let h = "";
+            for(let t in db.checklist) {
+                db.checklist[t].forEach(item => {
+                    h += `<tr><td>${t}</td><td>${item.f}</td><td>${item.t}</td><td><button onclick="db.checklist['${t}']=db.checklist['${t}'].filter(x=>x.id!=${item.id});save();renderAdminAll();">❌</button></td></tr>`;
+                });
+            }
+            document.getElementById('tbody_cfg_check').innerHTML = h;
+        }
+
+        function renderRunTurnBtns() {
+            document.getElementById('run_turn_btns').innerHTML = Object.keys(db.checklist).map(t => `<button class="nav-btn" onclick="startChecklist('${t}')">${t}</button>`).join('');
+        }
+        function startChecklist(t) {
+            currentActiveTurn = t;
+            const items = db.checklist[t];
+            let h = `<h4>Turno: ${t}</h4>`;
+            ["Inizio", "Durante", "Fine"].forEach(f => {
+                const fItems = items.filter(x => x.f === f);
+                if(fItems.length) {
+                    h += `<div class="checklist-section-title">${f}</div>`;
+                    fItems.forEach(i => {
+                        h += `<div class="check-item"><span>${i.t}</span><input type="checkbox" onchange="logCheck('${t}','${i.t}', this.checked)"></div>`;
+                    });
+                }
+            });
+            document.getElementById('run_checklist_area').innerHTML = h;
+        }
+        function logCheck(turno, task, val) {
+            if(val) {
+                const entry = {id:Date.now(), t:new Date().toLocaleString(), data_iso:new Date().toISOString().split('T')[0], a:currentUser.n+" "+currentUser.c, l:"Checklist", d:`Completato: ${task} (Turno ${turno})`, m:"Checklist Eseguita", r:"SI", p:"normale"};
+                db.giornale.push(entry); save(); renderGiornale();
+            }
+        }
+
+        // Gestione Documenti
+        function setupDragDrop() {
+            const dz = document.getElementById('drop_zone');
+            dz.onclick = () => document.getElementById('file_input').click();
+            document.getElementById('file_input').onchange = (e) => handleFile(e.target.files[0]);
+            dz.ondragover = (e) => { e.preventDefault(); dz.style.borderColor = "var(--red)"; };
+            dz.ondragleave = () => dz.style.borderColor = "#bbb";
+            dz.ondrop = (e) => { e.preventDefault(); dz.style.borderColor = "#bbb"; handleFile(e.dataTransfer.files[0]); };
+        }
+        function handleFile(file) {
+            if(!file || file.type !== "application/pdf") return alert("Solo PDF");
+            const reader = new FileReader();
+            reader.onload = (e) => { tempFileData = e.target.result; document.getElementById('drop_zone').innerText = "File pronto: " + file.name; };
+            reader.readAsDataURL(file);
+        }
+        function uploadDocument() {
+            const n = document.getElementById('doc_name').value;
+            if(!n || !tempFileData) return alert("Mancano dati");
+            db.docs.push({ id: Date.now(), n, s: document.getElementById('doc_start').value, e: document.getElementById('doc_end').value, data: tempFileData });
+            save(); renderAdminAll();
+            tempFileData = null; document.getElementById('drop_zone').innerText = "Trascina qui il PDF o clicca";
+        }
+        function renderDocsAdmin() {
+            document.getElementById('tbody_docs_admin').innerHTML = (db.docs || []).map(d => `<tr><td>${d.n}</td><td>${d.s}</td><td>${d.e}</td><td><button onclick="db.docs=db.docs.filter(x=>x.id!=${d.id});save();renderAdminAll();">❌</button></td></tr>`).join('');
+        }
+        function renderDocsGrid() {
+            const oggi = new Date().toISOString().split('T')[0];
+            const vis = (db.docs || []).filter(d => (d.s==="" || oggi>=d.s) && (d.e==="" || oggi<=d.e));
+            document.getElementById('docs_grid').innerHTML = vis.map(d => `<div class="card" style="text-align:center;"><b>PDF</b><br>${d.n}<br><button class="nav-btn" onclick="openPdf('${d.id}')">APRI</button></div>`).join('');
+        }
+        function openPdf(id) {
+            const d = db.docs.find(x => x.id == id);
+            const w = window.open("");
+            w.document.write(`<iframe src="${d.data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        }
+
+        // Workflow Admin
+        function addWorkflowOrg() {
+            const nome = prompt("Nome Organizzazione (es. Securitas, Consorzio):");
+            if(!nome) return;
+            db.workflows.push({id: Date.now(), nome, nodi: []});
+            save(); renderAdminAll();
+        }
+        function renderAdminAll() {
+            renderUsersAdmin(); renderVarchiAdmin(); renderPredefAdmin(); renderLinksAdmin(); renderCheckAdmin(); renderDocsAdmin();
+            const container = document.getElementById('admin_workflow_list');
+            container.innerHTML = (db.workflows || []).map(wf => `
+                <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px; border-radius:5px;">
+                    <strong>${wf.nome}</strong> 
+                    <button onclick="addNodo(${wf.id})">+ Nodo</button> 
+                    <button onclick="db.workflows=db.workflows.filter(x=>x.id!=${wf.id});save();renderAdminAll();">Elimina</button>
+                    <div style="font-size:0.8rem; color:#666; margin-top:5px;">
+                        ${wf.nodi.map(n => `ID:${n.id} [${n.tipo}] ${n.titolo} -> SI:${n.idSi} NO:${n.idNo} <button onclick="linkNodi(${wf.id}, ${n.id})">Link</button>`).join('<br>')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        function addNodo(wfId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            const t = prompt("Tipo: scelta / istruzione / nota / fine"); if(!t) return;
+            wf.nodi.push({id:Date.now(), tipo:t, titolo:prompt("Testo:"), istruzione:prompt("Istruzione:"), idSi:null, idNo:null});
+            save(); renderAdminAll();
+        }
+        function linkNodi(wfId, nId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            const n = wf.nodi.find(x => x.id === nId);
+            n.idSi = prompt("ID Prossimo/SÌ:");
+            if(n.tipo==='scelta') n.idNo = prompt("ID NO:");
+            save(); renderAdminAll();
+        }
+        function renderBadgeWorkflows() {
+            document.getElementById('badge_start_btns').innerHTML = (db.workflows || []).map(wf => `<button class="nav-btn" onclick="startWorkflow(${wf.id})">📋 ${wf.nome}</button>`).join('');
+        }
+        function startWorkflow(wfId) {
+            const wf = db.workflows.find(x => x.id === wfId);
+            if(wf && wf.nodi.length) eseguiNodo(wfId, wf.nodi[0].id);
+        }
+        function eseguiNodo(wfId, nId) {
+            if(!nId || nId === 'FINE') { document.getElementById('flow_render_area').innerHTML = "<h2>PROCEDURA COMPLETATA</h2>"; return; }
+            const wf = db.workflows.find(x => x.id === wfId);
+            const n = wf.nodi.find(x => x.id == nId);
+            if(!n) return;
+            let h = `<div class="card"><h3>${n.titolo}</h3><p>${n.istruzione || ''}</p><div style="display:flex; gap:10px; justify-content:center;">`;
+            if(n.tipo === 'scelta') {
+                h += `<button class="nav-btn" style="background:green" onclick="eseguiNodo(${wfId}, '${n.idSi}')">SÌ / OK</button>`;
+                h += `<button class="nav-btn" style="background:var(--red)" onclick="eseguiNodo(${wfId}, '${n.idNo}')">NO / ANOMALIA</button>`;
+            } else if(n.tipo === 'fine') {
+                h += `<button class="nav-btn" onclick="document.getElementById('flow_render_area').innerHTML=''">CHIUDI</button>`;
+            } else {
+                h += `<button class="nav-btn" onclick="eseguiNodo(${wfId}, '${n.idSi}')">PROSEGUI</button>`;
+            }
+            h += `</div></div>`;
+            document.getElementById('flow_render_area').innerHTML = h;
+        }
     </script>
 </body>
 </html>
