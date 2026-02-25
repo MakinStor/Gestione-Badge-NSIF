@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSIF CASTIONE - GESTIONALE V 1.1.0 BETA</title>
+    <title>NSIF CASTIONE - GESTIONALE V 1.19.0 BETA</title>
     <style>
         :root { --blue: #003366; --red: #e30613; --bg: #f0f2f5; --white: #ffffff; --grey: #666; --warn: #ffcc00; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; }
@@ -360,11 +360,12 @@
 
         function addFornitore() {
             const azi = document.getElementById('f_azienda').value;
+            const aut = document.getElementById('f_autista').value;
             const tar = document.getElementById('f_targa').value.toUpperCase();
-            if(!azi || !tar) return alert("Mancano dati!");
+            if(!azi || !tar || !aut) return alert("Mancano dati (Azienda, Targa o Autista)!");
             const entry = {
                 id: Date.now(), data: new Date().toLocaleDateString('it-IT'),
-                azienda: azi, autista: document.getElementById('f_autista').value,
+                azienda: azi, autista: aut,
                 targa: tar, casco: document.getElementById('f_casco').checked,
                 gilet: document.getElementById('f_gilet').checked, nota: document.getElementById('f_nota_dpi').value,
                 entrata: new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}),
@@ -421,8 +422,13 @@
             document.getElementById('f_targa').value = tar;
             document.getElementById('f_casco').checked = c; 
             document.getElementById('f_gilet').checked = g;
-            if(!isPredef) { document.getElementById('f_autista').value = aut; }
-            addFornitore();
+            if(!isPredef) { 
+                document.getElementById('f_autista').value = aut;
+                addFornitore(); 
+            } else {
+                document.getElementById('f_autista').value = "";
+                document.getElementById('f_autista').focus();
+            }
         }
 
         function delRecente(targa) { db.recenti = db.recenti.filter(r => r.targa !== targa); save(); renderFornitori(); }
