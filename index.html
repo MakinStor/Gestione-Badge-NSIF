@@ -56,6 +56,11 @@
         .field-group { display: flex; flex-direction: column; gap: 5px; }
         .field-group label { font-size: 0.75rem; font-weight: bold; color: var(--blue); text-transform: uppercase; }
         .field-group input, .field-group select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+
+        /* Checklist Styles */
+        .checklist-section-title { background: var(--blue); color: white; padding: 8px 15px; border-radius: 4px; margin-top: 20px; font-size: 1rem; }
+        .check-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; transition: 0.2s; }
+        .check-item:hover { background: #f9f9f9; }
     </style>
 </head>
 <body>
@@ -191,7 +196,13 @@
             </div>
         </div>
 
-        <div id="section_checklist" class="container"><div class="card"><h3>Checklist Turni</h3><div id="run_turn_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div><div id="run_checklist_area"></div></div></div>
+        <div id="section_checklist" class="container">
+            <div class="card">
+                <h3>Checklist Turni</h3>
+                <div id="run_turn_btns" style="display:flex; gap:10px; margin-bottom:20px;"></div>
+                <div id="run_checklist_area"></div>
+            </div>
+        </div>
         
         <div id="section_badge" class="container">
             <div class="card">
@@ -281,6 +292,7 @@
         let editUserId = null;
         let tempFileData = null;
         let activeOutFornitoreId = null;
+        let currentActiveTurn = null;
 
         function save() { localStorage.setItem('nsif_v19_db', JSON.stringify(db)); }
 
@@ -500,10 +512,72 @@
         function addPredefinito() { const a = document.getElementById('adm_f_azienda').value; const t = document.getElementById('adm_f_targa').value; if(a && t) { db.predefiniti.push({ a, t }); save(); renderAdminAll(); } }
         function addHomeLink() { const n = document.getElementById('cfg_link_name').value; const u = document.getElementById('cfg_link_url').value; if(n && u) { db.links.push({ n, u }); save(); renderAdminAll(); renderHomeLinks(); } }
         function renderHomeLinks() { document.getElementById('home_links').innerHTML = db.links.map(l => `<button class="nav-btn" style="background:white; color:var(--blue); border:2px solid var(--blue); padding:15px 30px;" onclick="window.open('${l.u}')">${l.n}</button>`).join(''); }
-        function addCheckItem() { const t = document.getElementById('cfg_turn_name').value; if(!t) return; if(!db.checklist[t]) db.checklist[t] = []; db.checklist[t].push({ fase: document.getElementById('cfg_fase').value, titolo: document.getElementById('cfg_title').value }); save(); renderAdminAll(); }
-        function renderRunTurnBtns() { document.getElementById('run_turn_btns').innerHTML = Object.keys(db.checklist).map(t => `<button class="nav-btn" onclick="openRunCheck('${t}')">${t}</button>`).join(''); }
-        function openRunCheck(t) { let h = `<h3>${t}</h3>`; db.checklist[t].forEach((item, i) => { h += `<div class="check-item" style="display:flex; justify-content:space-between; margin-bottom:10px;"><span><b>${item.fase}</b>: ${item.titolo}</span><div><span class="time-badge" id="ts_${t}_${i}">--:--</span><input type="checkbox" onchange="document.getElementById('ts_${t}_${i}').innerText = this.checked ? new Date().toLocaleTimeString() : '--:--'"></div></div>`; }); document.getElementById('run_checklist_area').innerHTML = h; }
         
+        /* CHECKLIST CORE FUNCTIONS */
+        function addCheckItem() { const t = document.getElementById('cfg_turn_name').value; if(!t) return; if(!db.checklist[t]) db.checklist[t] = []; db.checklist[t].push({ fase: document.getElementById('cfg_fase').value, titolo: document.getElementById('cfg_title').value }); save(); renderAdminAll(); }
+        
+        function renderRunTurnBtns() { 
+            document.getElementById('run_turn_btns').innerHTML = Object.keys(db.checklist).map(t => `<button class="nav-btn" onclick="openRunCheck('${t}')">${t}</button>`).join(''); 
+        }
+
+        function openRunCheck(turnName) { 
+            currentActiveTurn = turnName;
+            const items = db.checklist[turnName] || [];
+            const fasi = ["Inizio", "Durante", "Fine"];
+            let h = `<h2>Checklist Operativa: ${turnName}</h2>`;
+            
+            fasi.forEach(f => {
+                const faseItems = items.filter(i => i.fase === f);
+                if(faseItems.length > 0) {
+                    h += `<div class="checklist-section-title">${f.toUpperCase()} TURNO</div>`;
+                    faseItems.forEach((item, idx) => {
+                        const globalIdx = items.indexOf(item);
+                        h += `
+                        <div class="check-item">
+                            <span>${item.titolo}</span>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span class="time-badge" id="ts_${globalIdx}">--:--</span>
+                                <input type="checkbox" style="transform: scale(1.5);" onchange="updateCheckTime(${globalIdx}, this)">
+                            </div>
+                        </div>`;
+                    });
+                }
+            });
+
+            h += `
+            <div style="margin-top:20px;">
+                <label style="font-weight:bold; color:var(--blue);">NOTE INTEGRATIVE DI FINE TURNO:</label>
+                <textarea id="check_notes" style="width:100%; height:80px; margin-top:10px; padding:10px; border-radius:5px; border:1px solid #ccc;" placeholder="Inserisci eventuali anomalie o note per il prossimo turno..."></textarea>
+            </div>
+            <button class="nav-btn" style="background:green; width:100%; margin-top:20px; padding:15px;" onclick="concludeChecklist()">CONCLUDI CHECKLIST E REGISTRA DIARIO</button>`;
+
+            document.getElementById('run_checklist_area').innerHTML = h; 
+        }
+
+        function updateCheckTime(idx, cb) {
+            const badge = document.getElementById('ts_' + idx);
+            badge.innerText = cb.checked ? new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}) : '--:--';
+        }
+
+        function concludeChecklist() {
+            if(!currentActiveTurn) return;
+            const note = document.getElementById('check_notes').value;
+            const record = {
+                t: new Date().toLocaleString(),
+                a: currentUser.n + " " + currentUser.c,
+                l: "CHECKLIST " + currentActiveTurn,
+                d: "Completata procedura checklist. Note: " + (note || "Nessuna nota aggiuntiva."),
+                r: "SI"
+            };
+            db.giornale.push(record);
+            save();
+            renderGiornale();
+            alert("Checklist salvata con successo nel Giornale di Bordo.");
+            document.getElementById('run_checklist_area').innerHTML = '<p style="text-align:center; color:green; font-weight:bold;">Checklist completata e registrata correttamente.</p>';
+            currentActiveTurn = null;
+        }
+        /* END CHECKLIST FUNCTIONS */
+
         function setupDragDrop() { const zone = document.getElementById('drop_zone'); zone.onclick = () => document.getElementById('file_input').click(); zone.ondragover = (e) => e.preventDefault(); zone.ondrop = (e) => { e.preventDefault(); processFile(e.dataTransfer.files[0]); }; document.getElementById('file_input').onchange = (e) => processFile(e.target.files[0]); }
         function processFile(file) { if(!file || file.type !== "application/pdf") return alert("Solo PDF"); const reader = new FileReader(); reader.onload = (e) => { tempFileData = e.target.result; document.getElementById('drop_zone').innerText = "File pronto: " + file.name; }; reader.readAsDataURL(file); }
         function uploadDocument() { const n = document.getElementById('doc_name').value; if(!n || !tempFileData) return alert("Inserisci titolo e seleziona file"); db.docs.push({ id: Date.now(), n, s: document.getElementById('doc_start').value, e: document.getElementById('doc_end').value, data: tempFileData }); save(); renderAdminAll(); tempFileData = null; document.getElementById('drop_zone').innerText = "Trascina qui il PDF o clicca"; }
